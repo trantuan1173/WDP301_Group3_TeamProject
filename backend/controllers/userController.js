@@ -1,0 +1,285 @@
+const User = require("../models/userModel.js");
+const Profile = require("../models/profileModel.js");
+const Role = require("../models/roleModel.js");
+const jwt = require("jsonwebtoken");
+
+// Generate JWT token
+function generateToken(id) {
+  return jwt.sign({ id: id }, process.env.JWT_SECRET || "your_jwt_secret", {
+    expiresIn: "2h"
+  });
+}
+
+// Get all users
+const getUsers = async function(req, res) {
+  try {
+    const users = await User.find().populate("profileId").populate("roleId")
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+      error: error.message,
+    })
+  }
+}
+
+// Get single user
+const getUser = async function(req, res) {
+  try {
+    const user = await User.findById(req.params.id).populate("profileId").populate("roleId")
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+      error: error.message,
+    })
+  }
+}
+
+// Create user
+const createUser = async function(req, res) {
+  try {
+    const { email, password, profileData} = req.body
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      })
+    }
+
+    // Create profile
+    const profile = await Profile.create(profileData)
+
+    // Create user
+    const user = await User.create({
+      email,
+      password,
+      profileId: profile._id,
+    })
+
+    // Generate token
+    const token = generateToken(user._id)
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: user._id,
+        email: user.email,
+        profile,
+        token,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to create user",
+      error: error.message,
+    })
+  }
+}
+
+const adminCreateTeacher = async function(req, res) {
+  try {
+    const { email, password, profileData, roleId } = req.body
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      })
+    }
+
+    // Create profile
+    const profile = await Profile.create(profileData)
+    
+    // Create user
+    const user = await User.create({
+      email,
+      password,
+      profileId: profile._id,
+      roleId,
+    })
+
+    // Generate token
+    const token = generateToken(user._id)
+
+    res.status(201).json({
+      success: true,
+      data: {
+        _id: user._id,
+        email: user.email,
+        profile,
+        token,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to create teacher",
+      error: error.message,
+    })
+  }
+}
+
+// Update user
+const updateUser = async (req, res) => {
+  try {
+    const { email, password, profileData, roleId } = req.body
+
+    // Find user
+    const user = await User.findById(req.params.id)
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    // Update profile if provided
+    if (profileData && user.profileId) {
+      await Profile.findByIdAndUpdate(user.profileId, profileData, {
+        new: true,
+        runValidators: true,
+      })
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        email: email || user.email,
+        password: password || user.password,
+        roleId: roleId || user.roleId,
+        updatedAt: Date.now(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("profileId")
+      .populate("roleId")
+
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update user",
+      error: error.message,
+    })
+  }
+}
+
+// Delete user
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+
+    // Delete profile
+    if (user.profileId) {
+      await Profile.findByIdAndDelete(user.profileId)
+    }
+
+    // Delete user
+    await User.findByIdAndDelete(req.params.id)
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete user",
+      error: error.message,
+    })
+  }
+}
+
+// User login
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body
+
+    // Check if user exists
+    const user = await User.findOne({ email }).populate("profileId").populate("roleId", "nameRole")
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      })
+    }
+
+    // Check if password matches
+    const isMatch = await user.comparePassword(password)
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      })
+    }
+
+    // Generate token
+    const token = generateToken(user._id)
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: user._id,
+        email: user.email,
+        profile: user.profileId,
+        role: user.roleId.nameRole,
+        token,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Login failed",
+      error: error.message,
+    })
+  }
+}
+
+module.exports = {
+  getUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  loginUser,
+  adminCreateTeacher,
+}
