@@ -8,7 +8,7 @@ const {
   addStudentToClass,
   removeStudentFromClass,
 } = require("../controllers/classController.js");
-const { protect, authorize } = require("../middlewares/authMiddleware.js");
+const { protect, authorize } = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
 
