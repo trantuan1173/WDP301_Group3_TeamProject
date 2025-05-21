@@ -15,7 +15,7 @@ export default function AdminEditAccount({ user, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl w-full max-w-lg p-6 shadow-lg">
         <h3 className="text-xl font-semibold mb-4">Chỉnh sửa tài khoản</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
