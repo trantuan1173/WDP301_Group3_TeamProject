@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import axios from 'axios';
+import { API_ENDPOINTS } from '../../config';
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -29,10 +30,20 @@ export default function Login() {
     const handleChange = (e) =>
         setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Login data:", form);
         // TODO: Call API login here
+        try {
+            const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
+
+            // Lưu thông tin đăng nhập
+            localStorage.setItem('token', response.data.data.token);
+            alert("Đăng nhập thành công");
+
+        } catch (error) {
+            alert("Đăng nhập thất bại");
+        }
     };
 
     return (
