@@ -10,9 +10,7 @@ import Login from './pages/Auth/Login'
 const App = () => {
   return (
     <div>
-
       <Login/>
-
     </div>
   )
 }
