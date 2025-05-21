@@ -2,6 +2,7 @@ const User = require("../models/userModel.js");
 const Profile = require("../models/profileModel.js");
 const Role = require("../models/roleModel.js");
 const jwt = require("jsonwebtoken");
+const sendVerifyEmail = require("../service/sendVerifyEmail");
 
 // Generate JWT token
 function generateToken(id) {
@@ -76,20 +77,46 @@ const createUser = async function(req, res) {
       email,
       password,
       profileId: profile._id,
+      isVerified: false // Add isVerified flag
     })
 
-    // Generate token
-    const token = generateToken(user._id)
-
-    res.status(201).json({
-      success: true,
-      data: {
-        _id: user._id,
-        email: user.email,
-        profile,
-        token,
-      },
-    })
+    // Generate verification token (expires in 24 hours)
+    const verificationToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "24h" }
+    )
+    
+    try {
+      // Send verification email
+      await sendVerifyEmail(email, verificationToken)
+      
+      // Generate login token (shorter expiration)
+      const loginToken = generateToken(user._id)
+      
+      res.status(201).json({
+        success: true,
+        message: "Registration successful! Please check your email to verify your account.",
+        data: {
+          _id: user._id,
+          email: user.email,
+          profile,
+          token: loginToken,
+        },
+      })
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError)
+      // Still return success but notify about email issue
+      res.status(201).json({
+        success: true,
+        message: "Registration successful, but failed to send verification email. Please try logging in later to resend verification.",
+        data: {
+          _id: user._id,
+          email: user.email,
+          profile,
+        },
+      })
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -98,6 +125,18 @@ const createUser = async function(req, res) {
     })
   }
 }
+
+const verifyUser = async function(req, res) {
+  const { token } = req.params
+  const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret")
+  const user = await User.findById(decoded.id)
+  user.isVerified = true
+  await user.save()
+  res.status(200).json({
+    success: true,
+    message: "User verified successfully",
+  })
+} 
 
 const adminCreateTeacher = async function(req, res) {
   try {
@@ -282,4 +321,5 @@ module.exports = {
   deleteUser,
   loginUser,
   adminCreateTeacher,
+  verifyUser,
 }
