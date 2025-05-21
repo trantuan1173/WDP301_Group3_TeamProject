@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import NavBar from "../../components/Layouts/NavBar";
 import AdminSideMenu from '../../components/Layouts/AdminSideMenu';
-import AdminManageAccount from '../../components/Admin/AdminManageAccount';
+import AdminManageAccount from '../../components/Admin/ManagerAcount/AdminManageAccount';
 
 function AdminDashboard() {
   const [selectedPage, setSelectedPage] = useState('overview');
