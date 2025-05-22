@@ -58,32 +58,55 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">
-              Hình ảnh khoá học
+              Ảnh khóa học
             </label>
-
-            {/* Xem trước ảnh */}
-            <div className="w-full h-[150px] flex justify-center items-center border rounded mb-2 bg-gray-50">
-              {form.imageUrl ? (
+            {/* Hiển thị ảnh xem trước */}
+            {form.imageUrl && (
+              <div className="mt-2 w-full h-[150px] flex justify-center items-center border rounded">
                 <img
                   src={form.imageUrl}
-                  alt="Preview"
+                  alt="Xem trước ảnh"
                   className="max-h-full object-contain"
                 />
-              ) : (
-                <span className="text-gray-400 text-sm">Chưa có ảnh</span>
-              )}
-            </div>
+              </div>
+            )}
+            {/* Upload từ thiết bị */}
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="file-upload"
+                className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              >
+                Tải ảnh lên
+              </label>
 
-            {/* Input URL ảnh */}
+              <span className="text-sm text-gray-600">
+                hoặc dán URL bên dưới
+              </span>
+            </div>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const imageURL = URL.createObjectURL(file);
+                  setForm((prev) => ({ ...prev, imageUrl: imageURL }));
+                }
+              }}
+              className="hidden"
+            />
+
+            {/* Nhập URL ảnh */}
             <input
               type="text"
               name="imageUrl"
               value={form.imageUrl}
               onChange={handleChange}
+              placeholder="Dán URL ảnh..."
               className={`border p-2 rounded w-full ${
                 errors.imageUrl ? "border-red-500" : ""
               }`}
-              placeholder="Dán URL ảnh..."
             />
             {errors.imageUrl && (
               <p className="text-red-500 text-sm mt-1">{errors.imageUrl}</p>
@@ -221,6 +244,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit }) {
           </label>
           <textarea
             name="description"
+            placeholder ="Thêm mô tả cho khóa học..."
             value={form.description}
             onChange={handleChange}
             className={`border p-2 rounded w-full ${
@@ -236,7 +260,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit }) {
         <div className="flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 border border-gray-400 rounded"
+            className="px-4 py-2 bg-red-400 text-white border border-gray-400 rounded"
           >
             Hủy
           </button>
