@@ -12,7 +12,7 @@ function generateToken(id) {
 }
 
 // Get all users
-const getUsers = async function(req, res) {
+const getUsers = async function (req, res) {
   try {
     const users = await User.find().populate("profileId").populate("roleId")
 
@@ -31,7 +31,7 @@ const getUsers = async function(req, res) {
 }
 
 // Get single user
-const getUser = async function(req, res) {
+const getUser = async function (req, res) {
   try {
     const user = await User.findById(req.params.id).populate("profileId").populate("roleId")
 
@@ -56,9 +56,9 @@ const getUser = async function(req, res) {
 }
 
 // Create user
-const createUser = async function(req, res) {
+const createUser = async function (req, res) {
   try {
-    const { email, password, profileData} = req.body
+    const { email, password, profileData } = req.body
 
     // Check if user already exists
     const existingUser = await User.findOne({ email })
@@ -85,14 +85,14 @@ const createUser = async function(req, res) {
       process.env.JWT_SECRET || "your_jwt_secret",
       { expiresIn: "24h" }
     )
-    
+
     try {
       // Send verification email
       await sendVerifyEmail(email, verificationToken)
-      
+
       // Generate login token (shorter expiration)
       const loginToken = generateToken(user._id)
-      
+
       res.status(201).json({
         success: true,
         message: "Registration successful! Please check your email to verify your account.",
@@ -125,7 +125,7 @@ const createUser = async function(req, res) {
   }
 }
 
-const verifyUser = async function(req, res) {
+const verifyUser = async function (req, res) {
   const { token } = req.params
   const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret")
   const user = await User.findById(decoded.id)
@@ -135,9 +135,9 @@ const verifyUser = async function(req, res) {
     success: true,
     message: "User verified successfully",
   })
-} 
+}
 
-const adminCreateTeacher = async function(req, res) {
+const adminCreateTeacher = async function (req, res) {
   try {
     const { email, password, profileData, roleId } = req.body
 
@@ -152,7 +152,7 @@ const adminCreateTeacher = async function(req, res) {
 
     // Create profile
     const profile = await Profile.create(profileData)
-    
+
     // Create user
     const user = await User.create({
       email,
@@ -312,6 +312,45 @@ const loginUser = async (req, res) => {
   }
 }
 
+const sendResetEmail = require("../service/sendResetEmail");
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "your_jwt_secret", {
+      expiresIn: "15m"
+    });
+
+    await sendResetEmail(email, resetToken);
+
+    res.status(200).json({ success: true, message: "Password reset email sent" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to send reset email", error: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password reset successful" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: "Invalid or expired token", error: error.message });
+  }
+};
+
+
 module.exports = {
   getUsers,
   getUser,
@@ -321,4 +360,6 @@ module.exports = {
   loginUser,
   adminCreateTeacher,
   verifyUser,
+  forgotPassword,
+  resetPassword
 }
