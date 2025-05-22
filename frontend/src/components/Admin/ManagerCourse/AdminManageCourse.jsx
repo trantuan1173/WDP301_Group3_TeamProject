@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
 import AdminAddCourse from "./AdminAddCourseForm";
+import { Link } from "react-router-dom";
 
 export default function AdminManageCourse() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +88,7 @@ export default function AdminManageCourse() {
                                 <p className="text-sm text-gray-600">Thời lượng: {course.duration}buổi</p>
                                 <p className="text-sm text-gray-600">Học phí: {course.price}</p>
                                 <button className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded">
-                                    Chi tiết
+                                   <Link to={`/admin/course/${course.id}`}>Chi tiết</Link>
                                 </button>
                             </div>
                         ))}
