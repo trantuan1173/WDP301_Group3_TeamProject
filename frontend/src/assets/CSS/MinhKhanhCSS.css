@@ -1,0 +1,289 @@
+/* GuestView */
+
+.section-divider {
+    border: none;
+    height: 1px;
+    background-color: #000000 !important;
+    margin: 60px auto;
+    border-radius: 1px;
+    width: 70%;
+}
+
+
+
+.guest-section1 {
+    padding: 2rem 1rem;
+}
+
+.roadmap-main-title {
+    font-weight: bold;
+    font-size: 30px;
+    margin-bottom: 1.5rem;
+    border-left: 7px solid #949393;
+    padding-left: 1rem;
+}
+
+.roadmap-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.roadmap-content-card-main-title-At-GuestView {
+    font-size: 25px;
+    font-weight: bold;
+    padding: 0 28px;
+}
+
+/* Left column */
+.roadmap-card-guest {
+    border: none !important;
+    /* Force remove */
+    background-color: transparent;
+    /* Optional: if you want to keep only inner bg */
+    box-shadow: none;
+}
+
+
+.roadmap-card-container-At-GuestView {
+    background-color: #EBF5FF;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    padding: 20px;
+    min-height: 100px;
+    display: flex;
+    justify-content: left;
+}
+
+.roadmap-content-stack-At-GuestView {
+    width: 100%;
+    max-width: 400px;
+    /* 👈 limit content width */
+    margin: 0 auto;
+    /* center within parent */
+}
+
+
+.roadmap-btn-stack-At-GuestView {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.roadmap-btn-At-GuestView {
+    width: 360px;
+    height: 70px;
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0px 5px 6px rgba(0, 0, 0, 0.25);
+    margin-bottom: 11px;
+}
+
+.roadmap-btn-At-GuestView:hover {
+    background-color: #e6e6e6;
+    transition: all 0.3s ease-in-out;
+}
+
+.roadmap-btn-title-At-GuestView {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 40px;
+}
+
+.roadmap-btn-desc-At-GuestView {
+    font-size: 13px;
+    color: #000000;
+    text-align: left;
+    padding-left: 45px;
+    margin-top: 4px;
+}
+
+/* Right column */
+.custom-course-card {
+    max-width: 300px;
+    /* make card smaller horizontally */
+    background-color: #EBF5FF !important;
+    margin: 0 auto;
+    /* center the card in the column */
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: none !important;
+}
+
+.custom-course-card .course-img {
+    width: 100%;
+    height: 190px;
+    /* fixed height for uniformity */
+    object-fit: cover;
+    /* keep image aspect ratio, crop if needed */
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.custom-center-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    /* roughly size="sm" */
+    background-color: #198754;
+    /* bootstrap success green */
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.custom-center-btn:hover {
+    background-color: #157347;
+}
+
+.guest-section3 {
+    margin-top: 80px;
+    padding: 2rem 1rem;
+    background-color: #EBF5FF;
+    /* Light background, change as you like */
+    text-align: center;
+}
+
+.guest-section3-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.guest-section3-card-row {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.guest-section3-card {
+    width: 250px;
+    height: 250px;
+    background-color: #f0f0f0;
+    border-radius: 1px;
+}
+
+
+.guest-section4 {
+    padding: 2rem 1rem;
+    background-color: #f0f4f8;
+    text-align: center;
+}
+
+.guest-section4-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+
+.guest-section4-feedback-card {
+    flex: 0 0 auto;
+    width: 300px;
+    height: 180px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    scroll-snap-align: start;
+}
+
+.draggable-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    cursor: grab;
+    padding-bottom: 1rem;
+    user-select: none;
+    scrollbar-width: none;
+}
+
+.draggable-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.draggable-carousel.active {
+    cursor: grabbing;
+}
+
+
+
+/* ====================================== */
+
+/* VerifyPage.jsx */
+
+
+.verifypage-container-main {
+    margin: 6rem auto;
+    width: 800px;
+    height: 500px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #f0f2f5;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+.verifypage-logo-for-loading {
+    width: 100px;
+    height: 100px;
+    margin-top: 1.5rem;
+}
+
+.verifypage-logo-for-loading img.spin {
+    width: 100%;
+    height: 100%;
+    animation: bounce 1.2s ease-in-out infinite;
+
+    
+}
+.verify-login-button-wrapper {
+    margin-top: 1.5rem;
+}
+
+.verify-login-button {
+    width: 200px;
+    height: 50px;
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background-color: #0A2C63;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.verify-login-button:hover {
+    transform: scale(1.05);
+    background-color: #0068d8;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}

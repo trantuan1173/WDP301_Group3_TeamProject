@@ -6,7 +6,7 @@ import Register from './pages/Auth/Register'
 import Login from './pages/Auth/Login'
 import VerifyPage from './pages/Auth/VerifyPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
+import GuestView from './pages/Homepage/GuestView'
 const App = () => {
   return (
     <div>
@@ -16,6 +16,7 @@ const App = () => {
           <Route path="/register" element={<Register/>}/>
           <Route path="/admin" element={<AdminDashboard/>}/>
           <Route path="/verify/:token" element={<VerifyPage />} />
+          <Route path="/" element={<GuestView />} />
         </Routes>
       </BrowserRouter>
     </div>
