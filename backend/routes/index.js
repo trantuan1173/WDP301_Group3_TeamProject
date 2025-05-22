@@ -16,7 +16,7 @@ const router = express.Router();
 router.use('/attendance', attendanceRoutes);
 router.use('/class', classRoutes);
 router.use('/courseDetail', courseDetailRoutes);
-router.use('/course', courseRoutes);
+router.use('/courses', courseRoutes);
 router.use('/feedback', feedbackRoutes);
 router.use('/profile', profileRoutes);
 router.use('/role', roleRoutes);
