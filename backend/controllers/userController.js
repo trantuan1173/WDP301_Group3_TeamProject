@@ -77,7 +77,6 @@ const createUser = async function(req, res) {
       email,
       password,
       profileId: profile._id,
-      isVerified: false // Add isVerified flag
     })
 
     // Generate verification token (expires in 24 hours)

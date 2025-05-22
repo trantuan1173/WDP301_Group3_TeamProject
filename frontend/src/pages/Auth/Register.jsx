@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const Register = () => {
   const [errors, setErrors] = useState({
     confirmPassword: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,6 +64,8 @@ const Register = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const response = await axios.post(`${API_ENDPOINTS.REGISTER}`, formData);
 
@@ -70,8 +74,12 @@ const Register = () => {
       }
     } catch (error) {
       alert('Đăng ký thất bại');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) return <LoadingSpinner size={120} text="ĐANG ĐĂNG KÝ" />;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
