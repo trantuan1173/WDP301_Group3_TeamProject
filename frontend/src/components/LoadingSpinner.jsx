@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const LoadingSpinner = ({ size = 200, text = "LOADING" }) => {
+const LoadingSpinner = ({ size = 200, text = "LOADING" , textSize = 24 }) => {
   const barCount = 12;
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const LoadingSpinner = ({ size = 200, text = "LOADING" }) => {
   }, [size]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+    <div className="flex flex-col items-center justify-center bg-white">
       <div
         className="relative"
         style={{
@@ -57,8 +57,11 @@ const LoadingSpinner = ({ size = 200, text = "LOADING" }) => {
 
       <div className="mt-8 text-center">
         <h2
-          className="text-2xl font-light text-cyan-500"
-          style={{ letterSpacing: '0.3em' }}
+          className="font-light text-cyan-500"
+          style={{
+            fontSize: `${textSize}px`,
+            letterSpacing: '0.3em',
+          }}
         >
           {text}
         </h2>
