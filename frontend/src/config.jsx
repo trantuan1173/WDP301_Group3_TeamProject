@@ -6,4 +6,5 @@ export const API_ENDPOINTS = {
   LOGIN: `${baseUrl}/api/users/login`,
   REGISTER: `${baseUrl}/api/users/register`,
   GET_ALL_ACCOUNT: `${baseUrl}/api/users`,
+  GET_ALL_COURSE: `${baseUrl}/api/courses`,
 };

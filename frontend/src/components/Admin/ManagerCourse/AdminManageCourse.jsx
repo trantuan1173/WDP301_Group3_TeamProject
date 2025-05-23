@@ -2,37 +2,40 @@ import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
 import AdminAddCourse from "./AdminAddCourseForm";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../config";
+import { useEffect } from "react";
 
 export default function AdminManageCourse() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showAddPopup, setShowAddPopup] = useState(false);
-    const [courses, setCourses] = useState([
-        {
-            id: 1,
-            category: "Khóa học cho Người lớn / Sinh viên / Người đi làm",
-            imageUrl: "/CourseImage/A1image.png",
-            name: "Tiếng Anh A1",
-            level: "A1 - A2",
-            duration: "60 ",
-            price: "2.000.000 VNĐ",
-        },
-        {
-            id: 2,
-            category: "Khóa học ngắn hạn chuyên đề",
-            imageUrl: "/CourseImage/B1image.png",
-            name: "Khóa phát âm chuẩn IPA",
-            level: "A1 - B1",
-            duration: "20 ",
-            price: "1.000.000 VNĐ",
-        },
-    ]);
+    const [courses, setCourses] = useState([]);
 
     const handleAddCourse = (newCourse) => {
         setCourses([...courses, { ...newCourse, id: Date.now() }]);
     };
 
+    const fetchCourses = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.status === 200) {
+            setCourses(response.data.data);
+          }
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+      useEffect(() => {
+        fetchCourses();
+      }, []);
+
     const filteredCourses = courses.filter((course) =>
-        course.name.toLowerCase().includes(searchQuery.toLowerCase())
+        course.nameCourses.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const groupedCourses = filteredCourses.reduce((acc, course) => {
