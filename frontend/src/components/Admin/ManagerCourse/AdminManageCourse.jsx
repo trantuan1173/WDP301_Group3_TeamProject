@@ -2,6 +2,8 @@ import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
 import AdminAddCourse from "./AdminAddCourseForm";
+import AdminEditCourse from "./AdminEditCourse";
+import CourseDetailModal from "./CourseDetailModal";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { useEffect } from "react";
@@ -10,6 +12,9 @@ export default function AdminManageCourse() {
     const [searchQuery, setSearchQuery] = useState("");
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [courses, setCourses] = useState([]);
+    const [viewingCourse, setViewingCourse] = useState(null);
+    const [editingCourse, setEditingCourse] = useState(null);
+
 
     const handleAddCourse = (newCourse) => {
         setCourses([...courses, { ...newCourse, id: Date.now() }]);
@@ -91,7 +96,9 @@ export default function AdminManageCourse() {
                                 <p className="text-sm text-gray-600">Level: {course.level}</p>
                                 <p className="text-sm text-gray-600">Thời lượng: {course.duration}buổi</p>
                                 <p className="text-sm text-gray-600">Học phí: {course.price}</p>
-                                <button className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded">
+                                <button className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
+                                onClick={() => setViewingCourse(course)}
+                                >
                                     Chi tiết
                                 </button>
                             </div>
@@ -106,6 +113,27 @@ export default function AdminManageCourse() {
                     onSubmit={handleAddCourse}
                 />
             )}
+{viewingCourse && (
+    <CourseDetailModal
+        courseData={viewingCourse}
+        onClose={() => setViewingCourse(null)}
+        onEdit={() => {
+            setEditingCourse(viewingCourse);
+            setViewingCourse(null);
+        }}
+    />
+)}
+
+{editingCourse && (
+    <AdminEditCourse
+        courseData={editingCourse}
+        onClose={() => setEditingCourse(null)}
+        onSubmit={(updatedCourse) => {
+            setCourses(courses.map(c => c.id === updatedCourse.id ? updatedCourse : c));
+            setEditingCourse(null);
+        }}
+    />
+)}
         </div>
     );
 }
