@@ -1,207 +1,154 @@
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../config";
 
 export default function AdminAddCourse({ onClose, onSubmit }) {
-    const [form, setForm] = useState({
-        imageUrl: "",
-        category: "",
-        name: "",
-        level: "",
-        duration: "",
-        price: "",
-        description: "",
-    });
+  const [form, setForm] = useState({
+    nameCourses: "",
+    category: "",
+    level: "",
+    price: "",
+    description: "",
+    durationDays: "",
+    imageURL: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    const [categories, setCategories] = useState([
-        "Khóa học cho Người lớn / Sinh viên / Người đi làm",
-        "Khóa học ngắn hạn chuyên đề",
-    ]);
-    const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
-    const [newCategory, setNewCategory] = useState("");
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
+  };
 
-    const [errors, setErrors] = useState({});
+  const handleSubmit = async () => {
+    const {
+      nameCourses,
+      category,
+      level,
+      price,
+      description,
+      durationDays,
+      imageURL,
+    } = form;
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-    };
+    if (!nameCourses) return setError("Tên khóa học là bắt buộc");
 
-    const handleAddCategory = () => {
-        if (newCategory.trim() !== "") {
-            setCategories((prev) => [...prev, newCategory.trim()]);
-            setForm({ ...form, category: newCategory.trim() });
-            setNewCategory("");
-            setShowNewCategoryInput(false);
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      // Tạo khóa học
+      const courseRes = await axios.post(
+        API_ENDPOINTS.CREATE_COURSE,
+        { nameCourses },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-    };
+      );
 
-    const validate = () => {
-        const newErrors = {};
-        if (!form.imageUrl.trim()) newErrors.imageUrl = "Không được để trống.";
-        if (!form.category.trim()) newErrors.category = "Không được để trống.";
-        if (!form.name.trim()) newErrors.name = "Không được để trống.";
-        if (!form.level.trim()) newErrors.level = "Không được để trống.";
-        if (!form.duration.trim()) {
-            newErrors.duration = "Không được để trống.";
-        } else if (isNaN(form.duration)) {
-            newErrors.duration = "Phải là số.";
+      const courseId = courseRes.data.data._id;
+
+      // Tạo chi tiết khóa học
+      await axios.post(
+        API_ENDPOINTS.CREATE_COURSE_DETAIL,
+        {
+          courseId,
+          type: category,
+          level,
+          price: parseFloat(price),
+          description,
+          durationDays: parseInt(durationDays),
+          imageURL,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-        if (!form.price.trim()) {
-            newErrors.price = "Không được để trống.";
-        } else if (isNaN(form.price)) {
-            newErrors.price = "Phải là số.";
-        }
-        if (!form.description.trim()) newErrors.description = "Không được để trống.";
+      );
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+      if (onSubmit) onSubmit();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError("Thêm khóa học thất bại.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmit = () => {
-        if (validate()) {
-            onSubmit(form);
-            onClose();
-        }
-    };
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">Thêm khóa học mới</h2>
 
-    return (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-full max-w-2xl shadow-lg">
-                <h2 className="text-xl font-semibold mb-4 text-center">Thêm khóa học mới</h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <input
-                            type="text"
-                            name="imageUrl"
-                            placeholder="URL/Ảnh"
-                            value={form.imageUrl}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.imageUrl ? "border-red-500" : ""}`}
-                        />
-                        {errors.imageUrl && <p className="text-red-500 text-sm mt-1">{errors.imageUrl}</p>}
-                    </div>
-
-                    {/* Dropdown danh mục */}
-                    <div className="relative">
-                        <select
-                            name="category"
-                            value={form.category}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.category ? "border-red-500" : ""}`}
-                        >
-                            <option value="">Danh mục khoá học</option>
-                            {categories.map((cat, idx) => (
-                                <option key={idx} value={cat}>{cat}</option>
-                            ))}
-                        </select>
-                        {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
-
-                        {!showNewCategoryInput && (
-                            <button
-                                type="button"
-                                onClick={() => setShowNewCategoryInput(true)}
-                                className="text-blue-600 text-sm mt-1 flex items-center gap-1"
-                            >
-                                <FaPlus className="text-xs" /> Thêm danh mục
-                            </button>
-                        )}
-
-                        {showNewCategoryInput && (
-                            <div className="mt-2 flex gap-2">
-                                <input
-                                    type="text"
-                                    placeholder="Tên danh mục mới"
-                                    value={newCategory}
-                                    onChange={(e) => setNewCategory(e.target.value)}
-                                    className="border p-1 rounded flex-1 text-sm"
-                                />
-                                <button
-                                    onClick={handleAddCategory}
-                                    className="text-white bg-blue-600 px-3 py-1 rounded text-sm"
-                                >
-                                    Thêm
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Tên khóa học"
-                            value={form.name}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.name ? "border-red-500" : ""}`}
-                        />
-                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                    </div>
-
-                    <div>
-                        <input
-                            type="text"
-                            name="level"
-                            placeholder="Trình độ/Level"
-                            value={form.level}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.level ? "border-red-500" : ""}`}
-                        />
-                        {errors.level && <p className="text-red-500 text-sm mt-1">{errors.level}</p>}
-                    </div>
-
-                    <div>
-                        <input
-                            type="number"
-                            name="duration"
-                            placeholder="Thời lượng"
-                            value={form.duration}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.duration ? "border-red-500" : ""}`}
-                        />
-                        {errors.duration && <p className="text-red-500 text-sm mt-1">{errors.duration}</p>}
-                    </div>
-
-                    <div>
-                        <input
-                            type="number"
-                            name="price"
-                            placeholder="Học phí"
-                            value={form.price}
-                            onChange={handleChange}
-                            className={`border p-2 rounded w-full ${errors.price ? "border-red-500" : ""}`}
-                        />
-                        {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
-                    </div>
-                </div>
-
-                <div className="mb-4">
-                    <textarea
-                        name="description"
-                        placeholder="Mô tả"
-                        value={form.description}
-                        onChange={handleChange}
-                        className={`border p-2 rounded w-full ${errors.description ? "border-red-500" : ""}`}
-                        rows={3}
-                    />
-                    {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-                </div>
-
-                <div className="flex justify-end gap-2">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 text-gray-600 border border-gray-400 rounded"
-                    >
-                        Hủy
-                    </button>
-                    <button
-                        onClick={handleSubmit}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded"
-                    >
-                        Thêm
-                    </button>
-                </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <input
+            name="imageURL"
+            value={form.imageURL}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+            placeholder="URL/ Ảnh"
+          />
+          <select
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+          >
+            <option value="">Danh mục khóa học</option>
+            <option value="ielts">Khóa học IELTS</option>
+            <option value="giao_tiep">Giao tiếp</option>
+            <option value="nguoi_lon">Khóa học cho Người lớn</option>
+          </select>
+          <input
+            name="nameCourses"
+            value={form.nameCourses}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+            placeholder="Tên khóa học"
+          />
+          <input
+            name="level"
+            value={form.level}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+            placeholder="Trình độ/ Level"
+          />
+          <input
+            name="durationDays"
+            value={form.durationDays}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+            placeholder="Thời lượng"
+          />
+          <input
+            name="price"
+            value={form.price}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded"
+            placeholder="Học phí"
+          />
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            className="bg-blue-100 p-2 rounded col-span-1 md:col-span-2"
+            rows={3}
+            placeholder="Mô tả"
+          />
         </div>
-    );
+
+        {error && <p className="text-red-500 text-center mb-2">{error}</p>}
+
+        <div className="flex justify-end">
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
+          >
+            {loading ? "Đang thêm..." : "Thêm"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

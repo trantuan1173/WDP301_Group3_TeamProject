@@ -34,9 +34,11 @@ export default function AdminManageCourse() {
         fetchCourses();
       }, []);
 
-    const filteredCourses = courses.filter((course) =>
-        course.nameCourses.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+      const filteredCourses = courses.filter(
+        (course) =>
+          typeof course.nameCourses === "string" &&
+          course.nameCourses.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
     const groupedCourses = filteredCourses.reduce((acc, course) => {
         if (!acc[course.category]) acc[course.category] = [];
