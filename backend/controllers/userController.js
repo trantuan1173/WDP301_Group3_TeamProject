@@ -275,7 +275,7 @@ const loginUser = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email }).populate("profileId").populate("roleId", "nameRole")
     if (!user) {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
         message: "Invalid credentials",
       })
@@ -284,12 +284,17 @@ const loginUser = async (req, res) => {
     // Check if password matches
     const isMatch = await user.comparePassword(password)
     if (!isMatch) {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
         message: "Invalid credentials",
       })
     }
-
+    if (!user.isVerified) {
+      return res.status(401).json({
+        success: false,
+        message: "Please verify your email address",
+      })
+    }
     // Generate token
     const token = generateToken(user._id)
 

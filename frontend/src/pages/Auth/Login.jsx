@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [language, setLanguage] = useState("vi");
-
+    const [isLoading, setIsLoading] = useState(false);
     const t = {
         vi: {
             title: "Đăng nhập vào tài khoản",
@@ -32,20 +33,33 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Login data:", form);
-        // TODO: Call API login here
+        setIsLoading(true);
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
-
-            // Lưu thông tin đăng nhập
-            localStorage.setItem('token', response.data.data.token);
-            alert("Đăng nhập thành công");
-
+            if (response.status === 200) {
+                const { token, message } = response.data.data;
+                localStorage.setItem('token', token);
+                alert(message || "Đăng nhập thành công");
+            }
         } catch (error) {
-            alert("Đăng nhập thất bại");
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data.message || "Đăng nhập thất bại";
+    
+                if (status === 401) {
+                    alert(message); // Sai tài khoản/mật khẩu
+                } else if (status === 403) {
+                    alert(message); // Chưa xác thực
+                } else {
+                    alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+                }
+            } else {
+                alert("Không thể kết nối đến máy chủ.");
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
-
     return (
         <div className="min-h-screen flex">
             {/* Left form */}
@@ -106,7 +120,7 @@ export default function Login() {
                             </div>
                         </div>
 
-
+                        {isLoading && <LoadingSpinner size={50} textSize={20}/>}
 
                         <div>
                             <button
