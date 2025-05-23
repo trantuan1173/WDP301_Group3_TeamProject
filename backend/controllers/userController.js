@@ -139,7 +139,8 @@ const verifyUser = async function(req, res) {
 
 const adminCreateTeacher = async function(req, res) {
   try {
-    const { email, password, profileData, roleId } = req.body
+    const { email, password, profileData } = req.body
+    const roleId = "682989e63009eb573cbc1444"
 
     // Check if user already exists
     const existingUser = await User.findOne({ email })
