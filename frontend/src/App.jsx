@@ -6,6 +6,7 @@ import Register from './pages/Auth/Register'
 import Login from './pages/Auth/Login'
 import VerifyPage from './pages/Auth/VerifyPage'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCourse'
 import GuestView from './pages/Homepage/GuestView'
 import ForgotPassword from './pages/Auth/ForgotPassword'
@@ -23,6 +24,9 @@ const App = () => {
 
           <Route path="/admin" element={<AdminDashboard/>}/>
           <Route path="/verify/:token" element={<VerifyPage />} />
+          <Route path="/" element={<GuestView />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -148,6 +148,30 @@ const deleteCourseDetail = async (req, res) => {
   }
 }
 
+// Get all course details
+const getCourseDetailsForGuest = async (req, res) => {
+  try {
+    const courseDetails = await CourseDetail.find().populate("courseId")
+
+    const formattedDetails = courseDetails.map(detail => ({
+      nameCourses: detail.courseId?.nameCourses,
+      type: detail.type,
+      durationDays: detail.durationDays,
+      imageURL: detail.imageURL,
+    }))
+
+    res.status(200).json({
+      data: formattedDetails,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch course details",
+      error: error.message,
+    })
+  }
+}
+
 
 module.exports={
     getCourseDetails,
@@ -155,5 +179,6 @@ module.exports={
     getCourseDetail,
     createCourseDetail,
     updateCourseDetail,
-    deleteCourseDetail
+    deleteCourseDetail,
+    getCourseDetailsForGuest
 }
