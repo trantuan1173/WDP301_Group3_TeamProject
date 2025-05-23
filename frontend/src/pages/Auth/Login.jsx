@@ -140,7 +140,6 @@ export default function Login() {
                             </span>
                         </div>
                     </form>
-                    <a href="/forgot-password">Forgot Password</a>
                 </div>
             </div>
 

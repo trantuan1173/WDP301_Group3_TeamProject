@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import "../../assets/CSS/MinhKhanhCSS.css";
-import { Container } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
 const VerifyPage = () => {
   const { token } = useParams();
-  const navigate = useNavigate();
   const [message, setMessage] = useState("Đang xác minh...");
 
   useEffect(() => {
@@ -24,28 +20,37 @@ const VerifyPage = () => {
   }, [token]);
 
   return (
-    <div>
-      <div className="verifypage-container-main">
-        <h1>{message}</h1>
-
-        <div className="verifypage-logo-for-loading">
-          <img
-            src="/images/logo.png"
-            alt="Logo"
-            className={message === "Đang xác minh..." ? "spin" : ""}
-          />
-        </div>
-
-        <div className="verify-login-button-wrapper">
-          <button
-            className="verify-login-button"
-            onClick={() => navigate("/login")} >
-            Đăng nhập
-          </button>
-        </div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", backgroundColor: "#f0f2f5" }}>
+      <div style={{
+        padding: "2rem",
+        backgroundColor: message.includes("thành công") ? "#d4edda" : "#f8d7da",
+        color: message.includes("thành công") ? "#155724" : "#721c24",
+        border: `1px solid ${message.includes("thành công") ? "#c3e6cb" : "#f5c6cb"}`,
+        borderRadius: "8px",
+        textAlign: "center",
+        maxWidth: "400px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+      }}>
+        <h2 style={{ marginBottom: "1.5rem" }}>{message}</h2>
+        <button
+          onClick={() => window.location.href = "/login"}
+          style={{
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            transition: "background-color 0.3s ease"
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = "#0056b3"}
+          onMouseOut={(e) => e.target.style.backgroundColor = "#007bff"}
+        >
+          Đến trang đăng nhập
+        </button>
       </div>
     </div>
-
   );
 };
 
