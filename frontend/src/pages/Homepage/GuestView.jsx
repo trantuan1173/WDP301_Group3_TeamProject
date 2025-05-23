@@ -1,7 +1,7 @@
-import React from "react";
 import { Container, Row, Col, Card, Button, Carousel } from "react-bootstrap";
 import '../../assets/CSS/MinhKhanhCSS.css';
 import DraggableCarousel from "../../components/ulti/DraggableCarousel";
+import Footer from "../../components/Layouts/Footer";
 
 export default function GuestView() {
     const courseMockData = [
@@ -284,7 +284,7 @@ export default function GuestView() {
                 </section>
 
             </main>
-
+             <Footer />                       
         </>
     );
 }
