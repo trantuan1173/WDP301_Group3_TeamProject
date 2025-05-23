@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useNavigate } from "react-router-dom"; // Thêm dòng này
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [language, setLanguage] = useState("vi");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate(); // Thêm dòng này
 
     const t = {
@@ -34,11 +36,15 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
-            localStorage.setItem('token', response.data.data.token);
-            alert("Đăng nhập thành công");
-            navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
+            if (response.status === 200) {
+                const { token, message } = response.data.data;
+                localStorage.setItem('token', token);
+                alert(message || "Đăng nhập thành công");
+                navigate("/admin");
+            }
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
@@ -113,7 +119,7 @@ export default function Login() {
                                 />
                             </div>
                         </div>
-
+                        {isLoading && <LoadingSpinner size={50} textSize={20}/>}
                         <div>
                             <button
                                 type="submit"
