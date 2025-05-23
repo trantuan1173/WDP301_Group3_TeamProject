@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 import AdminAddCourse from "./AdminAddCourseForm";
 import AdminEditCourse from "./AdminEditCourse";
@@ -10,7 +9,7 @@ import CourseDetailModal from "./CourseDetailModal";
 
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
-import { useEffect } from "react";
+
 
 
 
