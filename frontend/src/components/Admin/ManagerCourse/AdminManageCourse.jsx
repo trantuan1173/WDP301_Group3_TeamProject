@@ -84,7 +84,7 @@ export default function AdminManageCourse() {
                                     className="w-full h-48 object-cover rounded"
                                 />
                                 <h4 className="font-semibold text-base mt-2 mb-1">
-                                    {course.name}
+                                    {course.nameCourses}
                                 </h4>
                                 <p className="text-sm text-gray-600">Level: {course.level}</p>
                                 <p className="text-sm text-gray-600">Thời lượng: {course.duration}buổi</p>
