@@ -110,6 +110,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
     return (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg">
+
                 <h2 className="text-2xl font-bold mb-6 text-center">Thêm khóa học mới</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -173,7 +174,13 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
 
                 {error && <p className="text-red-500 text-center mb-2">{error}</p>}
 
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-4 mt-4">
+                    <button
+                        onClick={onClose}
+                        className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
+                    >
+                        Đóng
+                    </button>
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
