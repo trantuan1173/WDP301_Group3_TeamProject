@@ -1,30 +1,31 @@
 import React, { useState } from "react";
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
-import LoadingSpinner from '../../components/LoadingSpinner';
+import { useNavigate } from "react-router-dom"; // Thêm dòng này
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [language, setLanguage] = useState("vi");
-    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate(); // Thêm dòng này
+
     const t = {
         vi: {
             title: "Đăng nhập vào tài khoản",
-
             email: "Địa chỉ Email",
             password: "Mật khẩu",
-
             login: "Đăng nhập",
             toggleLang: "English",
+            noAccount: "Chưa có tài khoản?",
+            signUp: "Đăng ký"
         },
         en: {
             title: "Sign in to your account",
-
             email: "Email address",
             password: "Password",
-
             login: "Sign in",
             toggleLang: "Tiếng Việt",
+            noAccount: "Don't have an account?",
+            signUp: "Sign Up"
         },
     };
 
@@ -33,14 +34,11 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
-            if (response.status === 200) {
-                const { token, message } = response.data.data;
-                localStorage.setItem('token', token);
-                alert(message || "Đăng nhập thành công");
-            }
+            localStorage.setItem('token', response.data.data.token);
+            alert("Đăng nhập thành công");
+            navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
         } catch (error) {
             if (error.response) {
                 const status = error.response.status;
@@ -85,10 +83,6 @@ export default function Login() {
                     <h2 className="mt-6 text-2xl font-bold text-gray-900">
                         {t[language].title}
                     </h2>
-                    <p className="text-sm text-gray-600">
-                        {t[language].subtitle}
-                    </p>
-
                     <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                         <div className="space-y-4">
                             <div>
@@ -120,8 +114,6 @@ export default function Login() {
                             </div>
                         </div>
 
-                        {isLoading && <LoadingSpinner size={50} textSize={20}/>}
-
                         <div>
                             <button
                                 type="submit"
@@ -131,12 +123,22 @@ export default function Login() {
                                 {t[language].login}
                             </button>
                         </div>
+                        {/* Thêm dòng đăng ký */}
+                        <div className="text-center mt-4 text-sm text-gray-600">
+                            {t[language].noAccount}{" "}
+                            <span
+                                className="text-blue-600 hover:underline cursor-pointer font-semibold"
+                                onClick={() => navigate("/register")}
+                            >
+                                {t[language].signUp}
+                            </span>
+                        </div>
                     </form>
                 </div>
             </div>
 
             {/* Right image */}
-            <div className="hidden md:block md:w-3    /10 lg:w-3/10 h-screen overflow-hidden">
+            <div className="hidden md:block md:w-3/10 lg:w-3/10 h-screen overflow-hidden">
                 <img
                     src="/images/loginimage.png"
                     alt="Login visual"
