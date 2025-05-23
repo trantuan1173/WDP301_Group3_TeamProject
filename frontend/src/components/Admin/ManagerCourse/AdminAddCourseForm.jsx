@@ -108,89 +108,101 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg">
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    
+    <div
+      className="absolute inset-0 bg-black/30"
+      onClick={onClose}
+    ></div>
 
-                <h2 className="text-2xl font-bold mb-6 text-center">Thêm khóa học mới</h2>
+    
+    <div
+      className="relative z-10 bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h2 className="text-2xl font-bold mb-6 text-center">Thêm khóa học mới</h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="bg-blue-100 p-2 rounded">
-                        <label>Tải ảnh khóa học:</label>
-                        <input type="file" accept="image/*" onChange={handleImageChange} />
-                        {form.imageURL && (
-                            <div>
-                                <img src={form.imageURL} alt="Preview" width="150" />
-                            </div>
-                        )}
-                    </div>
-                    <select
-                        name="category"
-                        value={form.category}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded"
-                    >
-                        <option value="">Danh mục khóa học</option>
-                        <option value="ielts">Khóa học IELTS</option>
-                        <option value="giao_tiep">Giao tiếp</option>
-                        <option value="nguoi_lon">Khóa học cho Người lớn</option>
-                    </select>
-                    <input
-                        name="nameCourses"
-                        value={form.nameCourses}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded"
-                        placeholder="Tên khóa học"
-                    />
-                    <input
-                        name="level"
-                        value={form.level}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded"
-                        placeholder="Trình độ/ Level"
-                    />
-                    <input
-                        name="durationDays"
-                        value={form.durationDays}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded"
-                        placeholder="Thời lượng"
-                    />
-                    <input
-                        name="price"
-                        value={form.price}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded"
-                        placeholder="Học phí"
-                    />
-                    <textarea
-                        name="description"
-                        value={form.description}
-                        onChange={handleChange}
-                        className="bg-blue-100 p-2 rounded col-span-1 md:col-span-2"
-                        rows={3}
-                        placeholder="Mô tả"
-                    />
-                </div>
-
-                {error && <p className="text-red-500 text-center mb-2">{error}</p>}
-
-                <div className="flex justify-end gap-4 mt-4">
-                    <button
-                        onClick={onClose}
-                        className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
-                    >
-                        Đóng
-                    </button>
-                    <button
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
-                    >
-                        {loading ? "Đang thêm..." : "Thêm"}
-                    </button>
-                </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="bg-blue-100 p-2 rounded">
+          <label>Tải ảnh khóa học:</label>
+          <input type="file" accept="image/*" onChange={handleImageChange} />
+          {form.imageURL && (
+            <div>
+              <img src={form.imageURL} alt="Preview" width="150" />
             </div>
+          )}
         </div>
-    );
+
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded"
+        >
+          <option value="">Danh mục khóa học</option>
+          <option value="ielts">Khóa học IELTS</option>
+          <option value="giao_tiep">Giao tiếp</option>
+          <option value="nguoi_lon">Khóa học cho Người lớn</option>
+        </select>
+
+        <input
+          name="nameCourses"
+          value={form.nameCourses}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded"
+          placeholder="Tên khóa học"
+        />
+        <input
+          name="level"
+          value={form.level}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded"
+          placeholder="Trình độ/ Level"
+        />
+        <input
+          name="durationDays"
+          value={form.durationDays}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded"
+          placeholder="Thời lượng"
+        />
+        <input
+          name="price"
+          value={form.price}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded"
+          placeholder="Học phí"
+        />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          className="bg-blue-100 p-2 rounded col-span-1 md:col-span-2"
+          rows={3}
+          placeholder="Mô tả"
+        />
+      </div>
+
+      {error && <p className="text-red-500 text-center mb-2">{error}</p>}
+
+      <div className="flex justify-end gap-4 mt-4">
+        <button
+          onClick={onClose}
+          className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
+        >
+          Đóng
+        </button>
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
+        >
+          {loading ? "Đang thêm..." : "Thêm khóa học"}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 }
 

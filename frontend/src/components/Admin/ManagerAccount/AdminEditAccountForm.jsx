@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function AdminEditAccount({ user, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
-    _id: user.id, // id để gửi vào API
+    _id: user.id, 
     email: user.email,
     role: user.role,
     profile: {

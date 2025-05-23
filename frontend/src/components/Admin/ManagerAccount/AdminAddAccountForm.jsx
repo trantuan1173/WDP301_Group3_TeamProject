@@ -9,9 +9,8 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
       name: "",
     },
     password: "",
-    
   });
- 
+
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showVerifyMsg, setShowVerifyMsg] = useState(false);
@@ -35,46 +34,49 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
 
     try {
       const token = localStorage.getItem("token");
-      const endpoint = role === "teacher" ? API_ENDPOINTS.REGISTER_TEACHER : API_ENDPOINTS.REGISTER;
+      const endpoint =
+        role === "teacher" ? API_ENDPOINTS.REGISTER_TEACHER : API_ENDPOINTS.REGISTER;
+
       const response = await axios.post(endpoint, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
 
       if (response.status === 201) {
-        setShowVerifyMsg(true); // Hiện thông báo xác thực email
+        setShowVerifyMsg(true);
+        if (onSubmit) onSubmit();
       }
     } catch (error) {
-      alert('Đăng ký thất bại');
+      alert("Đăng ký thất bại");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
       <div
-        className="absolute inset-0 bg-black opacity-40"
-        onClick={onClose}
-      ></div>
+        className="bg-white rounded-xl p-6 w-full max-w-xl shadow-lg relative"
+        onClick={(e) => e.stopPropagation()} // Ngăn đóng form khi click vào form
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Tạo tài khoản mới</h2>
 
-      <div className="relative z-10 bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
-        <h2 className="text-center text-xl font-bold text-[#120B48] mb-4">
-          Tạo tài khoản
-        </h2>
         {showVerifyMsg && (
-    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-3 text-center">
-      Đăng ký thành công! Vui lòng báo người dùng xác thực email .
-    </div>
-  )}
-        <form className="space-y-3" onSubmit={handleSubmit}>
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-3 text-center">
+            Đăng ký thành công! Vui lòng báo người dùng xác thực email.
+          </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <input
             name="name"
             value={formData.profileData.name}
             onChange={handleChange}
             type="text"
             placeholder="Họ và tên"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-blue-100 p-2 rounded"
             required
           />
           <input
@@ -83,7 +85,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             onChange={handleChange}
             type="email"
             placeholder="Email"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-blue-100 p-2 rounded"
             required
           />
           <input
@@ -92,14 +94,14 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             onChange={handleChange}
             type="password"
             placeholder="Mật khẩu"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full bg-blue-100 p-2 rounded"
             required
           />
           <select
             name="role"
             value={role}
-            onChange={(e)=> setRole(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full bg-blue-100 p-2 rounded"
             required
           >
             <option value="">Chọn vai trò</option>
@@ -107,18 +109,18 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             <option value="student">Student</option>
           </select>
 
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-300 text-black"
+              className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
               disabled={isLoading}
             >
-              Hủy
+              Đóng
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-indigo-600 text-white"
+              className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
               disabled={isLoading}
             >
               {isLoading ? "Đang xử lý..." : "Tạo tài khoản"}
