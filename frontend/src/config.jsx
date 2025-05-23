@@ -13,5 +13,10 @@ export const API_ENDPOINTS = {
   //Admin endpoints
   CREATE_COURSE: `${baseUrl}/api/courses`,
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
+  FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
+  RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
+
+  //Guest endpoints
+  GET_COURSES: `${baseUrl}/api/courseDetail/forguest`,
 
 };
