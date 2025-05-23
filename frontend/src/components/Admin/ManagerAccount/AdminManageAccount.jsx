@@ -12,73 +12,94 @@ export default function AdminManageAccount() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(null);
   const [showViewForm, setShowViewForm] = useState(null);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
+  const [users, setUsers] = useState([]);
+  
 
 
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Bui Hang",
-      email: "hangbui@gmail.com",
-      gender: "Nu",
-      dob: "2002-02-20",
-      phone: "0987654321",
-      role: "Manager",
-      password: "123456",
-    },
-    {
-      id: 2,
-      name: "Jony",
-      email: "jony112@gmail.com",
-      gender: "Nam",
-      dob: "2003-11-11",
-      phone: "0987654321",
-      role: "Teacher",
-      password: "abcdef",
-    },
-    {
-      id: 3,
-      name: "Mai Mai",
-      email: "maimai@gmail.com",
-      gender: "Nu",
-      dob: "2005-03-22",
-      phone: "0987654321",
-      role: "Student",
-      password: "maimai123",
-    },
-    {
-      id: 4,
-      name: "Trang Ma",
-      email: "maitrang@gmail.com",
-      gender: "Nu",
-      dob: "2005-03-22",
-      phone: "0987654421",
-      role: "Student",
-      password: "maimai123",
-    },
-  ]);
+  const handleAddUser = async (newUser) => {
+  const token = localStorage.getItem("token");
+  const endpoint =
+    newUser.role === "teacher"
+      ? API_ENDPOINTS.REGISTER_TEACHER
+      : API_ENDPOINTS.REGISTER;
 
-  const handleAddUser = (newUser) => {
-    setUsers([...users, { ...newUser, id: users.length + 1 }]);
-    setShowAddForm(false);
-  };
+  try {
+    const response = await axios.post(endpoint, newUser, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const handleUpdateUser = (updatedUser) => {
-    setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
-    setShowEditForm(null);
-  };
-
-  const handleDeleteUser = (id) => {
-    if (window.confirm("Bạn có chắc muốn xoá tài khoản này?")) {
-      setUsers(users.filter(user => user.id !== id));
+    if (response.status === 200 || response.status === 201) {
+      alert("Tạo tài khoản thành công");
+      setShowAddForm(false);
+      fetchUsers(); // refresh danh sách từ API
     }
-  };
+  } catch (error) {
+    console.error("Lỗi khi tạo tài khoản:", error);
+    alert("Tạo tài khoản thất bại");
+  }
+};
+
+  const handleUpdateUser = async (updatedUser) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const payload = {
+      email: updatedUser.email,
+      roleId: updatedUser.role,
+      profileData: {
+        name: updatedUser.profile.name,
+        dob: updatedUser.profile.dob,
+        gender: updatedUser.profile.gender,
+        phone: updatedUser.profile.phone,
+      },
+    };
+    
+    const response = await axios.put(
+      `${API_ENDPOINTS.UPDATE_USER.replace(":userId", updatedUser._id)}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      alert("Cập nhật người dùng thành công");
+      setShowEditForm(null);
+      fetchUsers(); // Làm mới danh sách
+    }
+  } catch (error) {
+    console.error("Lỗi cập nhật người dùng:", error);
+    alert("Cập nhật người dùng thất bại");
+  }
+};
+
+
+
+  const handleDeleteUser = async (id) => {
+  if (window.confirm("Bạn có chắc muốn xoá tài khoản này?")) {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(API_ENDPOINTS.DELETE_USER.replace(":userId", id), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert("Xóa tài khoản thành công");
+      fetchUsers(); // Làm mới danh sách
+    } catch (error) {
+      console.error("Lỗi khi xóa tài khoản:", error);
+      alert("Xóa tài khoản thất bại");
+    }
+  }
+};
 
   // Chỉ đếm giáo viên và học viên
-  const totalTeachers = users.filter((u) => u.role === "Teacher").length;
-  const totalStudents = users.filter((u) => u.role === "Student").length;
+  const totalTeachers = users.filter((u) => u.role.toLowerCase() === "teacher").length;
+  const totalStudents = users.filter((u) => u.role.toLowerCase() === "student").length;
   const totalUsers = totalTeachers + totalStudents;
 
   const fetchUsers = async () => {
@@ -89,25 +110,34 @@ export default function AdminManageAccount() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       if (response.status === 200) {
-        setUsers(response.data.data);
+        const mappedUsers = response.data.data.map((item, index) => ({
+          id: item._id,
+          name: item.profileId?.name || "",
+          email: item.email,
+          gender: item.profileId?.gender || "",
+          dob: item.profileId?.dob ? item.profileId.dob.slice(0, 10) : "",
+          phone: item.profileId?.phone || "",
+          role: item.roleId?.nameRole || "",
+        }));
+        setUsers(mappedUsers);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
+
   useEffect(() => {
     fetchUsers();
-  }, []); 
+  }, []);
   // Lọc theo search và role
   const filteredUsers = users.filter((user) => {
     const keyword = searchQuery.toLowerCase().trim();
-    const name = user.name || "";
-    const email = user.email || "";
-    const matchesSearch =
-      name.toLowerCase().includes(keyword) ||
-      email.toLowerCase().includes(keyword);
-    const matchesRole = selectedRole === "All" || user.role === selectedRole;
+    const name = user.name?.toLowerCase() || "";
+    const email = user.email?.toLowerCase() || "";
+    const matchesSearch = name.includes(keyword) || email.includes(keyword);
+    const matchesRole = selectedRole === "All" || user.role.toLowerCase() === selectedRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
 
@@ -151,9 +181,9 @@ export default function AdminManageAccount() {
             className="border px-3 py-1 rounded bg-white text-sm"
           >
             <option value="All">All</option>
-            <option value="Teacher">Teacher</option>
-            <option value="Student">Student</option>
-            <option value="Manager">Manager</option>
+            <option value="admin">Admin</option>
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
           </select>
           <button className="bg-blue-100 text-blue-800 px-4 py-1 rounded shadow text-sm font-medium">
             Xuất dữ liệu

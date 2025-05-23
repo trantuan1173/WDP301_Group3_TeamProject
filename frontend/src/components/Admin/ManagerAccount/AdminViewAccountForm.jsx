@@ -19,15 +19,7 @@ export default function AdminManagerViewForm({ user, onClose }) {
           <p><strong>Ngày sinh:</strong> {user.dob}</p>
           <p><strong>Giới tính:</strong> {user.gender}</p>
           <p><strong>Số điện thoại:</strong> {user.phone}</p>
-          <div className="flex items-center gap-2">
-            <strong>Mật khẩu:</strong>
-            <span>
-              {showPassword ? user.password : "••••••••"}
-            </span>
-            <button onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
+          
           <p><strong>Vai trò:</strong> {user.role}</p>
         </div>
 

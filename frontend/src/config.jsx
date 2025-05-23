@@ -7,4 +7,7 @@ export const API_ENDPOINTS = {
   REGISTER: `${baseUrl}/api/users/register`,
   GET_ALL_ACCOUNT: `${baseUrl}/api/users`,
   GET_ALL_COURSE: `${baseUrl}/api/courses`,
+  REGISTER_TEACHER: `${baseUrl}/api/users/createTeacher`,
+  UPDATE_USER: `${baseUrl}/api/users/:userId`,
+  DELETE_USER: `${baseUrl}/api/users/:userId`,
 };
