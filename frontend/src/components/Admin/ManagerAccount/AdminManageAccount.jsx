@@ -4,6 +4,9 @@ import { FiSearch } from "react-icons/fi";
 import AdminAddAccount from "./AdminAddAccountForm";
 import AdminEditAccount from "./AdminEditAccountForm";
 import AdminViewAccount from "./AdminViewAccountForm";
+import axios from "axios";
+import { useEffect } from "react";
+import { API_ENDPOINTS } from "../../../config";
 
 export default function AdminManageAccount() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -47,7 +50,7 @@ export default function AdminManageAccount() {
     },
     {
       id: 4,
-      name: "Trang Mai",
+      name: "Trang Ma",
       email: "maitrang@gmail.com",
       gender: "Nu",
       dob: "2005-03-22",
@@ -78,12 +81,32 @@ export default function AdminManageAccount() {
   const totalStudents = users.filter((u) => u.role === "Student").length;
   const totalUsers = totalTeachers + totalStudents;
 
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(API_ENDPOINTS.GET_ALL_ACCOUNT, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        setUsers(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  useEffect(() => {
+    fetchUsers();
+  }, []); 
   // Lọc theo search và role
   const filteredUsers = users.filter((user) => {
     const keyword = searchQuery.toLowerCase().trim();
+    const name = user.name || "";
+    const email = user.email || "";
     const matchesSearch =
-      user.name.toLowerCase().includes(keyword) ||
-      user.email.toLowerCase().includes(keyword);
+      name.toLowerCase().includes(keyword) ||
+      email.toLowerCase().includes(keyword);
     const matchesRole = selectedRole === "All" || user.role === selectedRole;
     return matchesSearch && matchesRole;
   });
