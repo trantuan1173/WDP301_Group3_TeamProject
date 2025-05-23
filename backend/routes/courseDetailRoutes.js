@@ -6,12 +6,15 @@ const {
   createCourseDetail,
   updateCourseDetail,
   deleteCourseDetail,
+  getCourseDetailsForGuest,
 } = require("../controllers/courseDetailController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
 const router = express.Router()
 
 router.get("/", protect, getCourseDetails)
+
+router.get("/forguest", getCourseDetailsForGuest)
 
 router.post("/", protect, authorize("admin"), createCourseDetail)
 
@@ -22,5 +25,7 @@ router.get("/:id", protect, getCourseDetail)
 router.put("/:id", protect, authorize("admin"), updateCourseDetail)
 
 router.delete("/:id", protect, authorize("admin"), deleteCourseDetail)
+
+
 
 module.exports = router
