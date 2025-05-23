@@ -10,4 +10,8 @@ export const API_ENDPOINTS = {
   REGISTER_TEACHER: `${baseUrl}/api/users/createTeacher`,
   UPDATE_USER: `${baseUrl}/api/users/:userId`,
   DELETE_USER: `${baseUrl}/api/users/:userId`,
+  //Admin endpoints
+  CREATE_COURSE: `${baseUrl}/api/courses`,
+  CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
+
 };
