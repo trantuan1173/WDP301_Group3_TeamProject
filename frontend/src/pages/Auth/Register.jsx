@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +16,8 @@ const Register = () => {
     confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerifyMsg, setShowVerifyMsg] = useState(false); // Thêm state này
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +73,7 @@ const Register = () => {
       const response = await axios.post(`${API_ENDPOINTS.REGISTER}`, formData);
 
       if (response.status === 201) {
-        alert('Đăng ký thành công');
+        setShowVerifyMsg(true); // Hiện thông báo xác thực email
       }
     } catch (error) {
       alert('Đăng ký thất bại');
@@ -137,10 +140,20 @@ const Register = () => {
           </button>
         </form>
 
+        {/* Thông báo xác thực email */}
+        {showVerifyMsg && (
+          <p className="mt-4 text-sm text-red-500">
+            Please check your email to verify account.
+          </p>
+        )}
+
         {/* 👇 Dòng chữ nhỏ bên dưới form */}
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{' '}
-          <span className="underline text-indigo-500 cursor-pointer hover:text-indigo-700">
+          <span
+            className="underline text-indigo-500 cursor-pointer hover:text-indigo-700"
+            onClick={() => navigate('/login')}
+          >
             Sign In
           </span>
         </p>
