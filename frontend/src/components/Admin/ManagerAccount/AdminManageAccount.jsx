@@ -7,6 +7,7 @@ import AdminViewAccount from "./AdminViewAccountForm";
 import axios from "axios";
 import { useEffect } from "react";
 import { API_ENDPOINTS } from "../../../config";
+import LoadingSpinner from "../../LoadingSpinner";
 
 export default function AdminManageAccount() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -15,6 +16,7 @@ export default function AdminManageAccount() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   
 
 
@@ -105,6 +107,7 @@ export default function AdminManageAccount() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
+      setLoading(true);
       const response = await axios.get(API_ENDPOINTS.GET_ALL_ACCOUNT, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -125,6 +128,8 @@ export default function AdminManageAccount() {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -140,7 +145,7 @@ export default function AdminManageAccount() {
     const matchesRole = selectedRole === "All" || user.role.toLowerCase() === selectedRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
-
+  if (loading) return <LoadingSpinner size={120} text="Loading..." />;
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">QUẢN LÝ TÀI KHOẢN</h2>

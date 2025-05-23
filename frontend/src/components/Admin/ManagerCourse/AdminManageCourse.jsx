@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import axios from "axios";
+
 import AdminAddCourse from "./AdminAddCourseForm";
 import AdminEditCourse from "./AdminEditCourse";
 import CourseDetailModal from "./CourseDetailModal";
+
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { useEffect } from "react";
+
+
 
 export default function AdminManageCourse() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -15,39 +21,41 @@ export default function AdminManageCourse() {
     const [viewingCourse, setViewingCourse] = useState(null);
     const [editingCourse, setEditingCourse] = useState(null);
 
-
     const handleAddCourse = (newCourse) => {
-        setCourses([...courses, { ...newCourse, id: Date.now() }]);
+        setCourses([...courses, { ...newCourse, _id: Date.now().toString() }]);
     };
 
     const fetchCourses = async () => {
         try {
-          const token = localStorage.getItem("token");
-          const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (response.status === 200) {
-            setCourses(response.data.data);
-          }
+            const token = localStorage.getItem("token");
+            const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.status === 200) {
+                setCourses(response.data.data || []);
+                console.log("Courses fetched successfully:", response.data.data); 
+            }
         } catch (error) {
-          console.error("Error fetching users:", error);
+            console.error("Error fetching courses:", error);
         }
-      };
-      useEffect(() => {
-        fetchCourses();
-      }, []);
+    };
+    
 
-      const filteredCourses = courses.filter(
-        (course) =>
-          typeof course.nameCourses === "string" &&
-          course.nameCourses.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    useEffect(() => {
+        fetchCourses();
+    }, []);
+
+    const filteredCourses = courses.filter((course) => {
+        const name = course.courseId?.nameCourses || "";
+        return name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
 
     const groupedCourses = filteredCourses.reduce((acc, course) => {
-        if (!acc[course.category]) acc[course.category] = [];
-        acc[course.category].push(course);
+        const category = course.courseId?.type || "Khác";
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(course);
         return acc;
     }, {});
 
@@ -57,7 +65,7 @@ export default function AdminManageCourse() {
 
             {/* Search + Add */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                <div className="flex items-center border rounded px-2 bg-white">
+                <div className="flex items-center border rounded px-2 bg-white w-full sm:w-auto">
                     <input
                         type="text"
                         placeholder="Tìm kiếm khoá học..."
@@ -82,22 +90,28 @@ export default function AdminManageCourse() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {courseList.map((course) => (
                             <div
-                                key={course.id}
+                                key={course._id}
                                 className="bg-white rounded-lg shadow p-4 text-center"
                             >
                                 <img
-                                    src={course.imageUrl}
+                                    src={course.imageURL}
                                     alt="course"
                                     className="w-full h-48 object-cover rounded"
                                 />
                                 <h4 className="font-semibold text-base mt-2 mb-1">
-                                    {course.nameCourses}
+                                    {course.courseId?.nameCourses}
                                 </h4>
                                 <p className="text-sm text-gray-600">Level: {course.level}</p>
-                                <p className="text-sm text-gray-600">Thời lượng: {course.duration}buổi</p>
-                                <p className="text-sm text-gray-600">Học phí: {course.price}</p>
-                                <button className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
-                                onClick={() => setViewingCourse(course)}
+                                <p className="text-sm text-gray-600">
+                                    Thời lượng: {course.durationDays} buổi
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    Học phí: {course.price?.toLocaleString()} VNĐ
+                                </p>
+
+                                <button
+                                    className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
+                                    onClick={() => setViewingCourse(course)}
                                 >
                                     Chi tiết
                                 </button>
@@ -107,33 +121,33 @@ export default function AdminManageCourse() {
                 </div>
             ))}
 
+            {/* Modals */}
             {showAddPopup && (
                 <AdminAddCourse
                     onClose={() => setShowAddPopup(false)}
                     onSubmit={handleAddCourse}
                 />
             )}
-{viewingCourse && (
-    <CourseDetailModal
-        courseData={viewingCourse}
-        onClose={() => setViewingCourse(null)}
-        onEdit={() => {
-            setEditingCourse(viewingCourse);
-            setViewingCourse(null);
-        }}
-    />
-)}
-
-{editingCourse && (
-    <AdminEditCourse
-        courseData={editingCourse}
-        onClose={() => setEditingCourse(null)}
-        onSubmit={(updatedCourse) => {
-            setCourses(courses.map(c => c.id === updatedCourse.id ? updatedCourse : c));
-            setEditingCourse(null);
-        }}
-    />
-)}
+            {viewingCourse && (
+                <CourseDetailModal
+                    courseData={viewingCourse}
+                    onClose={() => setViewingCourse(null)}
+                    onEdit={() => {
+                        setEditingCourse(viewingCourse);
+                        setViewingCourse(null);
+                    }}
+                />
+            )}
+            {editingCourse && (
+                <AdminEditCourse
+                    courseData={editingCourse}
+                    onClose={() => setEditingCourse(null)}
+                    onSubmit={(updatedCourse) => {
+                        setCourses(courses.map((c) => (c._id === updatedCourse._id ? updatedCourse : c)));
+                        setEditingCourse(null);
+                    }}
+                />
+            )}
         </div>
     );
 }
