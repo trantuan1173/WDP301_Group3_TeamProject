@@ -13,5 +13,6 @@ export const API_ENDPOINTS = {
   //Admin endpoints
   CREATE_COURSE: `${baseUrl}/api/courses`,
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
+  GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
 
 };
