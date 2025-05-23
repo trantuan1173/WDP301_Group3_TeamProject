@@ -7,6 +7,12 @@ const courseDetailSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    type: {
+      type: String,
+      required: true,
+      trim: true,
+      enum: ["toeic", "ielts"],
+    },
     level: {
       type: String,
       required: true,
@@ -23,6 +29,10 @@ const courseDetailSchema = new mongoose.Schema(
     durationDays: {
       type: Number,
       required: true,
+    },
+    imageURL: {
+      type: String,
+      trim: true,
     },
   },
   { timestamps: true },

@@ -2,104 +2,53 @@ import { Container, Row, Col, Card, Button, Carousel } from "react-bootstrap";
 import '../../assets/CSS/MinhKhanhCSS.css';
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebookF, faTwitter, faInstagram, faPinterestP } from "@fortawesome/free-brands-svg-icons";
-import { faLocationDot, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
-
+import { faLocationDot, faPhone, faEnvelope, faPrint } from "@fortawesome/free-solid-svg-icons";
 
 export default function Footer() {
-
-
     return (
-        <footer id="footerHomePage">
-            <div id="footerComunicateWarper">
+        <div className="" style={{ marginTop: "200px" }}>
+            <footer className="text-center text-lg-start text-white" style={{ backgroundColor: "#092257" }}>
+                <section className="d-flex justify-content-between p-4" style={{ backgroundColor: "#8b9dc3" }}>
+                  
+                </section>
 
-                <Row style={{ backgroundColor: "#1B181F", borderBottom: "0.3px solid #fff", width: "100%" }}>
-                    <Col sm={4} className="iconAndTextAtFooter">
-                        <div className="iconTextContainer">
-                            <div className="iconWrapper">
-                                <FontAwesomeIcon icon={faLocationDot} />
-                            </div>
-                            <div className="textWrapper">
-                                <div className="footerLabel">Address:</div>
-                                <div className="footerContent">Thach That, Ha Noi</div>
-                            </div>
-                        </div>
-                    </Col>
-                    <Col sm={4} className="iconAndTextAtFooter">
-                        <div className="iconTextContainer">
-                            <div className="iconWrapper">
-                                <FontAwesomeIcon icon={faPhone} />
-                            </div>
-                            <div className="textWrapper">
-                                <div className="footerLabel">Phone:</div>
-                                <div className="footerContent">097 379 28 81</div>
-                            </div>
-                        </div>
-                    </Col>
-                    <Col sm={4} className="iconAndTextAtFooter">
-                        <div className="iconTextContainer">
-                            <div className="iconWrapper">
-                                <FontAwesomeIcon icon={faEnvelope} />
-                            </div>
-                            <div className="textWrapper">
-                                <div className="footerLabel">Email:</div>
-                                <div className="footerContent">smartenglishcenter2025@gmail.com</div>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+                <section>
+                    <div className="container text-center text-md-start mt-5">
+                        <div className="row mt-3">
+                            <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                                <h6 className="text-uppercase fw-bold">Smart English Center</h6>
+                                <hr className="mb-4 mt-0 d-inline-block mx-auto" style={{ width: "60px", backgroundColor: "#7c4dff", height: "2px" }} />
+                                <img src="./images/logo.png" alt="logo" className="footer-logo" />
 
-            <Row style={{ backgroundColor: "#1B181F", padding: "40px 0", width: "100%" }}>
-                {/* Logo and Social Icons */}
-                <Col sm={3} className="footerSection">
-                    <img src="./resourses/icons/logo3.png" alt="logo" id="footerLogo" />
-                    <p id="footerDescription">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos, quae.
-                    </p>
-                    <div className="socialIcons">
-                        <FontAwesomeIcon icon={faFacebookF} className="socialIcon" />
-                        <FontAwesomeIcon icon={faInstagram} className="socialIcon" />
+
+                            </div>
+
+                            <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                                <h6 className="text-uppercase fw-bold">Khóa Học</h6>
+                                <hr className="mb-4 mt-0 d-inline-block mx-auto" style={{ width: "60px", backgroundColor: "#7c4dff", height: "2px" }} />
+                                <p><a href="#!" className="text-white">KHOÁ HỌC TOEIC</a></p>
+                                <p><a href="#!" className="text-white">KHÓA HỌC IELTS</a></p>
+                                <p><a href="#!" className="text-white">Quy trình đăng ký học</a></p>
+                                <p><a href="#!" className="text-white">Nội quy lớp học</a></p>
+                            </div>
+
+
+                            <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                                <h6 className="text-uppercase fw-bold">Thông tin liên hệ</h6>
+                                <hr className="mb-4 mt-0 d-inline-block mx-auto" style={{ width: "60px", backgroundColor: "#7c4dff", height: "2px" }} />
+                                <p><FontAwesomeIcon icon={faLocationDot} className="me-2" /> Trường Đại Học FPT, Hà Nội</p>
+                                <p><FontAwesomeIcon icon={faEnvelope} className="me-2" /> mailenglishcenter@gmail.com</p>
+                                <p><FontAwesomeIcon icon={faPhone} className="me-2" /> + 01 234 567 88</p>
+                                <p><FontAwesomeIcon icon={faPrint} className="me-2" /> + 01 234 567 89</p>
+                            </div>
+                        </div>
                     </div>
-                </Col>
+                </section>
 
-                {/* Services */}
-                <Col sm={3} className="footerSection">
-                    <h5 id="secondFooterTitle">Our Services:</h5>
-                    <ul className="footerList">
-                        <li><Link className="custom-link" to="/view-classes">My classes</Link></li>
-                        <li>For You</li>
-                        <li>Policies</li>
-                        <li><Link className="custom-link" to="/list-all-posts">Newsfeed</Link></li>
-                    </ul>
-                </Col>
-
-                {/* Gallery */}
-                <Col sm={3} className="footerSection">
-                    <h5 id="secondFooterTitle">Mentoring Program</h5>
-                    <ul className="footerList">
-                        <li><Link className="custom-link" to="/list-all-mentors">List Mentor</Link></li>
-                        <li>Category</li>
-                        <li>Major</li>
-                        <a className="custom-link" href="https://docs.google.com/forms/d/e/1FAIpQLScU367jljT2dd-L-o67oVpFB_WDPp8wzvL-kFSepmbVCxw5_A/viewform"><li>Register mentor</li></a>
-                    </ul>
-                </Col>
-
-                {/* Subscribe */}
-                <Col sm={3} className="footerSection">
-                    <h5>Đăng ký với chúng tôi</h5>
-                    <a className="custom-link" href="https://docs.google.com/forms/d/e/1FAIpQLScU367jljT2dd-L-o67oVpFB_WDPp8wzvL-kFSepmbVCxw5_A/viewform"><button id="registerButtonAtFooter">Đăng ký</button></a>
-                </Col>
-            </Row>
-
-
-            <Row id="copyrightAtFooterWrapper" >
-                <div style={{ textAlign: "center" }}>
-                    Copyright © 2025 <span style={{ color: "#FC6441" }}>Smart English Center</span> || All rights reserved.
+                <div className="text-center p-3" style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}>
+                    © 2025 Copyright: Smart English Center
                 </div>
-
-            </Row>
-
-        </footer>
-    )
-};
+            </footer>
+        </div>
+    );
+}

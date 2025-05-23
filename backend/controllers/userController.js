@@ -331,7 +331,7 @@ const forgotPassword = async (req, res) => {
 
     await sendResetEmail(email, resetToken);
 
-    res.status(200).json({ success: true, message: "Password reset email sent" });
+    res.status(200).json({ success: true, message: "Password reset email sent", resetToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to send reset email", error: error.message });
   }

@@ -1,37 +1,41 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from '../../config';
 import { Container, Row, Col, Card, Button, Carousel } from "react-bootstrap";
 import '../../assets/CSS/MinhKhanhCSS.css';
 import DraggableCarousel from "../../components/ulti/DraggableCarousel";
+import Navbar from "../../components/Layouts/NavBar";
 import Footer from "../../components/Layouts/Footer";
 
 export default function GuestView() {
-    const courseMockData = [
-        {
-            name: "TOEIC Foundation",
-            duration: "36",
-            imageURL: "https://mshoagiaotiep.com/uploads/images/userfiles/mail2topic1.jpg"
-        },
-        {
-            name: "TOEIC Beginner",
-            duration: "40",
-            imageURL: "https://mshoagiaotiep.com/uploads/images/userfiles/mail2topic1.jpg"
-        },
-        {
-            name: "TOEIC Intermediate",
-            duration: "45",
-            imageURL: "https://mshoagiaotiep.com/uploads/images/userfiles/mail2topic1.jpg"
-        },
-        {
-            name: "TOEIC Advanced",
-            duration: "50",
-            imageURL: "https://mshoagiaotiep.com/uploads/images/userfiles/mail2topic1.jpg"
-        },
-    ];
+    const [toeicCourses, setToeicCourses] = useState([]);
+    const [ieltsCourses, setIeltsCourses] = useState([]);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const res = await axios.get(API_ENDPOINTS.GET_COURSES);
+                const data = res.data.data;
+
+                const toeic = data.filter(course => course.type === "toeic");
+                const ielts = data.filter(course => course.type === "ielts");
+
+                setToeicCourses(toeic);
+                setIeltsCourses(ielts);
+            } catch (error) {
+                console.error("Failed to fetch courses:", error);
+            }
+        };
+
+        fetchCourses();
+    }, []);
+
 
 
     return (
         <>
             <header className="guest-header">
-
+                <Navbar />
             </header>
 
             <main>
@@ -138,20 +142,21 @@ export default function GuestView() {
                             {/* Right side - Courses */}
                             <Col md={7}>
                                 <Row xs={1} md={2} className="g-3">
-                                    {courseMockData.map((course, i) => (
+                                    {toeicCourses.map((course, i) => (
                                         <Col key={i}>
                                             <Card className="custom-course-card">
                                                 <Card.Img variant="top" src={course.imageURL} className="course-img" />
                                                 <Card.Body>
-                                                    <Card.Title>{course.name}</Card.Title>
+                                                    <Card.Title>{course.nameCourses}</Card.Title>
                                                     <Card.Text className="small mb-2">
-                                                        Thời lượng: {course.duration} buổi
+                                                        Thời lượng: {course.durationDays} buổi
                                                     </Card.Text>
                                                     <button className="custom-center-btn">Tìm hiểu thêm</button>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
                                     ))}
+
                                 </Row>
                             </Col>
                         </Row>
@@ -233,14 +238,14 @@ export default function GuestView() {
                             {/* Right side - Courses */}
                             <Col md={7}>
                                 <Row xs={1} md={2} className="g-3">
-                                    {courseMockData.map((course, i) => (
+                                    {ieltsCourses.map((course, i) => (
                                         <Col key={i}>
                                             <Card className="custom-course-card">
                                                 <Card.Img variant="top" src={course.imageURL} className="course-img" />
                                                 <Card.Body>
-                                                    <Card.Title>{course.name}</Card.Title>
+                                                    <Card.Title>{course.nameCourses}</Card.Title>
                                                     <Card.Text className="small mb-2">
-                                                        Thời lượng: {course.duration} buổi
+                                                        Thời lượng: {course.durationDays} buổi
                                                     </Card.Text>
                                                     <button className="custom-center-btn">Tìm hiểu thêm</button>
                                                 </Card.Body>
@@ -253,7 +258,7 @@ export default function GuestView() {
                     </Container>
                 </section>
 
-                <section className="guest-section3">
+                {/* <section className="guest-section3">
                     <Container>
 
                         <div className="guest-section3-title">
@@ -281,10 +286,10 @@ export default function GuestView() {
                             <div className="guest-section4-feedback-card">Feedback 5</div>
                         </DraggableCarousel>
                     </Container>
-                </section>
+                </section> */}
 
             </main>
-             <Footer />                       
+            <Footer />
         </>
     );
 }
