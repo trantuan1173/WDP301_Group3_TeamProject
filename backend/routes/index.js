@@ -18,7 +18,7 @@ router.use('/class', classRoutes);
 router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
 router.use('/feedback', feedbackRoutes);
-router.use('/profile', profileRoutes);
+router.use('/profiles', profileRoutes);
 router.use('/role', roleRoutes);
 router.use('/schedule', scheduleRoutes);
 router.use('/test', testRoutes);

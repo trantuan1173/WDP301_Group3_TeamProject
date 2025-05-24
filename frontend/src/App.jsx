@@ -11,7 +11,8 @@ import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCours
 import GuestView from './pages/Homepage/GuestView'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import ResetPassword from './pages/Auth/ResetPassword'
-
+import UserDashboard from './pages/Dashboard/UserDashboard'
+import UserProfileForm from './components/Student/UserProfileForm'
 
 const App = () => {
   return (
@@ -20,9 +21,9 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
-              <Route path="/admin/course/:id" element={<AdminDetailCourse />} />
-
+          <Route path="/admin/course/:id" element={<AdminDetailCourse />} />
           <Route path="/admin" element={<AdminDashboard/>}/>
+          <Route path="/update-profile" element={<UserDashboard selectedPage="profile"/>}/>
           <Route path="/verify/:token" element={<VerifyPage />} />
           <Route path="/" element={<GuestView />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

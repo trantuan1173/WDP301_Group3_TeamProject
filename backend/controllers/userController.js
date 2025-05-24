@@ -11,6 +11,14 @@ function generateToken(id) {
   });
 }
 
+const formatDate = (date) => {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");//2 chu so
+  const month = String(d.getMonth() + 1).padStart(2, "0");//so co 2 chu so
+  const year = d.getFullYear();
+  return `${year}-${month}-${day}`;
+}
+
 // Get all users
 const getUsers = async function (req, res) {
   try {
@@ -41,10 +49,23 @@ const getUser = async function (req, res) {
         message: "User not found",
       })
     }
-
+    const profileObj = user.profileId.toObject();
+    const data = {
+      _id: user._id,
+      email: user.email,
+      isVerified: user.isVerified,
+      role: user.roleId.nameRole,
+      profile: {
+        ...profileObj,
+        dob: profileObj.dob,
+        phone: profileObj.phone,
+        address: profileObj.address,
+        gender: profileObj.gender,
+      },
+    }
     res.status(200).json({
       success: true,
-      data: user,
+      data: data,
     })
   } catch (error) {
     res.status(500).json({
@@ -197,9 +218,20 @@ const updateUser = async (req, res) => {
       })
     }
 
+    if (!profileData.phone||!profileData.dob||!profileData.gender) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone, dob and gender are required",
+      })
+    }
+
+    const isUpdatedData = {
+      ...profileData,
+      isUpdated: true,
+    }
     // Update profile if provided
     if (profileData && user.profileId) {
-      await Profile.findByIdAndUpdate(user.profileId, profileData, {
+      await Profile.findByIdAndUpdate(user.profileId, isUpdatedData, {
         new: true,
         runValidators: true,
       })

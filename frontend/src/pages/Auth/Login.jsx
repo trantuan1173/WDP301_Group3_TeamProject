@@ -40,10 +40,16 @@ export default function Login() {
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
             if (response.status === 200) {
-                const { token, message } = response.data.data;
+                const { token, message, profile, role } = response.data.data;
                 localStorage.setItem('token', token);
                 alert(message || "Đăng nhập thành công");
-                navigate("/admin");
+                if (!profile.isUpdated) {
+                    navigate("/update-profile");
+                } else if (role === "admin") {
+                    navigate("/admin");
+                } else {
+                    navigate("/");
+                }
             }
         } catch (error) {
             if (error.response) {
