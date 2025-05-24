@@ -16,15 +16,16 @@ export default function CourseDetailModal({ courseData, onClose, onEdit }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <div className="w-full h-[150px] flex justify-center items-center border rounded">
                         <img
-                            src={courseData.imageUrl}
-                            alt={courseData.name}
-                            className="max-h-full object-contain"
-                        />
+    src={courseData.imageURL || courseData.imageUrl}
+    alt={courseData.courseId?.nameCourses || "Ảnh khóa học"}
+    className="max-h-full object-contain"
+/>
+
                     </div>
 
                     <div>
-                        <p><strong>Danh mục:</strong> {courseData.category}</p>
-                        <p><strong>Tên khóa học:</strong> {courseData.name}</p>
+                        <p><strong>Danh mục:</strong> {courseData.courseId?.type || courseData.type}</p>
+                        <p><strong>Tên khóa học:</strong> {courseData.courseId?.nameCourses}</p>
                         <p><strong>Trình độ:</strong> {courseData.level}</p>
                         <p><strong>Thời lượng:</strong> {courseData.duration}</p>
                         <p><strong>Học phí gốc:</strong> {courseData.price}</p>
