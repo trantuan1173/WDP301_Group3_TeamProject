@@ -7,6 +7,14 @@ const profileSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    imageURL: {
+      type: String,
+      trim: true,
+    },
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
     phone: {
       type: Number,
       trim: true,
@@ -16,7 +24,7 @@ const profileSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
+      enum: ["Male", "Female", "Other"],
     },
     address: {
       type: String,

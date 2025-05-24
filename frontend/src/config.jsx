@@ -2,6 +2,11 @@
 const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
+
+  AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
+  //Protected endpoints
+  GET_PROFILE_BY_USERID: (userId) => `${baseUrl}/api/users/${userId}`,
+  USER_UPDATE_PROFILE: (userId) => `${baseUrl}/api/users/${userId}`,
   // Auth endpoints
   LOGIN: `${baseUrl}/api/users/login`,
   REGISTER: `${baseUrl}/api/users/register`,
