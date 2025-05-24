@@ -137,7 +137,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           name="category"
           value={form.category}
           onChange={handleChange}
-          className="bg-blue-100 p-2 rounded"
+          className="bg-blue-100 p-2 rounded h-[56px] min-h-[56px] max-h-[56px] w-full"
         >
           <option value="">Danh mục khóa học</option>
           <option value="ielts">Khóa học IELTS</option>

@@ -140,6 +140,7 @@ export default function AdminManageCourse() {
                         setEditingCourse(viewingCourse);
                         setViewingCourse(null);
                     }}
+                    onDelete={fetchCourses}
 
 
 

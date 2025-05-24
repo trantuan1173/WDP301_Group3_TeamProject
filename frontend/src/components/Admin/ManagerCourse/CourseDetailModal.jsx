@@ -2,8 +2,25 @@ import React from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
-export default function CourseDetailModal({ courseData, onClose, onEdit  }) {
-   
+export default function CourseDetailModal({ courseData, onClose, onEdit, onDelete   }) {
+   const handleDelete = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
+    try {
+      await axios.delete(
+        API_ENDPOINTS.DELETE_COURSE.replace(":courseId", courseData.courseId?._id || courseData.courseId),
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        }
+      );
+      alert("Đã xóa khóa học!");
+      onClose();
+      if (typeof onDelete === "function") onDelete(); // Gọi hàm fetch lại dữ liệu
+      
+    } catch (err) {
+      alert("Xóa khóa học thất bại!");
+      console.error(err);
+    }
+  };
     return (
   <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
     <div
@@ -105,10 +122,10 @@ export default function CourseDetailModal({ courseData, onClose, onEdit  }) {
           Chỉnh sửa
         </button>
         <button
-          onClick={onClose}
+          onClick={handleDelete}
           className="bg-red-600 text-white px-4 py-2 rounded"
         >
-          Đóng
+          Xóa khóa học
         </button>
       </div>
     </div>
