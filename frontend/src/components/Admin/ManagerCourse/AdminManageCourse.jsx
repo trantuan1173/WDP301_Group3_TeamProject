@@ -23,6 +23,11 @@ export default function AdminManageCourse() {
     const handleAddCourse = (newCourse) => {
         setCourses([...courses, { ...newCourse, _id: Date.now().toString() }]);
     };
+    const handleEditCourse = (updatedCourse) => {
+        // Ví dụ: cập nhật lại state hoặc fetch lại danh sách
+        fetchCourses();
+        setEditingCourse(null);
+    };
 
     const fetchCourses = async () => {
         try {
@@ -34,13 +39,13 @@ export default function AdminManageCourse() {
             });
             if (response.status === 200) {
                 setCourses(response.data.data || []);
-                console.log("Courses fetched successfully:", response.data.data); 
+                console.log("Courses fetched successfully:", response.data.data);
             }
         } catch (error) {
             console.error("Error fetching courses:", error);
         }
     };
-    
+
 
     useEffect(() => {
         fetchCourses();
@@ -124,7 +129,7 @@ export default function AdminManageCourse() {
             {showAddPopup && (
                 <AdminAddCourse
                     onClose={() => setShowAddPopup(false)}
-                    onSubmit={handleAddCourse}
+                    onSubmit={fetchCourses}
                 />
             )}
             {viewingCourse && (
@@ -135,18 +140,20 @@ export default function AdminManageCourse() {
                         setEditingCourse(viewingCourse);
                         setViewingCourse(null);
                     }}
+
+
+
                 />
             )}
             {editingCourse && (
                 <AdminEditCourse
                     courseData={editingCourse}
                     onClose={() => setEditingCourse(null)}
-                    onSubmit={(updatedCourse) => {
-                        setCourses(courses.map((c) => (c._id === updatedCourse._id ? updatedCourse : c)));
-                        setEditingCourse(null);
-                    }}
+                    handlerEdit={handleEditCourse} // truyền thêm prop này
+                    onRefresh={fetchCourses}
                 />
             )}
+
         </div>
     );
 }

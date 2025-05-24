@@ -14,6 +14,9 @@ export const API_ENDPOINTS = {
   CREATE_COURSE: `${baseUrl}/api/courses`,
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
+  UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
+  UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
+  DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
