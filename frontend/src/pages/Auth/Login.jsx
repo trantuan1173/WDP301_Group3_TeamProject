@@ -40,13 +40,23 @@ export default function Login() {
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
             if (response.status === 200) {
-                const { token, message, profile, role } = response.data.data;
+                const { token } = response.data.data;
                 localStorage.setItem('token', token);
-                alert(message || "Đăng nhập thành công");
-                if (!profile.isUpdated) {
+
+                const authProfile = await axios.get(`${API_ENDPOINTS.AUTH_PROFILE}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                
+                const afterAuthProfile = authProfile.data.data;
+
+                if (!afterAuthProfile.profile.isUpdated) {
                     navigate("/update-profile");
-                } else if (role === "admin") {
+                } else if (afterAuthProfile.role === "admin") {
                     navigate("/admin");
+                } else if (afterAuthProfile.role === "student") {
+                    navigate("/");
                 } else {
                     navigate("/");
                 }

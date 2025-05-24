@@ -2,7 +2,7 @@ import { FaHome, FaUser, FaCalendarAlt, FaCheckSquare, FaLock } from 'react-icon
 
 const StudentSideMenu = () => {
   return (
-    <div className="w-64 bg-white shadow p-4">
+    <div className="w-64 bg-white shadow p-6">
       <h1 className="text-xl font-bold mb-6 text-blue-700">SMART<br />ENGLISH CENTER</h1>
       <ul className="space-y-4">
         <li className="text-gray-700 flex items-center gap-2">

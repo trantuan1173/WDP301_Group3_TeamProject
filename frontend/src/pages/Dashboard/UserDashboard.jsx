@@ -8,14 +8,18 @@ function UserDashboard({ selectedPage }) {
   const [currentPage, setCurrentPage] = useState(selectedPage || 'profile');
 
   return (
-    <div className="flex">
-      <StudentSideMenu
-        onMenuSelect={(key) => setCurrentPage(key)}
-        selectedKey={currentPage}
-      />
-      <div className="flex-1">
-        <NavBar />
-        {currentPage === 'profile' && <UserProfileForm />}
+    <div className="h-screen flex flex-col">
+      <NavBar />
+      <div className="flex flex-1">
+        <div className="">
+          <StudentSideMenu
+            onMenuSelect={(key) => setCurrentPage(key)}
+            selectedKey={currentPage}
+          />
+        </div>
+        <div className="flex-1">
+          {currentPage === 'profile' && <UserProfileForm />}
+        </div>
       </div>
     </div>
   );

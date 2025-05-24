@@ -10,6 +10,7 @@ export default function UserProfileForm() {
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [uploadingImage, setUploadingImage] = useState(false);
 
 
     const handleImageChange = (e) => {
@@ -27,11 +28,13 @@ export default function UserProfileForm() {
         formData.append("cloud_name", "dvdnw79tk");
 
         try {
+            setUploadingImage(true);
             const res = await fetch("https://api.cloudinary.com/v1_1/dvdnw79tk/image/upload", {
                 method: "POST",
                 body: formData,
             });
             const data = await res.json();
+            console.log("Image uploaded URL:", data.secure_url);
             if (data.secure_url) {
                 setProfile((prevForm) => ({ ...prevForm, imageURL: data.secure_url }));
             } else {
@@ -40,6 +43,8 @@ export default function UserProfileForm() {
         } catch (err) {
             console.error("Error uploading image:", err);
             setError("Upload ảnh thất bại.");
+        } finally {
+            setUploadingImage(false);
         }
     };
 
@@ -116,47 +121,52 @@ export default function UserProfileForm() {
     };
 
     return (
-        <div className="flex-1 rounded shadow p-6 m-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px"}}>
+        <div className="flex-1 rounded shadow p-6 m-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px" }}>
             {loading ? (
-                <LoadingSpinner size={50}/>
+                <LoadingSpinner size={50} />
             ) : (
-            <div className="flex justify-center mb-4">
-                <label className="relative cursor-pointer group">
-                    <img
-                        src={profile?.profileData?.imageURL || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
-                        alt="Avatar"
-                        className="w-24 h-24 rounded-full border-4 border-yellow-300 object-cover"
-                    />
-                    {isEditing && (
-                        <>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                            />
-                            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white text-sm font-semibold rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                Edit
+                <div className="flex justify-center mb-4">
+                    <label className="relative cursor-pointer group">
+                        <img
+                            src={profile?.profileData?.imageURL || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
+                            alt="Avatar"
+                            className="w-24 h-24 rounded-full border-4 border-yellow-300 object-cover"
+                        />
+                        {isEditing && (
+                            <>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white text-sm font-semibold rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Edit
+                                </div>
+                            </>
+                        )}
+                        {uploadingImage && (
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-full">
+                                <LoadingSpinner size={30} />
                             </div>
-                        </>
-                    )}
-                </label>
-            </div>
+                        )}
+                    </label>
+                </div>
             )}
             <form className="grid grid-cols-2 gap-4" onSubmit={handleUpdateProfile}>
                 <div>
                     <label>Full name</label>
-                    <input className="w-full p-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}} value={profile?.profileData?.name} placeholder="Full name" disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, name: e.target.value } })} />
+                    <input className="w-full p-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }} value={profile?.profileData?.name} placeholder="Full name" disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, name: e.target.value } })} />
                 </div>
                 <div>
                     <label>Email</label>
-                    <input className="w-full p-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}} value={profile?.email} placeholder="Email" disabled onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, email: e.target.value } })} />
+                    <input className="w-full p-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }} value={profile?.email} placeholder="Email" disabled onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, email: e.target.value } })} />
                 </div>
                 <div>
                     <label>Gender</label>
                     <select
                         className="w-full p-4"
-                        style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}}
+                        style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }}
                         value={profile?.profileData?.gender ?? ""}
                         disabled={!isEditing}
                         required
@@ -171,15 +181,15 @@ export default function UserProfileForm() {
                 </div>
                 <div>
                     <label>Birthdate</label>
-                    <input type="date" className="w-full p-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}} value={profile?.profileData?.dob} placeholder="Birthdate" required disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, dob: e.target.value } })} />
+                    <input type="date" className="w-full p-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }} value={profile?.profileData?.dob} placeholder="Birthdate" required disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, dob: e.target.value } })} />
                 </div>
                 <div>
                     <label>Phone number</label>
-                    <input className="w-full p-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}} value={profile?.profileData?.phone} placeholder="Phone number" required disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, phone: e.target.value } })} />
+                    <input className="w-full p-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }} value={profile?.profileData?.phone} placeholder="Phone number" required disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, phone: e.target.value } })} />
                 </div>
                 <div>
                     <label>Address</label>
-                    <input className="w-full p-4" style={{border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2"}} value={profile?.profileData?.address} placeholder="Address" disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, address: e.target.value } })} />
+                    <input className="w-full p-4" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#EBF5FFC2" }} value={profile?.profileData?.address} placeholder="Address" disabled={!isEditing} onChange={(e) => setProfile({ ...profile, profileData: { ...profile?.profileData, address: e.target.value } })} />
                 </div>
 
             </form>

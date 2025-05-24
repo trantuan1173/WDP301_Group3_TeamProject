@@ -387,8 +387,39 @@ const resetPassword = async (req, res) => {
     res.status(400).json({ success: false, message: "Invalid or expired token", error: error.message });
   }
 };
+const authProfile = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decodedToken.id)
+      .populate("profileId", "name dob phone address gender isUpdated")
+      .populate("roleId", "nameRole");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
 
+    const data = {
+      _id: user._id,
+      email: user.email,
+      isVerified: user.isVerified,
+      role: user.roleId.nameRole,
+      profile: user.profileId,
+    };
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   getUsers,
   getUser,
@@ -399,5 +430,6 @@ module.exports = {
   adminCreateTeacher,
   verifyUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  authProfile,
 }
