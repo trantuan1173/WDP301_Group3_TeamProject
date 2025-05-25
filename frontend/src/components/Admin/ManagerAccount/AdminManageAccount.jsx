@@ -17,7 +17,7 @@ export default function AdminManageAccount() {
   const [selectedRole, setSelectedRole] = useState("All");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+  const [roles, setRoles] = useState([]);
 
 
   const handleAddUser = async (newUser) => {
@@ -55,11 +55,13 @@ export default function AdminManageAccount() {
         dob: updatedUser.profile.dob,
         gender: updatedUser.profile.gender,
         phone: updatedUser.profile.phone,
+        address: updatedUser.profile.address || "",
+        imageURL: updatedUser.profile.imageURL || ""
       },
     };
     
     const response = await axios.put(
-      `${API_ENDPOINTS.UPDATE_USER.replace(":userId", updatedUser._id)}`,
+      `${API_ENDPOINTS.ADMIN_UPDATE_USER.replace(":userId", updatedUser._id)}`,
       payload,
       {
         headers: {
@@ -100,8 +102,8 @@ export default function AdminManageAccount() {
 };
 
   // Chỉ đếm giáo viên và học viên
-  const totalTeachers = users.filter((u) => u.role.toLowerCase() === "teacher").length;
-  const totalStudents = users.filter((u) => u.role.toLowerCase() === "student").length;
+  const totalTeachers = users.filter((u) => u.role.nameRole.toLowerCase() === "teacher").length;
+  const totalStudents = users.filter((u) => u.role.nameRole.toLowerCase() === "student").length;
   const totalUsers = totalTeachers + totalStudents;
 
   const fetchUsers = async () => {
@@ -122,7 +124,12 @@ export default function AdminManageAccount() {
           gender: item.profileId?.gender || "",
           dob: item.profileId?.dob ? item.profileId.dob.slice(0, 10) : "",
           phone: item.profileId?.phone || "",
-          role: item.roleId?.nameRole || "",
+          address: item.profileId?.address || "",
+          imageURL: item.profileId?.imageURL || "",
+          role: {
+            _id: item.roleId?._id || "",
+            nameRole: item.roleId?.nameRole || ""
+          }
         }));
         setUsers(mappedUsers);
       }
@@ -133,8 +140,30 @@ export default function AdminManageAccount() {
     }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      setLoading(true);
+      const response = await axios.get(API_ENDPOINTS.GET_ALL_ROLE, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        const mappedRoles = response.data.data.map((item, index) => item);
+        setRoles(mappedRoles);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
   }, []);
   // Lọc theo search và role
   const filteredUsers = users.filter((user) => {
@@ -142,10 +171,13 @@ export default function AdminManageAccount() {
     const name = user.name?.toLowerCase() || "";
     const email = user.email?.toLowerCase() || "";
     const matchesSearch = name.includes(keyword) || email.includes(keyword);
-    const matchesRole = selectedRole === "All" || user.role.toLowerCase() === selectedRole.toLowerCase();
+    const matchesRole = selectedRole === "All" || user.role.nameRole.toLowerCase() === selectedRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
+
+  // Danh sách roles cho dropdown chỉnh sửa
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">QUẢN LÝ TÀI KHOẢN</h2>
@@ -218,6 +250,7 @@ export default function AdminManageAccount() {
       {showEditForm && (
         <AdminEditAccount
           user={showEditForm}
+          roles={roles}
           onClose={() => setShowEditForm(null)}
           onSubmit={handleUpdateUser}
         />
@@ -247,7 +280,7 @@ export default function AdminManageAccount() {
                 <td className="px-4 py-2">{user.gender}</td>
                 <td className="px-4 py-2">{user.dob}</td>
                 <td className="px-4 py-2">{user.phone}</td>
-                <td className="px-4 py-2">{user.role}</td>
+                <td className="px-4 py-2">{user.role.nameRole}</td>
                 <td className="px-4 py-2 flex gap-2">
                   <FaEye
                     className="text-green-600 cursor-pointer"

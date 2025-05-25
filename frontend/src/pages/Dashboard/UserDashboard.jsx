@@ -9,8 +9,10 @@ function UserDashboard({ selectedPage }) {
 
   return (
     <div className="h-screen flex flex-col">
-      <NavBar />
-      <div className="flex flex-1">
+      <header className="w-full">
+        <NavBar />
+      </header>
+      <div className="flex flex-1" style={{backgroundColor: '#F1F6FA'}}>
         <div className="">
           <StudentSideMenu
             onMenuSelect={(key) => setCurrentPage(key)}

@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUsers, getUser, createUser, updateUser, deleteUser, loginUser, adminCreateTeacher, verifyUser, forgotPassword, resetPassword, authProfile } = require("../controllers/userController.js");
+const { getUsers, getUser, createUser, updateUser, deleteUser, loginUser, adminCreateTeacher, verifyUser, forgotPassword, resetPassword, authProfile, updateUserByAdmin } = require("../controllers/userController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
@@ -15,6 +15,8 @@ router.get("/authProfile", protect, authProfile)
 router.get("/:id", protect, getUser)
 
 router.put("/:id", protect, updateUser)
+
+router.put("/updateByAdmin/:id", protect, authorize("admin"), updateUserByAdmin)
 
 router.delete("/:id", protect, authorize("admin"), deleteUser)
 

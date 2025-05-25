@@ -10,16 +10,19 @@ function AdminDashboard() {
   const [selectedPage, setSelectedPage] = useState('overview');
 
   return (
-    <div className="flex">
-      <AdminSideMenu
-        onMenuSelect={(key) => setSelectedPage(key)}
-        selectedKey={selectedPage}
-      />
-      <div className="flex-1">
+    <div className="h-screen flex flex-col">
+      <header className="w-full">
         <NavBar />
-        {selectedPage === 'account' && <AdminManageAccount />}
-        {selectedPage === 'courses' && <AdminManageCourse />}
-        {/* Bạn có thể thêm các page khác tại đây nếu cần */}
+      </header>
+      <div className="flex flex-1">
+        <AdminSideMenu
+          onMenuSelect={(key) => setSelectedPage(key)}
+          selectedKey={selectedPage}
+        />
+        <div className="flex-1">
+          {selectedPage === 'account' && <AdminManageAccount />}
+          {selectedPage === 'courses' && <AdminManageCourse />}
+        </div>
       </div>
     </div>
   );

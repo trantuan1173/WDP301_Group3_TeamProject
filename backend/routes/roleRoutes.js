@@ -4,7 +4,7 @@ const { protect, authorize } = require("../middleware/authMiddleware.js")
 
 const router = express.Router()
 
-router.get("/", protect, getRoles)
+router.get("/", protect, authorize("admin"), getRoles)
 
 router.post("/", protect, authorize("admin"), createRole)
 

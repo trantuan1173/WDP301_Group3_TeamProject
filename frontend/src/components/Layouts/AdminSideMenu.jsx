@@ -17,7 +17,6 @@ const menuItems = [
 export default function AdminSideMenu({ onMenuSelect, selectedKey }) {
   return (
     <div className="w-64 bg-gray-100 h-screen shadow-lg p-4">
-      <h3 className="text-lg font-bold mb-6">Menu</h3>
       <ul className="space-y-2">
         {menuItems.map(({ icon: Icon, label, key }) => (
           <li
