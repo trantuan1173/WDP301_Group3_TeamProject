@@ -19,7 +19,7 @@ router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
 router.use('/feedback', feedbackRoutes);
 router.use('/profiles', profileRoutes);
-router.use('/role', roleRoutes);
+router.use('/roles', roleRoutes);
 router.use('/schedule', scheduleRoutes);
 router.use('/test', testRoutes);
 router.use('/testSubmission', testSubmissionRoutes);

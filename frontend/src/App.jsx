@@ -27,8 +27,8 @@ const App = () => {
         <Route element={<RequireAuth allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
-        <Route element={<RequireAuth allowedRoles={["student","teacher","admin"]} />}>
-        <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
+        <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
+          <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />

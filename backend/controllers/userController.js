@@ -267,6 +267,56 @@ const updateUser = async (req, res) => {
   }
 }
 
+// Update user
+const updateUserByAdmin = async (req, res) => {
+  try {
+    const { email, password, profileData, roleId } = req.body
+
+    // Find user
+    const user = await User.findById(req.params.id)
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      })
+    }
+    if (profileData && user.profileId) {
+      await Profile.findByIdAndUpdate(user.profileId, profileData, {
+        new: true,
+        runValidators: true,
+      })
+    }
+
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        email: email || user.email,
+        password: password || user.password,
+        roleId: roleId || user.roleId,
+        updatedAt: Date.now(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("profileId")
+      .populate("roleId")
+
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update user",
+      error: error.message,
+    })
+  }
+}
+
 // Delete user
 const deleteUser = async (req, res) => {
   try {
@@ -432,4 +482,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   authProfile,
+  updateUserByAdmin,
 }
