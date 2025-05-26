@@ -12,7 +12,7 @@ export default function GuestView() {
       </header>
 
       <main className="w-full">
-        <section className="w-full px-4 sm:px-6 lg:px-12 py-6">
+        <section className="w-full  sm:px-6 lg:px-12 py-6">
           <div className="w-full">
             <RouteCourse />
           </div>

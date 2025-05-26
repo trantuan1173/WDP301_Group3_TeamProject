@@ -53,7 +53,7 @@ const GuestViewFeedBack = () => {
 
   return (
     <section className="bg-white py-10 px-4 text-center">
-      <h2 className="text-xl font-bold mb-6">CẢM NHẬN CỦA HỌC VIÊN</h2>
+      <h2 className="text-xl font-bold mb-6">FEEDBACK CỦA HỌC VIÊN</h2>
       {feedbackImages.length === 0 ? (
         <p>Đang tải feedback...</p>
       ) : (

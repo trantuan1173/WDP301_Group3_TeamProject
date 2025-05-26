@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
+import Carousel from 'react-bootstrap/Carousel';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 
@@ -75,10 +76,58 @@ const RouteCourse = () => {
         };
         fetchCourses();
     }, []);
+    const chunkArray = (arr, size) => {
+        const result = [];
+        for (let i = 0; i < arr.length; i += size) {
+            result.push(arr.slice(i, i + size));
+        }
+        return result;
+    };
 
     // Banner/Header
     const renderHeader = () => (
-        <div>
+        <div
+            style={{
+            width: '100vw',
+            position: 'relative',
+            left: '50%',
+            right: '50%',
+            marginLeft: '-50vw',
+            marginRight: '-50vw',
+            overflow: 'hidden',
+            background: '#fff'
+        }}>
+            <div
+    style={{
+        width: '100vw',
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        marginLeft: '-50vw',
+        marginRight: '-50vw',
+        overflow: 'hidden',
+    }}
+>
+
+            {/* Banner background (ảnh) */}
+            <Carousel interval={5000} controls={true} indicators={true} pause={false}>
+            <Carousel.Item>
+                <img
+                    src="/images/Banner.png"
+                    alt="Banner 1"
+                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
+                />
+            </Carousel.Item>
+            {/* Thêm slide banner khác nếu muốn */}
+            <Carousel.Item>
+                <img
+                    src="/images/Banner1.png"
+                    alt="Banner 2"
+                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
+                />
+            </Carousel.Item>
+        </Carousel>
+        </div>
             {/* Menu */}
             <div
                 style={{
@@ -218,15 +267,7 @@ const RouteCourse = () => {
                     Hỗ trợ
                 </div>
             </div>
-
-            {/* Banner background (ảnh) */}
-            <div style={{ height: '100%', width: '100%' }}>
-                <img
-                    src="/images/Banner.png"
-                    alt="Banner"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-            </div>
+            
         </div>
     );
 
@@ -317,45 +358,61 @@ const RouteCourse = () => {
                 {/* Courses */}
                 <div style={{
                     flex: 2,
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 24,
-                    minHeight: 700,
+                    minHeight: 350,
                     maxHeight: 700,
-                    overflowY: 'auto'
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                 }}>
-                    {coursesArr.map((course, i) => (
-                        <div
-                            key={i}
-                            style={{
-                                background: '#f0f7ff',
-                                border: '1px solid #c9e2fa',
-                                borderRadius: 8,
-                                padding: 16,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                textAlign: 'center',
-                                minHeight: 330,
-                                alignSelf: 'flex-start'
-                            }}
-                        >
-                            <img src={course.imageURL} alt={course.nameCourses} style={{ width: '100%', borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
-                            <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.nameCourses}</div>
-                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                            <button style={{
-                                background: '#19b46a',
-                                color: '#fff',
-                                border: '2px solid #19b46a',
-                                borderRadius: 6,
-                                padding: '6px 16px',
-                                fontSize: 14,
-                                fontWeight: 500,
-                                cursor: 'pointer'
-                            }}>Tìm hiểu thêm</button>
-                        </div>
-                    ))}
+                    <Carousel interval={5000} controls={coursesArr.length > 3} indicators={false} pause={false}>
+                        {chunkArray(coursesArr, 3).map((group, idx) => (
+                            <Carousel.Item key={idx}>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr 1fr',
+                                    gap: 24,
+                                    minHeight: 330
+                                }}>
+                                    {group.map((course, i) => (
+                                        <div
+                                            key={i}
+                                            style={{
+                                                background: '#f0f7ff',
+                                                border: '1px solid #c9e2fa',
+                                                borderRadius: 8,
+                                                padding: 16,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                textAlign: 'center',
+                                                minHeight: 330,
+                                                alignSelf: 'flex-start'
+                                            }}
+                                        >
+                                            <img src={course.imageURL} alt={course.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
+                                            <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.nameCourses}</div>
+                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
+                                            <button style={{
+                                                background: '#19b46a',
+                                                color: '#fff',
+                                                border: '2px solid #19b46a',
+                                                borderRadius: 6,
+                                                padding: '6px 16px',
+                                                fontSize: 14,
+                                                fontWeight: 500,
+                                                cursor: 'pointer'
+                                            }}>Tìm hiểu thêm</button>
+                                        </div>
+                                    ))}
+                                    {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
+                                    {Array.from({ length: 3 - group.length }).map((_, idx2) => (
+                                        <div key={`empty-${idx2}`} />
+                                    ))}
+                                </div>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
                 </div>
             </div>
         </div>
