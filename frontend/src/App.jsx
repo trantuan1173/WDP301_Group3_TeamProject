@@ -15,6 +15,7 @@ import UserDashboard from './pages/Dashboard/UserDashboard'
 import UserProfileForm from './components/Student/UserProfileForm'
 import RequireAuth from './context/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const App = () => {
