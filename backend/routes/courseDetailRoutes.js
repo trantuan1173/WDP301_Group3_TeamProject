@@ -18,7 +18,7 @@ router.get("/forguest", getCourseDetailsForGuest)
 
 router.post("/", protect, authorize("admin"), createCourseDetail)
 
-router.get("/course/:courseId", protect, getCourseDetailsByCourse)
+router.get("/course/:courseId", getCourseDetailsByCourse)
 
 router.get("/:id", protect, getCourseDetail)
 
