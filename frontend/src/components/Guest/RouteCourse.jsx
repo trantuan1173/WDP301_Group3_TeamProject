@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
@@ -60,6 +60,7 @@ const RouteCourse = () => {
     const [toeicCourses, setToeicCourses] = useState([]);
     const [ieltsCourses, setIeltsCourses] = useState([]);
     const [filter, setFilter] = useState('all'); // all | toeic | ielts
+    const [activeTab, setActiveTab] = useState('intro');
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -79,98 +80,147 @@ const RouteCourse = () => {
     const renderHeader = () => (
         <div>
             {/* Menu */}
-            <div style={{
-                display: 'flex',
-                background: '#fff',
-                borderBottom: '1px solid #e0e0e0',
-                height: 40,
-                alignItems: 'center'
-            }}>
-                <div style={{
-                    background: '#12006b',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    padding: '0 32px',
-                    height: '100%',
+            <div
+                style={{
                     display: 'flex',
+                    background: '#fff',
+                    borderBottom: '1px solid #e0e0e0',
+                    height: 40,
                     alignItems: 'center',
-                    cursor: 'pointer'
-                }}>
-                    Giới thiệu
-                </div>
-                <div style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: '100%'
-                }}>
-                    <div style={{
+                }}
+            >
+                {/* Giới thiệu */}
+                <div
+                    onClick={() => setActiveTab('intro')}
+                    style={{
                         flex: 1,
                         textAlign: 'center',
-                        fontWeight: 500,
-                        cursor: 'pointer'
-                    }}>
-                        Lịch khai giảng
-                    </div>
-                    {/* Khóa học filter */}
-                    <div style={{
+                        fontWeight: 'bold',
+                        background: activeTab === 'intro' ? '#12006b' : '#fff',
+                        color: activeTab === 'intro' ? '#fff' : '#000',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        borderBottom: activeTab === 'intro' ? '2px solid #12006b' : 'none',
+                    }}
+                >
+                    Giới thiệu
+                </div>
+
+                {/* Lịch khai giảng */}
+                <div
+                    onClick={() => setActiveTab('schedule')}
+                    style={{
                         flex: 1,
                         textAlign: 'center',
                         fontWeight: 500,
                         cursor: 'pointer',
-                        position: 'relative'
-                    }}>
-                        <div style={{ position: 'relative', display: 'inline-block', marginLeft: 8 }}>
-                            <select
-                                value={filter}
-                                onChange={e => setFilter(e.target.value)}
-                                style={{
-                                    appearance: 'none',
-                                    padding: '6px 12px',
+                        background: activeTab === 'schedule' ? '#12006b' : 'transparent',
+                        color: activeTab === 'schedule' ? '#fff' : '#000',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    Lịch khai giảng
+                </div>
 
-                                    cursor: 'pointer',
-                                    width: 140,
-                                }}
-                            >
-                                <option value="all">Khóa học</option>
-                                <option value="toeic">TOEIC</option>
-                                <option value="ielts">IELTS</option>
-                            </select>
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: '50%',
-                                    right: 12,
-                                    pointerEvents: 'none',
-                                    transform: 'translateY(-50%)',
-                                    fontSize: 12,
-                                    color: '#555'
-                                }}
-                            >
-                                ▼
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{
+                {/* Khóa học (dropdown) */}
+                <div
+                    style={{
                         flex: 1,
-                        textAlign: 'center',
-                        fontWeight: 500,
-                        cursor: 'pointer'
-                    }}>
-                        Hướng dẫn đăng ký học
-                    </div>
-                    <div style={{
-                        flex: 1,
-                        textAlign: 'center',
-                        fontWeight: 500,
-                        cursor: 'pointer'
-                    }}>
-                        Hỗ trợ
+                        position: 'relative',
+                        background: activeTab === 'courses' ? '#12006b' : 'transparent',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <select
+                        value={filter}
+                        onChange={(e) => {
+                            setFilter(e.target.value);
+                            setActiveTab('courses');
+                        }}
+                        style={{
+                            appearance: 'none',
+                            width: '100%',
+                            height: '100%',
+                            padding: '0 32px 0 16px',
+                            border: 'none',
+                            background: 'transparent',
+                            color: activeTab === 'courses' ? '#fff' : '#000',
+                            fontWeight: 'bold',
+                            textAlignLast: 'center',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        <option style={{ color: '#000' }} value="all">Khóa học</option>
+                        <option style={{ color: '#000' }} value="toeic">TOEIC</option>
+                        <option style={{ color: '#000' }} value="ielts">IELTS</option>
+
+                    </select>
+                    {/* Icon mũi tên ▼ */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            right: 12,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            pointerEvents: 'none',
+                            fontSize: 12,
+                            color: activeTab === 'courses' ? '#fff' : '#000',
+                        }}
+                    >
+                        ▼
                     </div>
                 </div>
+
+                {/* Hướng dẫn */}
+                <div
+                    onClick={() => setActiveTab('guide')}
+                    style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        background: activeTab === 'guide' ? '#12006b' : 'transparent',
+                        color: activeTab === 'guide' ? '#fff' : '#000',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    Hướng dẫn đăng ký học
+                </div>
+
+                {/* Hỗ trợ */}
+                <div
+                    onClick={() => setActiveTab('support')}
+                    style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        background: activeTab === 'support' ? '#12006b' : 'transparent',
+                        color: activeTab === 'support' ? '#fff' : '#000',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    Hỗ trợ
+                </div>
             </div>
+
             {/* Banner background (ảnh) */}
-            <div style={{ height: 400, width: '100%' }}>
+            <div style={{ height: '100%', width: '100%' }}>
                 <img
                     src="/images/Banner.png"
                     alt="Banner"
@@ -179,6 +229,7 @@ const RouteCourse = () => {
             </div>
         </div>
     );
+
 
     // Component render cho từng loại roadmap và course
     const renderSection = (title, roadmapArr, coursesArr) => (
@@ -224,7 +275,7 @@ const RouteCourse = () => {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        
+
                         {title} Roadmap
                     </div>
                     <Accordion defaultActiveKey="0" alwaysOpen>
