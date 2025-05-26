@@ -150,7 +150,7 @@ export default function Login() {
                                 {t[language].login}
                             </button>
                         </div>
-                        {/* Thêm dòng đăng ký */}
+                        {/* Thêm dòng quên mật khẩu */}
                         <div className="text-center mt-4 text-sm text-gray-600">
                             <span
                                 className="text-blue-600 hover:underline cursor-pointer font-semibold"

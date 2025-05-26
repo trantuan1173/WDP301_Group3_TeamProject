@@ -158,6 +158,41 @@ const verifyUser = async function (req, res) {
   })
 }
 
+const resendVerifyEmail = async function (req, res) {
+  const { email } = req.body
+  const user = await User.findOne({ email })
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    })
+  }
+  if (user.isVerified) {
+    return res.status(400).json({
+      success: false,
+      message: "User is already verified",
+    })
+  }
+  const verificationToken = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET || "your_jwt_secret",
+    { expiresIn: "24h" }
+  )
+  try {
+    await sendVerifyEmail(email, verificationToken)
+    res.status(200).json({
+      success: true,
+      message: "Verification email resent successfully",
+    })
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError)
+    res.status(500).json({
+      success: false,
+      message: "Failed to resend verification email",
+    })
+  }
+}
+
 const adminCreateTeacher = async function (req, res) {
   try {
     const { email, password, profileData } = req.body
@@ -483,4 +518,5 @@ module.exports = {
   resetPassword,
   authProfile,
   updateUserByAdmin,
+  resendVerifyEmail,
 }
