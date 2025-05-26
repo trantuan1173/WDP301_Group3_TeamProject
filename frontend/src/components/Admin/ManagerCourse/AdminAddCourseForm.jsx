@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
+import LoadingSpinner from "../../../components/LoadingSpinner";
 
 export default function AdminAddCourse({ onClose, onSubmit }) {
     const [form, setForm] = useState({
@@ -15,18 +16,69 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [imageFile, setImageFile] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
         setError("");
     };
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         setImageFile(file);
+    //         uploadImageToCloudinary(file);
+    //     }
+    // };
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            uploadImageToCloudinary(file);
-        }
-    };
+      const file = e.target.files[0];
+      if (file) {
+          if (!file.type.startsWith("image/")) {
+              setError("Chỉ chấp nhận file ảnh.");
+              return;
+          }
+  
+          // Đọc ảnh và resize
+          const reader = new FileReader();
+          reader.onload = (event) => {
+              const img = new Image();
+              img.onload = () => {
+                  const MAX_WIDTH = 1000;
+                  const MAX_HEIGHT = 1000;
+  
+                  let width = img.width;
+                  let height = img.height;
+  
+                  if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                      if (width > height) {
+                          height *= MAX_WIDTH / width;
+                          width = MAX_WIDTH;
+                      } else {
+                          width *= MAX_HEIGHT / height;
+                          height = MAX_HEIGHT;
+                      }
+                  }
+  
+                  const canvas = document.createElement("canvas");
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext("2d");
+                  ctx.drawImage(img, 0, 0, width, height);
+  
+                  canvas.toBlob((blob) => {
+                      if (blob.size > 10 * 1024 * 1024) {
+                          setError("Ảnh sau khi nén vẫn lớn hơn 10MB.");
+                          return;
+                      }
+                      setError("");
+                      setImageFile(blob);
+                      uploadImageToCloudinary(blob);
+                  }, "image/jpeg", 0.8); // nén ở mức chất lượng 80%
+              };
+              img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+      }
+  };
 
     const uploadImageToCloudinary = async (file) => {
         const formData = new FormData();
@@ -35,6 +87,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
         formData.append("cloud_name", "dvdnw79tk");
 
         try {
+            setUploadingImage(true);
             const res = await fetch("https://api.cloudinary.com/v1_1/dvdnw79tk/image/upload", {
                 method: "POST",
                 body: formData,
@@ -48,6 +101,8 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
         } catch (err) {
             console.error("Error uploading image:", err);
             setError("Upload ảnh thất bại.");
+        } finally {
+            setUploadingImage(false);
         }
     };
 
@@ -62,8 +117,8 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
             imageURL,
         } = form;
 
-        if (!nameCourses) return setError("Tên khóa học là bắt buộc");
-        if (!imageURL) return setError("Vui lòng tải lên ảnh khóa học");
+        if (!nameCourses) return setError("Course name is required");
+        if (!imageURL) return setError("Please upload course image");
 
         try {
             setLoading(true);
@@ -101,7 +156,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
             onClose();
         } catch (err) {
             console.error(err);
-            setError("Thêm khóa học thất bại.");
+            setError("Add course failed");
         } finally {
             setLoading(false);
         }
@@ -120,12 +175,15 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
       className="relative z-10 bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg"
       onClick={(e) => e.stopPropagation()}
     >
-      <h2 className="text-2xl font-bold mb-6 text-center">Thêm khóa học mới</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Add New Course</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="bg-blue-100 p-2 rounded">
-          <label>Tải ảnh khóa học:</label>
+          <label>Image:</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
+          {uploadingImage && (
+            <LoadingSpinner size={20} text="Uploading..."/>
+          )}
           {form.imageURL && (
             <div>
               <img src={form.imageURL} alt="Preview" width="150" />
@@ -139,10 +197,9 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded"
         >
-          <option value="">Danh mục khóa học</option>
-          <option value="ielts">Khóa học IELTS</option>
-          <option value="giao_tiep">Giao tiếp</option>
-          <option value="nguoi_lon">Khóa học cho Người lớn</option>
+          <option value="" disabled>Course Category</option>
+          <option value="ielts">IELTS</option>
+          <option value="toeic">TOEIC</option>
         </select>
 
         <input
@@ -150,28 +207,28 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           value={form.nameCourses}
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded"
-          placeholder="Tên khóa học"
+          placeholder="Course Name"
         />
         <input
           name="level"
           value={form.level}
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded"
-          placeholder="Trình độ/ Level"
+          placeholder="Level"
         />
         <input
           name="durationDays"
           value={form.durationDays}
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded"
-          placeholder="Thời lượng"
+          placeholder="Duration"
         />
         <input
           name="price"
           value={form.price}
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded"
-          placeholder="Học phí"
+          placeholder="Price"
         />
         <textarea
           name="description"
@@ -179,7 +236,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           onChange={handleChange}
           className="bg-blue-100 p-2 rounded col-span-1 md:col-span-2"
           rows={3}
-          placeholder="Mô tả"
+          placeholder="Description"
         />
       </div>
 
@@ -190,14 +247,14 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           onClick={onClose}
           className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
         >
-          Đóng
+          Close
         </button>
         <button
           onClick={handleSubmit}
           disabled={loading}
           className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
         >
-          {loading ? "Đang thêm..." : "Thêm khóa học"}
+          {loading ? "Adding..." : "Add Course"}
         </button>
       </div>
     </div>
