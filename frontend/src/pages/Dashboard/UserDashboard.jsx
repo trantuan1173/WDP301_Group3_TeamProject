@@ -10,7 +10,7 @@ import UserOverView from '../../components/Student/UserOverView';
 
 
 function UserDashboard({ selectedPage }) {
-  const [currentPage, setCurrentPage] = useState(selectedPage || 'profile');
+  const [currentPage, setCurrentPage] = useState(selectedPage || 'overview');
 
   return (
     <div className="h-screen flex flex-col">
