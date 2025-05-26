@@ -12,7 +12,7 @@ const { protect, authorize } = require("../middleware/authMiddleware.js")
 
 const router = express.Router()
 
-router.get("/", protect, getCourseDetails)
+router.get("/", getCourseDetails)
 
 router.get("/forguest", getCourseDetailsForGuest)
 
