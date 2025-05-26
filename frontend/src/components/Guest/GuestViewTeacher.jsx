@@ -23,12 +23,12 @@ export default function GuestViewTeacher() {
   return (
     <div className="w-full bg-blue-100 py-10">
       <h2 className="text-2xl font-bold text-center mb-6">
-        100% GIÁO VIÊN ĐẠT 950+ TOEIC QUỐC TẾ
+        100% OF TEACHERS ACHIEVED 950+ INTERNATIONAL TOEIC
       </h2>
 
       <div className="max-w-7xl mx-auto px-4">
         {teachers.length === 0 ? (
-          <p className="text-center">Đang tải danh sách giáo viên...</p>
+          <p className="text-center">Loading teacher list...</p>
         ) : (
           <Swiper
             spaceBetween={20}

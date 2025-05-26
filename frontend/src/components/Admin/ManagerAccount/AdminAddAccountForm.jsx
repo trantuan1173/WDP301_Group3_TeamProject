@@ -46,7 +46,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
         if (onSubmit) onSubmit();
       }
     } catch (error) {
-      alert("Đăng ký thất bại");
+      alert("Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -59,13 +59,13 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
     >
       <div
         className="bg-white rounded-xl p-6 w-full max-w-xl shadow-lg relative"
-        onClick={(e) => e.stopPropagation()} // Ngăn đóng form khi click vào form
+        onClick={(e) => e.stopPropagation()} // Prevent closing form when clicking inside
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Tạo tài khoản mới</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Create New Account</h2>
 
         {showVerifyMsg && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-3 text-center">
-            Đăng ký thành công! Vui lòng báo người dùng xác thực email.
+            Registration successful! Please ask the user to verify their email.
           </div>
         )}
 
@@ -75,7 +75,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             value={formData.profileData.name}
             onChange={handleChange}
             type="text"
-            placeholder="Họ và tên"
+            placeholder="Full Name"
             className="w-full bg-blue-100 p-2 rounded"
             required
           />
@@ -93,7 +93,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             value={formData.password}
             onChange={handleChange}
             type="password"
-            placeholder="Mật khẩu"
+            placeholder="Password"
             className="w-full bg-blue-100 p-2 rounded"
             required
           />
@@ -104,7 +104,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
             className="w-full bg-blue-100 p-2 rounded"
             required
           >
-            <option value="">Chọn vai trò</option>
+            <option value="">Roles</option>
             <option value="teacher">Teacher</option>
             <option value="student">Student</option>
           </select>
@@ -116,14 +116,14 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
               className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
               disabled={isLoading}
             >
-              Đóng
+              Close
             </button>
             <button
               type="submit"
               className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
               disabled={isLoading}
             >
-              {isLoading ? "Đang xử lý..." : "Tạo tài khoản"}
+              {isLoading ? "Processing..." : "Create Account"}
             </button>
           </div>
         </form>

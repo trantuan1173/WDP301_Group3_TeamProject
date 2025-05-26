@@ -7,17 +7,17 @@ import { API_ENDPOINTS } from '../../config';
 const roadmapData = {
     toeic: [
         {
-            title: "TỪ MẤT GỐC - 450+",
-            desc: "Cải thiện khả năng từ mất gốc đến 450+/990 TOEIC",
+            title: "FROM BEGINNER - 450+",
+            desc: "Improve your skills from beginner to 450+/990 TOEIC",
             levels: [
-                { name: "TOEIC Foundation", desc: "Xây nền" },
+                { name: "TOEIC Foundation", desc: "Build the foundation" },
                 { name: "TOEIC Beginner", desc: "350+/990 TOEIC" },
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" }
             ]
         },
         {
-            title: "TỪ 450 - 700+ TOEIC",
-            desc: "Chiến lược học tập tối ưu, luyện nghe chuyên sâu. Phát triển toàn diện kỹ năng Listening & Reading. Cam kết đạt mục tiêu, sẵn sàng cho TOEIC cấp độ cao.",
+            title: "FROM 450 - 700+ TOEIC",
+            desc: "Optimal learning strategies, intensive listening practice. Comprehensive development of Listening & Reading skills. Commitment to achieving goals, ready for advanced TOEIC.",
             levels: [
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" },
                 { name: "TOEIC Intermediate", desc: "550+/990 TOEIC" },
@@ -25,8 +25,8 @@ const roadmapData = {
             ]
         },
         {
-            title: "4 KỸ NĂNG",
-            desc: "Lộ trình phát triển toàn diện 4 KỸ NĂNG Listening - Reading - Speaking - Writing trong vòng 10 - 11 tháng. Giáo trình chuyên sâu, phương pháp hiệu quả. Từ mất gốc đến thành thạo, sẵn sàng cho mọi thử thách TOEIC.",
+            title: "4 SKILLS",
+            desc: "Comprehensive roadmap for developing all 4 SKILLS: Listening - Reading - Speaking - Writing in 10-11 months. Intensive curriculum, effective methods. From beginner to mastery, ready for all TOEIC challenges.",
             levels: [
                 { name: "TOEIC Beginner", desc: "350+/990 TOEIC" },
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" },
@@ -37,8 +37,8 @@ const roadmapData = {
     ],
     ielts: [
         {
-            title: "TỪ MẤT GỐC - 5.0",
-            desc: "Cá nhân hóa lộ trình học IELTS theo level từ mất gốc đến 5.0/9.0",
+            title: "FROM BEGINNER - 5.0",
+            desc: "Personalized IELTS learning roadmap from beginner to 5.0/9.0",
             levels: [
                 { name: "IELTS Foundation", desc: "-3.0/9.0" },
                 { name: "IELTS Beginner", desc: "3.5-4.0/9.0" },
@@ -46,8 +46,8 @@ const roadmapData = {
             ]
         },
         {
-            title: "TỪ 5.0 - 7.5+ IELTS",
-            desc: "Chiến lược học tập tối ưu, luyện đề chuyên sâu. Phát triển toàn diện kỹ năng Listening & Reading. Cam kết đạt mục tiêu, sẵn sàng cho IELTS cấp độ cao.",
+            title: "FROM 5.0 - 7.5+ IELTS",
+            desc: "Optimal learning strategies, intensive test practice. Comprehensive development of Listening & Reading skills. Commitment to achieving goals, ready for advanced IELTS.",
             levels: [
                 { name: "IELTS Intermediate", desc: "5.5-6.0" },
                 { name: "IELTS Upper", desc: "6.5-7.0" },
@@ -108,8 +108,7 @@ const RouteCourse = () => {
         overflow: 'hidden',
     }}
 >
-
-            {/* Banner background (ảnh) */}
+            {/* Banner background (image) */}
             <Carousel interval={5000} controls={true} indicators={true} pause={false}>
             <Carousel.Item>
                 <img
@@ -118,7 +117,7 @@ const RouteCourse = () => {
                     style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
                 />
             </Carousel.Item>
-            {/* Thêm slide banner khác nếu muốn */}
+            {/* Add more banner slides if needed */}
             <Carousel.Item>
                 <img
                     src="/images/Banner1.png"
@@ -138,7 +137,7 @@ const RouteCourse = () => {
                     alignItems: 'center',
                 }}
             >
-                {/* Giới thiệu */}
+                {/* Introduction */}
                 <div
                     onClick={() => setActiveTab('intro')}
                     style={{
@@ -155,10 +154,10 @@ const RouteCourse = () => {
                         borderBottom: activeTab === 'intro' ? '2px solid #12006b' : 'none',
                     }}
                 >
-                    Giới thiệu
+                    Introduction
                 </div>
 
-                {/* Lịch khai giảng */}
+                {/* Opening Schedule */}
                 <div
                     onClick={() => setActiveTab('schedule')}
                     style={{
@@ -174,10 +173,10 @@ const RouteCourse = () => {
                         justifyContent: 'center',
                     }}
                 >
-                    Lịch khai giảng
+                    Opening Schedule
                 </div>
 
-                {/* Khóa học (dropdown) */}
+                {/* Courses (dropdown) */}
                 <div
                     style={{
                         flex: 1,
@@ -208,12 +207,12 @@ const RouteCourse = () => {
                             cursor: 'pointer',
                         }}
                     >
-                        <option style={{ color: '#000' }} value="all">Khóa học</option>
+                        <option style={{ color: '#000' }} value="all">Courses</option>
                         <option style={{ color: '#000' }} value="toeic">TOEIC</option>
                         <option style={{ color: '#000' }} value="ielts">IELTS</option>
 
                     </select>
-                    {/* Icon mũi tên ▼ */}
+                    {/* Arrow icon ▼ */}
                     <div
                         style={{
                             position: 'absolute',
@@ -229,7 +228,7 @@ const RouteCourse = () => {
                     </div>
                 </div>
 
-                {/* Hướng dẫn */}
+                {/* Registration Guide */}
                 <div
                     onClick={() => setActiveTab('guide')}
                     style={{
@@ -245,10 +244,10 @@ const RouteCourse = () => {
                         justifyContent: 'center',
                     }}
                 >
-                    Hướng dẫn đăng ký học
+                    Registration Guide
                 </div>
 
-                {/* Hỗ trợ */}
+                {/* Support */}
                 <div
                     onClick={() => setActiveTab('support')}
                     style={{
@@ -264,7 +263,7 @@ const RouteCourse = () => {
                         justifyContent: 'center',
                     }}
                 >
-                    Hỗ trợ
+                    Support
                 </div>
             </div>
             
@@ -272,7 +271,7 @@ const RouteCourse = () => {
     );
 
 
-    // Component render cho từng loại roadmap và course
+    // Component to render each roadmap and course type
     const renderSection = (title, roadmapArr, coursesArr) => (
         <div style={{ marginBottom: 48 }}>
             {/* Title Course */}
@@ -392,7 +391,7 @@ const RouteCourse = () => {
                                         >
                                             <img src={course.imageURL} alt={course.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
                                             <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.nameCourses}</div>
-                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
+                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Duration: {course.durationDays} sessions</div>
                                             <button style={{
                                                 background: '#19b46a',
                                                 color: '#fff',
@@ -402,10 +401,10 @@ const RouteCourse = () => {
                                                 fontSize: 14,
                                                 fontWeight: 500,
                                                 cursor: 'pointer'
-                                            }}>Tìm hiểu thêm</button>
+                                            }}>Learn more</button>
                                         </div>
                                     ))}
-                                    {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
+                                    {/* If group < 3, add empty boxes for alignment */}
                                     {Array.from({ length: 3 - group.length }).map((_, idx2) => (
                                         <div key={`empty-${idx2}`} />
                                     ))}
@@ -418,7 +417,7 @@ const RouteCourse = () => {
         </div>
     );
 
-    // Xác định dữ liệu hiển thị theo filter
+    // Determine which sections to display based on filter
     let sections = [];
     if (filter === 'all') {
         sections = [

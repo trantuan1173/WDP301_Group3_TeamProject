@@ -20,6 +20,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 
+
 const App = () => {
   return (
     <AuthProvider>
@@ -32,6 +33,7 @@ const App = () => {
         </Route>
         <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
+          <Route path="/user" element={<UserDashboard />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />

@@ -58,7 +58,7 @@ export default function Login() {
                 } else if (afterAuthProfile.role === "admin") {
                     navigate("/admin");
                 } else if (afterAuthProfile.role === "student") {
-                    navigate("/");
+                    navigate("/user");
                 } else {
                     navigate("/");
                 }
