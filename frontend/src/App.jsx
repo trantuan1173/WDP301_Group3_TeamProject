@@ -8,7 +8,7 @@ import VerifyPage from './pages/Auth/VerifyPage'
 import { Routes, Route } from 'react-router-dom'
 
 import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCourse'
-import GuestView from './pages/Homepage/GuestView'
+import GuestView from './pages/GuestView'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import ResetPassword from './pages/Auth/ResetPassword'
 import UserDashboard from './pages/Dashboard/UserDashboard'

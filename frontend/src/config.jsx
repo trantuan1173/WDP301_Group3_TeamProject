@@ -28,6 +28,6 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
 
   //Guest endpoints
-  GET_COURSES: `${baseUrl}/api/courseDetail/forguest`,
+  GET_COURSES: `${baseUrl}/api/courseDetail`,
 
 };
