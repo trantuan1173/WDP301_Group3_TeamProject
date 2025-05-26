@@ -33,6 +33,7 @@ const courseDetailSchema = new mongoose.Schema(
     imageURL: {
       type: String,
       trim: true,
+      required: true,
     },
   },
   { timestamps: true },
