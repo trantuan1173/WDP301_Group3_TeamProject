@@ -29,5 +29,6 @@ export const API_ENDPOINTS = {
 
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
 
 };

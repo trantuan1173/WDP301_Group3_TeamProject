@@ -5,7 +5,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import { useNavigate } from "react-router-dom";
 
-const navigate = useNavigate();
+
 
 
 const roadmapData = {
@@ -62,6 +62,7 @@ const roadmapData = {
 };
 
 const RouteCourse = () => {
+    const navigate = useNavigate();
     const [toeicCourses, setToeicCourses] = useState([]);
     const [ieltsCourses, setIeltsCourses] = useState([]);
     const [filter, setFilter] = useState('all'); // all | toeic | ielts
@@ -397,7 +398,7 @@ const RouteCourse = () => {
                                             <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
                                             <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
                                             <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                                            <button onClick={() => navigate(`/course/${course._id}`)} style={{
+                                            <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
                                                 background: '#19b46a',
                                                 color: '#fff',
                                                 border: '2px solid #19b46a',

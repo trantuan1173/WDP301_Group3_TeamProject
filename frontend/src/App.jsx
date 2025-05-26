@@ -15,6 +15,7 @@ import UserDashboard from './pages/Dashboard/UserDashboard'
 import UserProfileForm from './components/Student/UserProfileForm'
 import RequireAuth from './context/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
+import ViewCourseDetails from './pages/ViewCourseDetails'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/" element={<GuestView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/course/:courseId" element={<ViewCourseDetails />} />
       </Routes>
     </AuthProvider>
   )
