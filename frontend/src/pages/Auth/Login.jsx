@@ -3,17 +3,19 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { useNavigate } from "react-router-dom"; // Thêm dòng này
+import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [language, setLanguage] = useState("vi");
     const [isLoading, setIsLoading] = useState(false);
+    const { setUser } = useAuth();
     const navigate = useNavigate(); // Thêm dòng này
 
     const t = {
         vi: {
             title: "Đăng nhập vào tài khoản",
-            email: "Địa chỉ Email",
+            email: "Địa chỉ Email", 
             password: "Mật khẩu",
             login: "Đăng nhập",
             toggleLang: "English",
@@ -50,7 +52,7 @@ export default function Login() {
                 });
                 
                 const afterAuthProfile = authProfile.data.data;
-
+                setUser(afterAuthProfile);
                 if (!afterAuthProfile.profile.isUpdated) {
                     navigate("/update-profile");
                 } else if (afterAuthProfile.role === "admin") {
