@@ -442,7 +442,7 @@ const authProfile = async (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decodedToken.id)
-      .populate("profileId", "name dob phone address gender isUpdated")
+      .populate("profileId", "name dob phone address gender isUpdated imageURL")
       .populate("roleId", "nameRole");
 
     if (!user) {

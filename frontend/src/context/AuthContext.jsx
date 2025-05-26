@@ -9,6 +9,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // chứa role, profile, ...
   const [loading, setLoading] = useState(true);
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("imageURL");
+  };
+    
+    
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
@@ -33,7 +40,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading, logout }}>
       {!loading && children}
     </AuthContext.Provider>
   );

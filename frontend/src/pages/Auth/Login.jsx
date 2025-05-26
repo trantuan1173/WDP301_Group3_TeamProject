@@ -20,7 +20,8 @@ export default function Login() {
             login: "Đăng nhập",
             toggleLang: "English",
             noAccount: "Chưa có tài khoản?",
-            signUp: "Đăng ký"
+            signUp: "Đăng ký",
+            forgotPassword: "Quên mật khẩu?"
         },
         en: {
             title: "Sign in to your account",
@@ -29,7 +30,8 @@ export default function Login() {
             login: "Sign in",
             toggleLang: "Tiếng Việt",
             noAccount: "Don't have an account?",
-            signUp: "Sign Up"
+            signUp: "Sign Up",
+            forgotPassword: "Forgot Password?"
         },
     };
 
@@ -42,8 +44,9 @@ export default function Login() {
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
             if (response.status === 200) {
-                const { token } = response.data.data;
+                const { token, profile } = response.data.data;
                 localStorage.setItem('token', token);
+                localStorage.setItem('imageURL', profile.imageURL)
 
                 const authProfile = await axios.get(`${API_ENDPOINTS.AUTH_PROFILE}`, {
                     headers: {
@@ -149,6 +152,14 @@ export default function Login() {
                         </div>
                         {/* Thêm dòng đăng ký */}
                         <div className="text-center mt-4 text-sm text-gray-600">
+                            <span
+                                className="text-blue-600 hover:underline cursor-pointer font-semibold"
+                                onClick={() => navigate("/forgot-password")}
+                            >
+                                {t[language].forgotPassword}
+                            </span>
+                        </div>
+                        <div className="text-center text-sm text-gray-600">
                             {t[language].noAccount}{" "}
                             <span
                                 className="text-blue-600 hover:underline cursor-pointer font-semibold"
@@ -158,7 +169,6 @@ export default function Login() {
                             </span>
                         </div>
                     </form>
-                    <a href="/forgot-password">Forgot Password</a>
                 </div>
             </div>
 
