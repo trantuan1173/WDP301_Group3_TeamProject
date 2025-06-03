@@ -3,6 +3,7 @@ import NavBar from "../../components/Layouts/NavBar";
 import AdminSideMenu from '../../components/Layouts/AdminSideMenu';
 import AdminManageAccount from '../../components/Admin/ManagerAccount/AdminManageAccount';
 import AdminManageCourse from '../../components/Admin/ManagerCourse/AdminManageCourse';
+import AdminManageClass from '../../components/Admin/ManagerClass/AdminManageClass';
 
 
 
@@ -22,6 +23,7 @@ function AdminDashboard() {
         <div className="flex-1">
           {selectedPage === 'account' && <AdminManageAccount />}
           {selectedPage === 'courses' && <AdminManageCourse />}
+          {selectedPage === 'classes' && <AdminManageClass/>}
         </div>
       </div>
     </div>
