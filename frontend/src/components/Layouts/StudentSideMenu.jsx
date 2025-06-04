@@ -8,7 +8,7 @@ const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
   const hoverClass = "hover:bg-[#67B3FF] hover:text-white";
 
   return (
-    <div className="flex flex-col justify-between rounded shadow pr-10 pt-6 m-4 w-64 bg-white h-screen border border-gray-300">
+    <div className="flex flex-col justify-between  pr-10 pt-6 w-64 bg-white h-screen shadow border border-gray-300">
       <ul className="flex flex-col gap-2">
         <li className={`${baseClass} ${selectedKey === 'overview' ? selectedClass : ''} ${hoverClass}`} onClick={() => onMenuSelect('overview')}>
           <FaHome /> Overview
