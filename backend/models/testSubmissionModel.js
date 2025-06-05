@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const testSubmissionSchema = new mongoose.Schema(
   {
-    testId: {
+    testAssignId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Test",
+      ref: "TestAssign",
       required: true,
     },
     studentId: {
