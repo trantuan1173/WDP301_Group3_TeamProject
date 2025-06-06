@@ -37,13 +37,16 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
           <Route path="/user" element={<UserDashboard />} />
         </Route>
+        <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
+           <Route path="/teacher" element={<TeacherDashboard />} />
+        </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
        
-          <Route path="/teacher" element={<TeacherDashboard />} />
+          
         
       </Routes>
     </AuthProvider>
