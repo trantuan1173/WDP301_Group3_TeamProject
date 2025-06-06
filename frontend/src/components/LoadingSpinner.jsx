@@ -61,6 +61,7 @@ const LoadingSpinner = ({ size = 200, text = "LOADING" , textSize = 24 }) => {
           style={{
             fontSize: `${textSize}px`,
             letterSpacing: '0.3em',
+            color: '#06b6d4',
           }}
         >
           {text}

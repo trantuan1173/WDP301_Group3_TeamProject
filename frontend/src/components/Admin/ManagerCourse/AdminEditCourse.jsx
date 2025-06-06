@@ -3,24 +3,19 @@ import { FaPlus, FaPen } from "react-icons/fa";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
-export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefresh }) {
+export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefresh, categories }) {
   const [form, setForm] = useState({
     ...courseData,
     name: courseData.courseId?.nameCourses || "",
     courseId: courseData.courseId?._id || courseData.courseId || "",
     courseDetailId: courseData._id || "",
-    imageUrl: courseData.imageURL || courseData.imageUrl || "",
+    imageURL: courseData.imageURL || courseData.imageUrl || "",
     duration: courseData.durationDays || courseData.duration || "",
-    category: courseData.category || "",
+    type: courseData.type || "",
     level: courseData.level || "",
     price: courseData.price || "",
     description: courseData.description || "",
-    type: courseData.type || courseData.courseId?.type || "",
   });
-  const [categories, setCategories] = useState([
-    "Khóa học cho Người lớn / Sinh viên / Người đi làm",
-    "Khóa học ngắn hạn chuyên đề",
-  ]);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [errors, setErrors] = useState({});
@@ -33,8 +28,8 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
   const handleAddCategory = () => {
     if (newCategory.trim() !== "") {
       const newCat = newCategory.trim();
-      setCategories((prev) => [...prev, newCat]);
-      setForm((prev) => ({ ...prev, category: newCat }));
+      categories.push(newCat);
+      setForm((prev) => ({ ...prev, type: newCat }));
       setNewCategory("");
       setShowNewCategoryInput(false);
     }
@@ -42,13 +37,12 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
 
   const validate = () => {
     const newErrors = {};
-    if (!form.imageUrl.trim()) newErrors.imageUrl = "Không được để trống.";
-    if (!form.category.trim()) newErrors.category = "Không được để trống.";
-    if (!form.name.trim()) newErrors.name = "Không được để trống.";
-    if (!form.level.trim()) newErrors.level = "Không được để trống.";
-    if (!form.duration.toString().trim()) newErrors.duration = "Không được để trống.";
-    if (!form.price.toString().trim()) newErrors.price = "Không được để trống.";
-    if (!form.description.trim()) newErrors.description = "Không được để trống.";
+    if (!form.imageURL.trim()) newErrors.imageURL = "Can't be empty";
+    if (!form.type.trim()) newErrors.type = "Can't be empty";
+    if (!form.name.trim()) newErrors.name = "Can't be empty";
+    if (!form.level.trim()) newErrors.level = "Can't be empty";
+    if (!form.duration.toString().trim()) newErrors.duration = "Can't be empty";
+    if (!form.price.toString().trim()) newErrors.price = "Can't be empty";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -75,8 +69,8 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
           price: parseFloat(form.price),
           description: form.description,
           durationDays: parseInt(form.duration),
-          imageURL: form.imageUrl,
-          category: form.category,
+          imageURL: form.imageURL,
+          type: form.type,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -108,7 +102,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
         {/* Ảnh khóa học */}
         <div className="flex justify-center items-start">
           <img
-            src={form.imageUrl}
+            src={form.imageURL}
             alt="Xem trước ảnh"
             className="rounded-xl object-contain"
             style={{ background: "#f3faff", width: "220px", height: "180px" }}
@@ -121,8 +115,8 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
   <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục khóa học</label>
   <div className="relative">
     <select
-      name="category"
-      value={form.category}
+      name="type"
+      value={form.type}
       onChange={handleChange}
       className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 appearance-none pr-8"
     >
@@ -134,8 +128,8 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
   </div>
   {/* Thông báo lỗi danh mục */}
-  {errors.category && (
-    <p className="text-red-500 text-xs mt-1">{errors.category}</p>
+  {errors.type && (
+    <p className="text-red-500 text-xs mt-1">{errors.type}</p>
   )}
   {!showNewCategoryInput && (
     <button

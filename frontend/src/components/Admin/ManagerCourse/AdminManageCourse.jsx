@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import AdminAddCourse from "./AdminAddCourseForm";
 import AdminEditCourse from "./AdminEditCourse";
 import CourseDetailModal from "./CourseDetailModal";
+import LoadingSpinner from "../../LoadingSpinner";
 
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
@@ -19,37 +20,51 @@ export default function AdminManageCourse() {
     const [courses, setCourses] = useState([]);
     const [viewingCourse, setViewingCourse] = useState(null);
     const [editingCourse, setEditingCourse] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const handleAddCourse = (newCourse) => {
         setCourses([...courses, { ...newCourse, _id: Date.now().toString() }]);
     };
-    const handleEditCourse = (updatedCourse) => {
-        // Ví dụ: cập nhật lại state hoặc fetch lại danh sách
-        fetchCourses();
-        setEditingCourse(null);
-    };
 
-    const fetchCourses = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 200) {
-                setCourses(response.data.data || []);
-                console.log("Courses fetched successfully:", response.data.data);
-            }
-        } catch (error) {
-            console.error("Error fetching courses:", error);
-        }
-    };
+  
 
 
     useEffect(() => {
+        const fetchCourses = async () => {
+            setLoading(true);
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (response.status === 200) {
+                    setCourses(response.data.data || []);
+                    console.log("Courses fetched successfully:", response.data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching courses:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchCourses();
     }, []);
+    useEffect(() => {
+        const uniqueCategories = new Set();
+        courses?.forEach((item) => {
+            if (item.type) {
+                if (Array.isArray(item.type)) {
+                    item.type.forEach((type) => uniqueCategories.add(type));
+                } else {
+                    uniqueCategories.add(item.type);
+                }
+            }
+        });
+        setCategories([...uniqueCategories]);
+    }, [courses]);
 
     const filteredCourses = courses.filter((course) => {
         const name = course.courseId?.nameCourses || "";
@@ -57,14 +72,16 @@ export default function AdminManageCourse() {
     });
 
     const groupedCourses = filteredCourses.reduce((acc, course) => {
-        const category = course.courseId?.type || "Khác";
+        const category = course?.type || "Khác";
         if (!acc[category]) acc[category] = [];
         acc[category].push(course);
         return acc;
     }, {});
 
+    if (loading) return <LoadingSpinner size={120} text="Loading..." />;
+    
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+            <div className="p-6 bg-gray-100 min-h-screen">
             <h2 className="text-2xl font-bold mb-4">QUẢN LÝ KHOÁ HỌC</h2>
 
             {/* Search + Add */}
@@ -129,7 +146,7 @@ export default function AdminManageCourse() {
             {showAddPopup && (
                 <AdminAddCourse
                     onClose={() => setShowAddPopup(false)}
-                    onSubmit={fetchCourses}
+                    onSubmit={handleAddCourse}
                 />
             )}
             {viewingCourse && (
@@ -140,21 +157,21 @@ export default function AdminManageCourse() {
                         setEditingCourse(viewingCourse);
                         setViewingCourse(null);
                     }}
-                    onDelete={fetchCourses}
-
-
-
                 />
             )}
             {editingCourse && (
                 <AdminEditCourse
+                    categories={categories}
                     courseData={editingCourse}
                     onClose={() => setEditingCourse(null)}
-                    handlerEdit={handleEditCourse} // truyền thêm prop này
-                    onRefresh={fetchCourses}
+                    onSubmit={(updatedCourse) => {
+                        setCourses(courses.map((c) => (c._id === updatedCourse._id ? updatedCourse : c)));
+                        setEditingCourse(null);
+                    }}
+                    onRefresh={() => fetchCourses()}
                 />
             )}
-
         </div>
     );
 }
+

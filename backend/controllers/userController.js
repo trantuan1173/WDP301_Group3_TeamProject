@@ -158,6 +158,41 @@ const verifyUser = async function (req, res) {
   })
 }
 
+const resendVerifyEmail = async function (req, res) {
+  const { email } = req.body
+  const user = await User.findOne({ email })
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    })
+  }
+  if (user.isVerified) {
+    return res.status(400).json({
+      success: false,
+      message: "User is already verified",
+    })
+  }
+  const verificationToken = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET || "your_jwt_secret",
+    { expiresIn: "24h" }
+  )
+  try {
+    await sendVerifyEmail(email, verificationToken)
+    res.status(200).json({
+      success: true,
+      message: "Verification email resent successfully",
+    })
+  } catch (emailError) {
+    console.error("Failed to send verification email:", emailError)
+    res.status(500).json({
+      success: false,
+      message: "Failed to resend verification email",
+    })
+  }
+}
+
 const adminCreateTeacher = async function (req, res) {
   try {
     const { email, password, profileData } = req.body
@@ -442,7 +477,7 @@ const authProfile = async (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decodedToken.id)
-      .populate("profileId", "name dob phone address gender isUpdated")
+      .populate("profileId", "name dob phone address gender isUpdated imageURL")
       .populate("roleId", "nameRole");
 
     if (!user) {
@@ -483,4 +518,5 @@ module.exports = {
   resetPassword,
   authProfile,
   updateUserByAdmin,
+  resendVerifyEmail,
 }
