@@ -1,40 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../config";
+import { useNavigate } from "react-router-dom";
 
-const mockData = [
-  {
-    _id: "1",
-    course: "Tiếng Anh Thiếu nhi 1",
-    className: "Lớp A1",
-    teacherId: "t1",
-    teacherName: "Cô Lan",
-    students: Array(10).fill({}),
-    progress: 80,
-    start_time: "2025-08-01T00:00:00.000Z",
-    status: "Đang diễn ra"
-  },
-  {
-    _id: "2",
-    course: "Giao tiếp cơ bản",
-    className: "Lớp GCB2",
-    teacherId: "t2",
-    teacherName: "Thầy Hùng",
-    students: Array(15).fill({}),
-    progress: 100,
-    start_time: "2025-08-01T00:00:00.000Z",
-    status: "Đang diễn ra"
-  },
-  {
-    _id: "3",
-    course: "Tiếng Anh Thiếu nhi 1",
-    className: "Lớp A2",
-    teacherId: null,
-    teacherName: "",
-    students: [],
-    progress: 0,
-    start_time: "2025-09-01T00:00:00.000Z",
-    status: "Chưa bắt đầu"
-  }
-];
 
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
@@ -48,13 +16,45 @@ const getStatusColor = (status) => {
   return "text-gray-800";
 };
 
+const getStatus = (progress) => {
+  if (progress === 0) return "Chưa bắt đầu";
+  if (progress >= 100) return "Đã hoàn thành";
+  return "Đang diễn ra";
+};
+
 const AdminManageClass = () => {
   const [search, setSearch] = useState("");
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+const handleViewDetail = (id) => {
+    navigate(`/admin/class/${id}`, {
+      state: { from: 'classes' }, // <== đây là key quan trọng
+    });
+  };
+  useEffect(() => {
+    const fetchClasses = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(API_ENDPOINTS.GET_ALL_CLASSES, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setClasses(response.data.data || response.data);
+      } catch (error) {
+        // Có thể thêm thông báo lỗi ở đây nếu muốn
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClasses();
+  }, []);
 
   return (
     <div className="bg-white min-h-screen p-8">
       <h2 className="font-extrabold text-2xl mb-8 tracking-wide">QUẢN LÝ LỚP HỌC</h2>
-      
       <div className="flex gap-3 mb-6">
         <div className="relative flex-1">
           <input
@@ -94,31 +94,40 @@ const AdminManageClass = () => {
             </tr>
           </thead>
           <tbody>
-            {mockData
-              .filter(row =>
-                row.course.toLowerCase().includes(search.toLowerCase()) ||
-                row.className.toLowerCase().includes(search.toLowerCase()) ||
-                (row.teacherName || "").toLowerCase().includes(search.toLowerCase())
-              )
-              .map((row, idx) => (
-                <tr key={row._id} className="border-b border-gray-100">
-                  <td className="py-2 px-2">{idx + 1}</td>
-                  <td className="py-2 px-2">{row.className}</td>
-                  <td className="py-2 px-2">{row.course}</td>
-                  <td className="py-2 px-2">{getMonthYear(row.start_time)}</td>
-                  <td className={`py-2 px-2 ${row.teacherId ? "text-gray-800" : "text-red-500 font-bold"}`}>
-                    {row.teacherId ? row.teacherName : "Chưa có giáo viên"}
-                  </td>
-                  <td className="py-2 px-2">{row.students.length}/15</td>
-                  <td className="py-2 px-2">{row.progress}%</td>
-                  <td className={`py-2 px-2 font-bold ${getStatusColor(row.status)}`}>
-                    {row.status}
-                  </td>
-                  <td className="py-2 px-2">
-                    <button className="bg-gray-200 rounded-full px-4 py-1 font-semibold text-base">Chi tiết</button>
-                  </td>
-                </tr>
-              ))}
+            {loading ? (
+              <tr>
+                <td colSpan={9} className="text-center py-8">Đang tải dữ liệu...</td>
+              </tr>
+            ) : (
+              classes
+                .filter(row =>
+                  (row.course || "").toLowerCase().includes(search.toLowerCase()) ||
+                  (row.courseId && row.courseId.nameCourses && row.courseId.nameCourses.toLowerCase().includes(search.toLowerCase())) ||
+                  (row.note || "").toLowerCase().includes(search.toLowerCase())
+                )
+                .map((row, idx) => (
+                  <tr key={row._id} className="border-b border-gray-100">
+                    <td className="py-2 px-2">{idx + 1}</td>
+                    <td className="py-2 px-2">{row.courseId && row.courseId.nameCourses ? row.courseId.nameCourses : "Chưa đặt tên"}</td>
+                    <td className="py-2 px-2">{row.course || ""}</td>
+                    <td className="py-2 px-2">{getMonthYear(row.start_time)}</td>
+                    <td className={`py-2 px-2 ${row.teacherId ? "text-gray-800" : "text-red-500 font-bold"}`}>
+                      {row.teacherId ? row.teacherId.name || "Đã phân công" : "Chưa có giáo viên"}
+                    </td>
+                    <td className="py-2 px-2">{row.students ? row.students.length : 0}/15</td>
+                    <td className="py-2 px-2">{row.progress}%</td>
+                    <td className={`py-2 px-2 font-bold ${getStatusColor(getStatus(row.progress))}`}>
+                      {getStatus(row.progress)}
+                    </td>
+                    <td className="py-2 px-2">
+                      <button
+                        className="bg-gray-200 rounded-full px-4 py-1 font-semibold text-base"
+                        onClick={() => handleViewDetail(row._id)}>
+                        Chi tiết
+                      </button>                    </td>
+                  </tr>
+                ))
+            )}
           </tbody>
         </table>
       </div>
