@@ -11,7 +11,9 @@ const router = express.Router();
  *     summary: Lấy danh sách giáo viên (chỉ admin)
  *     tags: [Users]
  *     security:
- *       - bearerAuth: []
+ *       - bearerAuth: [
+ *           token
+ *         ]
  *     responses:
  *       200:
  *         description: Danh sách giáo viên

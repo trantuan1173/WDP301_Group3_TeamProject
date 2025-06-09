@@ -9,6 +9,20 @@ const options = {
       version: '1.0.0',
       description: 'API quản lý',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT", // Không bắt buộc, nhưng nên có
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
     servers: [
       {
         url: 'http://localhost:9999/api', 
