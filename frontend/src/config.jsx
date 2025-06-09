@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
 
   GET_ALL_CLASSES: `${baseUrl}/api/classes`,
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
+  CREATE_CLASS: `${baseUrl}/api/classes`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation} from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import NavBar from "../../Layouts/NavBar";
@@ -38,9 +38,9 @@ export default function AdminViewClassDetails() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
-  headers: { Authorization: `Bearer ${token}` }
-});
-setClassData(res.data.data || res.data);
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setClassData(res.data.data || res.data);
       } catch (err) {
         setClassData(null);
       } finally {
@@ -59,7 +59,7 @@ setClassData(res.data.data || res.data);
   }
 
   const status = getStatus(classData.progress);
-   const handleBack = () => {
+  const handleBack = () => {
     if (from === 'classes') {
       navigate('/admin', { state: { selectedPage: 'classes' } });
     } else {
@@ -68,25 +68,27 @@ setClassData(res.data.data || res.data);
   };
 
   return (
-      
-     <div className="bg-white min-h-screen p-8">
+
+    <div className="bg-white min-h-screen p-8">
       <NavBar />
-      <h2 className="text-2xl font-bold mb-2">
-        {classData.courseId?.nameCourses || "Tên lớp"} - Khóa học {classData.course || ""}
+      <h2 className="text-2xl font-bold mb-4 p-8 ">
+        Khóa học {classData.course || ""} - {classData.courseId?.nameCourses || "Tên lớp"}
       </h2>
-      <div className="flex items-center mb-4">
-        <div className="flex gap-4">
-          <button className="bg-blue-100 text-gray-800 rounded-full px-5 py-2 font-semibold shadow-sm">
-            + Thêm giảng viên
-          </button>
-          <button className="bg-blue-100 text-gray-800 rounded-full px-5 py-2 font-semibold shadow-sm">
-            + Thêm học viên
-          </button>
+      <div className="flex items-center mb-4 w-full">
+        <div className="flex gap-4 flex-1">
+          <div className="flex gap-4 flex-1">
+  <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150">
+    {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
+  </button>
+  <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150">
+    {classData.courseId ? "Thay đổi khóa học" : "+ Thêm khóa học"}
+  </button>
+</div>
         </div>
         <button
-          className="ml-auto bg-gray-200 text-gray-800 rounded-full px-5 py-2 font-semibold shadow-sm"
-          onClick={handleBack}>
-        
+          className="ml-auto bg-gray-200 text-gray-800 rounded-full min-w-[110px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+          onClick={handleBack}
+        >
           Quay lại
         </button>
       </div>
@@ -94,21 +96,21 @@ setClassData(res.data.data || res.data);
 
       <div className="mb-8">
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 max-w-2xl">
-          <div className="font-medium">Giáo viên phụ trách</div>
-          <div className={classData.teacherId ? "" : "text-red-500 font-semibold"}>
-            {classData.teacherId?.name || "Chưa có giáo viên"}
+          <div className="font-medium">Giáo viên phụ trách:</div>
+          <div className={classData.teacherId ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}>
+            {classData.teacherId?.email || "Chưa có giáo viên"}
           </div>
-          <div className="font-medium">Tên lớp</div>
-          <div>{classData.courseId?.nameCourses || "Chưa đặt tên"}</div>
-          <div className="font-medium">Thời gian học</div>
+          <div className="font-medium">Tên lớp:</div>
+          <div>{ classData.course  || "Chưa đặt tên"}</div>
+          <div className="font-medium">Thời gian học:</div>
           <div>Chưa có API</div>
-          <div className="font-medium">Khóa học</div>
-          <div>{classData.course || ""}</div>
-          <div className="font-medium">Tháng mở</div>
+          <div className="font-medium">Khóa học:</div>
+          <div>{classData.courseId?.nameCourses || ""}</div>
+          <div className="font-medium">Tháng mở:</div>
           <div>{getMonthYear(classData.start_time)}</div>
-          <div className="font-medium">Trạng thái lớp</div>
+          <div className="font-medium">Trạng thái lớp:</div>
           <div className={getStatusColor(status)}>{status}</div>
-          <div className="font-medium">Số học sinh</div>
+          <div className="font-medium">Số học sinh:</div>
           <div>{classData.students?.length || 0}</div>
         </div>
       </div>

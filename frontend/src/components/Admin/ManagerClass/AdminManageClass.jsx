@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import AdminCreateClassForm from "./AdminCreateClassForm";
 
 
 const getMonthYear = (dateStr) => {
@@ -26,34 +27,46 @@ const AdminManageClass = () => {
   const [search, setSearch] = useState("");
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const navigate = useNavigate();
-const handleViewDetail = (id) => {
+  const handleViewDetail = (id) => {
     navigate(`/admin/class/${id}`, {
       state: { from: 'classes' }, // <== đây là key quan trọng
     });
   };
+  const handleCreateSuccess = () => {
+    setShowCreateForm(false);
+    fetchClasses(); 
+  };
+  const fetchClasses = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(API_ENDPOINTS.GET_ALL_CLASSES, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setClasses(response.data.data || response.data);
+    } catch (error) {
+      
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchClasses = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(API_ENDPOINTS.GET_ALL_CLASSES, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setClasses(response.data.data || response.data);
-      } catch (error) {
-        // Có thể thêm thông báo lỗi ở đây nếu muốn
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchClasses();
   }, []);
 
   return (
     <div className="bg-white min-h-screen p-8">
+       {showCreateForm && (
+        <AdminCreateClassForm
+          onSuccess={handleCreateSuccess}
+          onCancel={() => setShowCreateForm(false)}
+        />
+      )}
       <h2 className="font-extrabold text-2xl mb-8 tracking-wide">QUẢN LÝ LỚP HỌC</h2>
       <div className="flex gap-3 mb-6">
         <div className="relative flex-1">
@@ -73,7 +86,10 @@ const handleViewDetail = (id) => {
         </div>
         <button className="bg-blue-100 text-gray-800 rounded-full px-5 py-2 font-semibold shadow-sm">Filter thời gian</button>
         <button className="bg-blue-100 text-gray-800 rounded-full px-5 py-2 font-semibold shadow-sm">Filter trạng thái</button>
-        <button className="bg-white text-gray-800 rounded-full px-5 py-2 font-bold shadow-sm flex items-center gap-1 border border-gray-200">
+        <button
+          className="bg-white text-gray-800 rounded-full px-5 py-2 font-bold shadow-sm flex items-center gap-1 border border-gray-200"
+          onClick={() => setShowCreateForm(true)}
+        >
           <span className="text-xl font-bold">+</span> Thêm lớp học
         </button>
       </div>
@@ -108,13 +124,13 @@ const handleViewDetail = (id) => {
                 .map((row, idx) => (
                   <tr key={row._id} className="border-b border-gray-100">
                     <td className="py-2 px-2">{idx + 1}</td>
-                    <td className="py-2 px-2">{row.courseId && row.courseId.nameCourses ? row.courseId.nameCourses : "Chưa đặt tên"}</td>
                     <td className="py-2 px-2">{row.course || ""}</td>
+                    <td className="py-2 px-2">{row.courseId && row.courseId.nameCourses ? row.courseId.nameCourses : "Chưa có khóa học"}</td>
                     <td className="py-2 px-2">{getMonthYear(row.start_time)}</td>
-                    <td className={`py-2 px-2 ${row.teacherId ? "text-gray-800" : "text-red-500 font-bold"}`}>
-                      {row.teacherId ? row.teacherId.name || "Đã phân công" : "Chưa có giáo viên"}
+                    <td className={`py-2 px-2 ${row.teacherId ? "text-green-500 font-bold" : "text-red-500 font-bold"}`}>
+                      {row.teacherId ? (row.teacherId.name || row.teacherId.email) : "Chưa có giáo viên"}
                     </td>
-                    <td className="py-2 px-2">{row.students ? row.students.length : 0}/15</td>
+                    <td className="py-2 px-2">{row.students ? row.students.length : 0}</td>
                     <td className="py-2 px-2">{row.progress}%</td>
                     <td className={`py-2 px-2 font-bold ${getStatusColor(getStatus(row.progress))}`}>
                       {getStatus(row.progress)}
@@ -124,7 +140,8 @@ const handleViewDetail = (id) => {
                         className="bg-gray-200 rounded-full px-4 py-1 font-semibold text-base"
                         onClick={() => handleViewDetail(row._id)}>
                         Chi tiết
-                      </button>                    </td>
+                      </button>
+                    </td>
                   </tr>
                 ))
             )}
