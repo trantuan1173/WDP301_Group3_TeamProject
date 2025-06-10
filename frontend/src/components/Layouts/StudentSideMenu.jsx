@@ -61,6 +61,15 @@ const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
 >
   <FaAddressBook /> Class
 </li>
+<li
+  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
+    ${selectedKey === 'test' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
+    hover:bg-blue-100 hover:text-blue-900`}
+  onClick={() => onMenuSelect && onMenuSelect('test')}
+>
+  <FaBook /> Test
+</li>
+
       </ul>
     </div>
   );

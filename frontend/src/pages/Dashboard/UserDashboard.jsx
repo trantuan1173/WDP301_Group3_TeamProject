@@ -7,7 +7,7 @@ import UserSchedule from '../../components/Student/UserSchedule';
 import UserAttendance from '../../components/Student/UserAttendance';
 import UserClass from '../../components/Student/UserClass';
 import UserOverView from '../../components/Student/UserOverView';
-
+import UserTest from '../../components/Student/UserTest';
 
 function UserDashboard({ selectedPage }) {
   const [currentPage, setCurrentPage] = useState(selectedPage || 'overview');
@@ -31,6 +31,7 @@ function UserDashboard({ selectedPage }) {
           {currentPage === 'schedule' && <UserSchedule />}
           {currentPage === 'attendance' && <UserAttendance />}
           {currentPage === 'class' && <UserClass />}
+          {currentPage === 'test' && <UserTest />}
           {/* Thêm các component khác nếu có */}
         </div>
       </div>
