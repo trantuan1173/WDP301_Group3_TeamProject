@@ -23,13 +23,13 @@ const options = {
         bearerAuth: [],
       },
     ],
-    servers: [
-      {
-        url: 'http://localhost:9999/api', 
-      },
-    ],
+    // servers: [
+    //   {
+    //     url: 'http://localhost:9999/api', 
+    //   },
+    // ],
   },
-  apis: ['./routes/userRoutes.js'], 
+  apis: ['./routes/userRoutes.js', './routes/profileRoutes.js', './routes/roleRoutes.js', './routes/courseRoutes.js', './routes/courseDetailRoutes.js', './routes/enrollmentRoutes.js', './routes/classRoutes.js', './routes/scheduleRoutes.js', './routes/attendanceRoutes.js', './routes/testRoutes.js', './routes/testAssignRoutes.js', './routes/testSubmissionRoutes.js', './routes/feedbackRoutes.js', './routes/paymentRoutes.js'], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);
