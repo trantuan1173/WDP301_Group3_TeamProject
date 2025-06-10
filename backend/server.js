@@ -4,6 +4,8 @@ const connectDB = require('./config/db.js');
 const mongoose = require('mongoose');
 const dotenv= require('dotenv');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./routes/swagger.js');
 
 connectDB();
 const app=express();
@@ -12,6 +14,8 @@ app.use(cors());
 
 app.use(express.json());
 app.use('/api',router);
+// Swagger UI endpoint
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT=process.env.PORT;
 app.listen(PORT,()=>{

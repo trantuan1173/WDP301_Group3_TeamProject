@@ -239,6 +239,26 @@ const adminCreateTeacher = async function (req, res) {
   }
 }
 
+//Admin Get all Teacher
+const getAllTeacher = async function (req, res) {
+  try {
+    const roleId = await Role.findOne({ nameRole: "teacher" })
+    const users = await User.find({ roleId: roleId._id }).populate("profileId").populate("roleId")
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch teachers",
+      error: error.message,
+    })
+  }
+}
+
 // Update user
 const updateUser = async (req, res) => {
   try {
@@ -513,6 +533,7 @@ module.exports = {
   deleteUser,
   loginUser,
   adminCreateTeacher,
+  getAllTeacher,
   verifyUser,
   forgotPassword,
   resetPassword,
