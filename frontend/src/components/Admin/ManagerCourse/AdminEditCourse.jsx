@@ -70,7 +70,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
           description: form.description,
           durationDays: parseInt(form.duration),
           imageURL: form.imageURL,
-          type: form.type,
+          
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

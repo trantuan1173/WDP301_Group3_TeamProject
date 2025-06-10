@@ -1,17 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect  } from 'react';
+import { useLocation } from 'react-router-dom'; 
 import NavBar from "../../components/Layouts/NavBar";
 import AdminSideMenu from '../../components/Layouts/AdminSideMenu';
 import AdminManageAccount from '../../components/Admin/ManagerAccount/AdminManageAccount';
 import AdminManageCourse from '../../components/Admin/ManagerCourse/AdminManageCourse';
+import AdminManageClass from '../../components/Admin/ManagerClass/AdminManageClass';
 
 
 
 function AdminDashboard() {
   const [selectedPage, setSelectedPage] = useState('overview');
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.selectedPage) {
+      setSelectedPage(location.state.selectedPage);
+    }
+  }, [location.state]);
 
   return (
     <div className="h-screen flex flex-col">
-      <header className="w-full">
+      <header className="w-full ">
         <NavBar />
       </header>
       <div className="flex flex-1">
@@ -22,6 +30,7 @@ function AdminDashboard() {
         <div className="flex-1">
           {selectedPage === 'account' && <AdminManageAccount />}
           {selectedPage === 'courses' && <AdminManageCourse />}
+          {selectedPage === 'classes' && <AdminManageClass/>}
         </div>
       </div>
     </div>

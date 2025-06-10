@@ -1,5 +1,5 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.davidmusic.site/';
+const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
 
@@ -27,8 +27,12 @@ export const API_ENDPOINTS = {
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
 
+  GET_ALL_CLASSES: `${baseUrl}/api/classes`,
+  GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
+  CREATE_CLASS: `${baseUrl}/api/classes`,
   //Guest endpoints
-  GET_COURSES: `${baseUrl}/api/courseDetail/forguest`,
+  GET_COURSES: `${baseUrl}/api/courseDetail`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
 
