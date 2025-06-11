@@ -21,6 +21,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
+import TeacherOverviewTest from './components/Teacher/TeacherOverviewTest'
+
 
 
 const App = () => {
@@ -39,6 +41,7 @@ const App = () => {
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
            <Route path="/teacher" element={<TeacherDashboard />} />
+            <Route path="/teacher/overview-test" element={<TeacherOverviewTest />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
