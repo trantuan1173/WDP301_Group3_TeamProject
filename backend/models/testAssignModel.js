@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
 
-const testSchema = new mongoose.Schema(
+const testAssignSchema = new mongoose.Schema(
   {
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
+      required: true,
+    },
+    testId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Test",
       required: true,
     },
     classId: {
@@ -17,40 +22,23 @@ const testSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    description: {
-      type: String,
-      trim: true,
-    },
     teacherId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    questions: [
-      {
-        question: {
-          type: String,
-          required: true,
-        },
-        options: [String],
-        correctAnswer: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-    createdAt: {
+    startDate: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
-    updatedAt: {
+    dueDate: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
   },
   { timestamps: true },
 )
 
-const Test = mongoose.model("Test", testSchema)
+const TestAssign = mongoose.model("TestAssign", testAssignSchema)
 
-module.exports = Test;
+module.exports = TestAssign

@@ -21,8 +21,8 @@ export default function NavBar() {
   }, []);
 
   return (
-    <div className="w-full bg-white shadow-md z-10 relative  ">
-      <div className="container mx-auto w-4/5 flex items-center justify-between px-8 py-4">
+    <div className="w-full bg-white shadow-md z-10 relative">
+      <div className="container mx-auto w-4/5 flex items-center justify-between px-8 py-4 gap-5">
         <div className="flex items-center gap-2 text-xl font-bold text-indigo-600">
           <Link to="/">
             <img
@@ -33,7 +33,8 @@ export default function NavBar() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-7 ">
+
+        <div className="flex items-center gap-6">
           <div className="relative">
             <Search className="absolute left-2 top-2.5 text-gray-400 w-4 h-4" />
             <input
@@ -80,10 +81,27 @@ export default function NavBar() {
                     </Link>
 
                     <Link
-                     to="/user"
+
+                      to="/user/profile"
                       className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
                       onClick={() => setShowDropdown(false)}
                     >
+                      <svg
+                        className="w-4 h-4 text-blue-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        aria-hidden="true"
+                      >
+                        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm1 2H9a4 4 0 00-4 4v1h10v-1a4 4 0 00-4-4z" />
+                      </svg>
+                      My Profile
+                    </Link>
+                    <Link
+                      to="/user"
+                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      {" "}
                       <svg
                         className="w-4 h-4 text-blue-500"
                         fill="currentColor"
@@ -102,6 +120,7 @@ export default function NavBar() {
                       }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 no-underline transition-colors duration-200 ease-in-out hover:bg-red-50 hover:text-red-700"
                     >
+                   
                       <svg
                         className="w-4 h-4 text-red-500"
                         fill="currentColor"

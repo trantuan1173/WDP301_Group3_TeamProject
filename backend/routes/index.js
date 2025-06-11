@@ -10,19 +10,25 @@ const scheduleRoutes = require('./scheduleRoutes.js');
 const testRoutes = require('./testRoutes.js');
 const testSubmissionRoutes = require('./testSubmissionRoutes.js');
 const userRoutes = require('./userRoutes.js');
+const testAssignRoutes = require('./testAssignRoutes.js');
+const paymentRoutes = require('./paymentRoutes.js');
+const enrollmentRoutes = require('./enrollmentRoutes.js');
 
 const router = express.Router();
 
 router.use('/attendance', attendanceRoutes);
-router.use('/class', classRoutes);
+router.use('/classes', classRoutes);
 router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
 router.use('/feedback', feedbackRoutes);
 router.use('/profiles', profileRoutes);
 router.use('/roles', roleRoutes);
 router.use('/schedule', scheduleRoutes);
-router.use('/test', testRoutes);
+router.use('/tests', testRoutes);
 router.use('/testSubmission', testSubmissionRoutes);
+router.use('/test-assigns', testAssignRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/enrollments', enrollmentRoutes);
 router.use('/users', userRoutes);
 
 module.exports=router;
