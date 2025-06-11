@@ -33,7 +33,6 @@ export default function NavBar() {
           </Link>
         </div>
 
-
         <div className="flex items-center gap-6">
           <div className="relative">
             <Search className="absolute left-2 top-2.5 text-gray-400 w-4 h-4" />
@@ -64,24 +63,7 @@ export default function NavBar() {
                 </div>
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
-                    <Link   to="/dashboard/profile"
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
-                      onClick={() => setShowDropdown(false)}
-                   
-                    >
-                      <svg
-                        className="w-4 h-4 text-blue-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        aria-hidden="true"
-                      >
-                        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm1 2H9a4 4 0 00-4 4v1h10v-1a4 4 0 00-4-4z" />
-                      </svg>
-                      My Profile
-                    </Link>
-
                     <Link
-
                       to="/user/profile"
                       className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
                       onClick={() => setShowDropdown(false)}
@@ -120,7 +102,6 @@ export default function NavBar() {
                       }}
                       className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 no-underline transition-colors duration-200 ease-in-out hover:bg-red-50 hover:text-red-700"
                     >
-                   
                       <svg
                         className="w-4 h-4 text-red-500"
                         fill="currentColor"
