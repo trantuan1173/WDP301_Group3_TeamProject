@@ -19,6 +19,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import StudentProfileDashboard from './pages/Dashboard/StudentProfileDashboard'
+import AttendanceDetails from "./components/Student/AttendanceDetail";
 
 
 
@@ -36,6 +37,8 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
            <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
+          <Route path="/attendance/:courseName" element={<AttendanceDetails />} />
+
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
            <Route path="/teacher" element={<TeacherDashboard />} />
