@@ -1,49 +1,50 @@
 // frontend/src/components/Teacher/teacherModal/ChooseTestModal.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaSearch } from "react-icons/fa";
 import "../../../assets/CSS/MinhKhanhCSS.css";
+import { API_ENDPOINTS } from '../../../config'
+import axios from 'axios';
 
-const testBank = [
-    {
-        id: 1,
-        name: "Kiểm tra 1",
-        questions: 20,
-        level: "Trung bình",
-        skill: "Nghe",
-        topic: "Gia đình",
-        date: "01/06/2025"
-    },
-    {
-        id: 2,
-        name: "Kiểm tra 2",
-        questions: 25,
-        level: "Khó",
-        skill: "Nói",
-        topic: "Trường học",
-        date: "02/06/2025"
-    }
-];
 
-const levels = ["Dễ", "Trung bình", "Khó"];
-const skills = ["Nghe", "Nói", "Đọc"];
-const topics = ["Gia đình", "Trường học", "Chính trị"];
+
+
 
 const ChooseTestModal = ({ show, onHide, onBack }) => {
+    const [testBank, setTestBank] = useState([]);
+    const [types, setTypes] = useState([]);
+    const [levels, setLevels] = useState([]);
     const [search, setSearch] = useState("");
     const [selectedLevel, setSelectedLevel] = useState("");
     const [selectedSkill, setSelectedSkill] = useState("");
-    const [selectedTopic, setSelectedTopic] = useState("");
-    const [dropdown, setDropdown] = useState(""); // "level" | "skill" | "topic" | ""
+    //const [selectedTopic, setSelectedTopic] = useState("");
+    const [dropdown, setDropdown] = useState(""); 
     const [selectedId, setSelectedId] = useState(null);
 
     const filtered = testBank.filter(
         t =>
             t.name.toLowerCase().includes(search.toLowerCase()) &&
             (selectedLevel ? t.level === selectedLevel : true) &&
-            (selectedSkill ? t.skill === selectedSkill : true) &&
-            (selectedTopic ? t.topic === selectedTopic : true)
+            (selectedSkill ? t.skill === selectedSkill : true)
+        // (selectedTopic ? t.topic === selectedTopic : true)
     );
+
+    useEffect(() => {
+        axios.get(API_ENDPOINTS.CREATE_COURSE_DETAIL)
+            .then(response => {
+                const courses = response.data.data;
+
+                // Extract unique types and levels
+                const uniqueTypes = [...new Set(courses.map(item => item.type))];
+                const uniqueLevels = [...new Set(courses.map(item => item.level))];
+
+                setTypes(uniqueTypes);
+                setLevels(uniqueLevels);
+            })
+            .catch(error => {
+                console.error("Failed to fetch course details:", error);
+            });
+    }, []);
 
     return (
         <Modal show={show} onHide={onHide} centered dialogClassName="choose-test-modal-at-teacher-choose-test">
@@ -96,14 +97,14 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                             }}
                             onClick={() => setDropdown(dropdown === "level" ? "" : "level")}
                         >
-                            Mức độ <span style={{ marginLeft: 8 }}>▼</span>
+                            Loại đề <span style={{ marginLeft: 8 }}>▼</span>
                         </Button>
                         {dropdown === "level" && (
                             <div style={{
                                 position: "absolute", top: 48, left: 0, right: 0, background: "#fff",
                                 borderRadius: 8, boxShadow: "0 2px 8px #e0e7ef", zIndex: 10
                             }}>
-                                {levels.map(l => (
+                                {types.map(l => (
                                     <div
                                         key={l}
                                         onClick={() => { setSelectedLevel(l); setDropdown(""); }}
@@ -134,14 +135,14 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                             }}
                             onClick={() => setDropdown(dropdown === "skill" ? "" : "skill")}
                         >
-                            Kỹ năng <span style={{ marginLeft: 8 }}>▼</span>
+                            Mức độ <span style={{ marginLeft: 8 }}>▼</span>
                         </Button>
                         {dropdown === "skill" && (
                             <div style={{
                                 position: "absolute", top: 48, left: 0, right: 0, background: "#fff",
                                 borderRadius: 8, boxShadow: "0 2px 8px #e0e7ef", zIndex: 10
                             }}>
-                                {skills.map(s => (
+                                {levels.map(s => (
                                     <div
                                         key={s}
                                         onClick={() => { setSelectedSkill(s); setDropdown(""); }}
@@ -158,7 +159,7 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                         )}
                     </div>
                     {/* Topic Dropdown */}
-                    <div style={{ position: "relative", minWidth: 140 }}>
+                    {/* <div style={{ position: "relative", minWidth: 140 }}>
                         <Button
                             style={{
                                 background: "#dbeafe",
@@ -194,7 +195,7 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </div> */}
                 </div>
                 {/* Table */}
                 <div style={{ marginTop: 16 }}>
