@@ -298,3 +298,15 @@
   object-fit: cover;   /* Ensures image fills circle without distortion */
   border: 2px solid white; /* Optional: a clean border */
 }
+
+
+/* ====================================== */
+.create-test-modal-at-teacher-create-test {
+  width: 700px !important;
+  max-width: 100% !important;
+}
+
+.choose-test-modal-at-teacher-choose-test {
+  width: 700px !important;
+  max-width: 100% !important;
+}

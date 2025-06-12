@@ -1,12 +1,13 @@
-// frontend/src/components/Teacher/TeacherDashboard.jsx
+// frontend/src/components/Teacher/TeacherOcerviewTest.jsx
 import React, { useState } from "react";
 import TeacherSideMenu from "../../components/Layouts/TeacherSideMenu";
 import NavBar from "../../components/Layouts/NavBar";
 import { Col, Row, Button, Card, Container, Table, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faEdit, faTrash, faPlus, faFileExport, faSearch } from "@fortawesome/free-solid-svg-icons";
-import CreateTestModal from "./teacherModal/CreateTestModal";
-
+import CreateTestForAClassModal from "./teacherModal/CreateTestModal";
+import ChooseTestModal from "./teacherModal/ChooseTestModal";
+import "../../assets/CSS/MinhKhanhCSS.css"
 
 
 
@@ -25,8 +26,10 @@ const testData = [
     }
 ];
 
-const TeacherDashboard = () => {
-    const [showModal, setShowModal] = useState(false);
+const TeacherOverviewTest = () => {
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showChooseModal, setShowChooseModal] = useState(false);
+
     return (
         <div className="h-screen flex flex-col">
             <header className="w-full">
@@ -107,7 +110,7 @@ const TeacherDashboard = () => {
                                                     minWidth: 150,
                                                     fontWeight: 600
                                                 }}
-                                                onClick={() => setShowModal(true)}
+                                               onClick={() => setShowCreateModal(true)}
                                             >
                                                 <FontAwesomeIcon icon={faPlus} className="me-2" />
                                                 Tạo mới
@@ -185,15 +188,28 @@ const TeacherDashboard = () => {
                         </Col>
                     </Row>
 
-                    <CreateTestModal
-                        show={showModal}
-                        onHide={() => setShowModal(false)}
-                        onSubmit={() => setShowModal(false)}
+                    <CreateTestForAClassModal
+                        show={showCreateModal}
+                        onHide={() => setShowCreateModal(false)}
+                        onSubmit={() => setShowCreateModal(false)}
+                        switchToChooseModal={() => {
+                            setShowCreateModal(false);
+                            setShowChooseModal(true);
+                        }}
                     />
+                    <ChooseTestModal
+                        show={showChooseModal}
+                        onHide={() => setShowChooseModal(false)}
+                        onBack={() => {
+                            setShowChooseModal(false);
+                            setShowCreateModal(true);
+                        }}
+                    />
+
                 </div>
             </div>
         </div>
     );
 };
 
-export default TeacherDashboard;
+export default TeacherOverviewTest;

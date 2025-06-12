@@ -1,12 +1,14 @@
-// frontend/src/components/Teacher/teacherModal/CreateTestModal.jsx
+// frontend/src/components/Teacher/teacherModal/CreateTestForAClassModal.jsx
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaUpload } from "react-icons/fa";
+import "../../../assets/CSS/MinhKhanhCSS.css";
 
-const CreateTestModal = ({
+const CreateTestForAClassModal = ({
   show,
   onHide,
   onSubmit,
+  switchToChooseModal
 }) => {
   const [name, setName] = useState('');
   const [startHour, setStartHour] = useState('07');
@@ -35,8 +37,13 @@ const CreateTestModal = ({
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Body style={{ padding: 32 }}>
+    <Modal
+      show={show}
+      onHide={onHide}
+      centered
+      dialogClassName="create-test-modal-at-teacher-create-test"
+    >
+      <Modal.Body style={{ height: '75vh', width: '100%', overflowY: 'auto', padding: 32 }}>
         <div className="text-center fw-bold" style={{ fontSize: 28, marginBottom: 24 }}>
           Thêm mới bài kiểm tra
         </div>
@@ -65,7 +72,7 @@ const CreateTestModal = ({
                 type="text"
                 maxLength={2}
                 value={startHour}
-                onChange={e => setStartHour(e.target.value.replace(/\D/, '').slice(0,2))}
+                onChange={e => setStartHour(e.target.value.replace(/\D/, '').slice(0, 2))}
                 style={{
                   width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
                 }}
@@ -75,7 +82,7 @@ const CreateTestModal = ({
                 type="text"
                 maxLength={2}
                 value={startMinute}
-                onChange={e => setStartMinute(e.target.value.replace(/\D/, '').slice(0,2))}
+                onChange={e => setStartMinute(e.target.value.replace(/\D/, '').slice(0, 2))}
                 style={{
                   width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
                 }}
@@ -99,7 +106,7 @@ const CreateTestModal = ({
                 type="text"
                 maxLength={2}
                 value={endHour}
-                onChange={e => setEndHour(e.target.value.replace(/\D/, '').slice(0,2))}
+                onChange={e => setEndHour(e.target.value.replace(/\D/, '').slice(0, 2))}
                 style={{
                   width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
                 }}
@@ -109,7 +116,7 @@ const CreateTestModal = ({
                 type="text"
                 maxLength={2}
                 value={endMinute}
-                onChange={e => setEndMinute(e.target.value.replace(/\D/, '').slice(0,2))}
+                onChange={e => setEndMinute(e.target.value.replace(/\D/, '').slice(0, 2))}
                 style={{
                   width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
                 }}
@@ -140,7 +147,9 @@ const CreateTestModal = ({
                 boxShadow: "0 3px 6px #e0e7ef",
                 fontSize: 20,
                 minHeight: 48,
-                marginTop: 4
+                marginTop: 4,
+                height: 73,
+                width: 646
               }}
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -156,7 +165,9 @@ const CreateTestModal = ({
                 background: "#e0e0e0",
                 fontSize: 18,
                 paddingRight: 48,
-                boxShadow: "0 2px 6px #e0e7ef"
+                boxShadow: "0 2px 6px #e0e7ef",
+                height: 74,
+                width: 646,
               }}
               disabled
             />
@@ -177,20 +188,25 @@ const CreateTestModal = ({
               color: "#222"
             }} />
           </div>
-          <Button
-            className="w-100 mb-3"
-            style={{
-              background: "#7ec3f7",
-              color: "#00529b",
-              border: "none",
-              borderRadius: 12,
-              fontWeight: 600,
-              fontSize: 20,
-              boxShadow: "0 2px 6px #e0e7ef"
-            }}
-          >
-            Chọn đề từ ngân hàng câu hỏi
-          </Button>
+          <div className="d-flex justify-content-center mb-3">
+            <Button
+              style={{
+                background: "#7ec3f7",
+                color: "#00529b",
+                border: "none",
+                borderRadius: 12,
+                fontWeight: 600,
+                fontSize: 20,
+                boxShadow: "0 2px 6px #e0e7ef",
+                maxWidth: 382,
+                width: 382,
+                height: 74,
+              }}
+              onClick={switchToChooseModal}
+            >
+              Chọn đề từ ngân hàng câu hỏi
+            </Button>
+          </div>
         </Form>
         <div className="d-flex justify-content-end mt-3" style={{ gap: 16 }}>
           <Button
@@ -224,4 +240,4 @@ const CreateTestModal = ({
   );
 };
 
-export default CreateTestModal;
+export default CreateTestForAClassModal;
