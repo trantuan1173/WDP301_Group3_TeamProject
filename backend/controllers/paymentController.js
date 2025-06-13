@@ -354,6 +354,9 @@ const createVNPayUrl = async (req, res) => {
   vnpUrl += '?' + Object.entries(orderedParams)
   .map(([key, value]) => `${key}=${value}`)
   .join('&');
+
+  console.log('SignData:', signData);
+console.log('Hash:', signed);
   const data = await Payment.create({
     studentId: studentObjectId,
     courseId: courseObjectId,
