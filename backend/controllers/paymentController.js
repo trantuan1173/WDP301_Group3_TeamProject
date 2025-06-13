@@ -369,27 +369,19 @@ const vnpayReturn = async (req, res) => {
 
   let querystring = require('qs');
   let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");
+  let crypto = require("crypto");     
   let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
 
-  if (secureHash === signed) {
-    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+  if(secureHash === signed){
+      //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
 
-    // res.render('success', {code: vnp_Params['vnp_ResponseCode']})
-    // const paymentUpdate = await Payment.findOneAndUpdate(orderId, 
-    //   { 
-    //     transactionId: vnp_Params['vnp_TransactionNo'],
-    //     status: 'success',
-    //     paidAt: vnp_Params['vnp_PayDate'],
-    //    });
-
-    res.json({ success: true, code: vnp_Params['vnp_ResponseCode'] });
-  } else {
-    // res.render('success', {code: '97'})
-    res.json({ success: false, code: '97' });
+      res.render('success', {code: vnp_Params['vnp_ResponseCode']})
+  } else{
+      res.render('success', {code: '97'})
   }
 };
+
 
 // VNPay IPN
 const vnpayIpn = async (req, res) => {
