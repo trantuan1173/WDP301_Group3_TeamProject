@@ -74,6 +74,45 @@ const getTestAssignsByCourse = async (req, res) => {
   }
 }
 
+// Get test assignments by student
+const getTestAssignsByStudent = async (req, res) => {
+  try { 
+    const { studentId } = req.params
+   // Tìm tất cả lớp mà học sinh này đang học
+   const classItem = await Class.find({ students: studentId });
+
+   // Nếu không có lớp nào
+   if (!classItem.length) {
+     return res.status(404).json({
+       success: false,
+       message: "Student is not enrolled in any class",
+     });
+   }
+
+   // Lấy danh sách classId
+   const classIds = classItem.map(cls => cls._id);
+
+   // Tìm tất cả bài kiểm tra đã gán cho các lớp đó
+   const testAssigns = await TestAssign.find({ classId: { $in: classIds } })
+     .populate("courseId")
+     .populate("testId")
+     .populate("teacherId", "email");
+
+    res.status(200).json({
+      success: true,
+      count: testAssigns.length,
+      data: testAssigns,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch test assignments",
+      error: error.message,
+    })
+  }
+}
+
+
 // Get single test assignment
 const getTestAssign = async (req, res) => {
   try {
@@ -226,4 +265,5 @@ module.exports = {
   createTestAssign,
   updateTestAssign,
   deleteTestAssign,
+  getTestAssignsByStudent,
 }   

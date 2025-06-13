@@ -7,6 +7,7 @@ const {
   createTestAssign,
   updateTestAssign,
   deleteTestAssign,
+  getTestAssignsByStudent,
 } = require("../controllers/testAssignController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -20,7 +21,7 @@ const router = express.Router()
 
 /**
  * @swagger
- * /testAssigns:
+ * /test-assigns:
  *   get:
  *     summary: Lấy danh sách phân công bài kiểm tra (chỉ admin)
  *     description: Lấy danh sách phân công bài kiểm tra (chỉ admin)
@@ -35,7 +36,7 @@ router.get("/", protect, getTestAssigns)
 
 /**
  * @swagger
- * /testAssigns:
+ * /test-assigns:
  *   post:
  *     summary: Tạo phân công bài kiểm tra (chỉ admin, teacher)
  *     description: Tạo phân công bài kiểm tra (chỉ admin, teacher)
@@ -63,7 +64,7 @@ router.post("/", protect, authorize("admin", "teacher"), createTestAssign)
 
 /**
  * @swagger
- * /testAssigns/class/{classId}:
+ * /test-assigns/class/{classId}:
  *   get:
  *     summary: Lấy danh sách phân công bài kiểm tra theo lớp (chỉ admin)
  *     description: Lấy danh sách phân công bài kiểm tra theo lớp (chỉ admin)
@@ -84,7 +85,7 @@ router.get("/class/:classId", protect, getTestAssignsByClass)
 
 /**
  * @swagger
- * /testAssigns/course/{courseId}:
+ * /test-assigns/course/{courseId}:
  *   get:
  *     summary: Lấy danh sách phân công bài kiểm tra theo khóa học (chỉ admin)
  *     description: Lấy danh sách phân công bài kiểm tra theo khóa học (chỉ admin)
@@ -105,7 +106,28 @@ router.get("/course/:courseId", protect, getTestAssignsByCourse)
 
 /**
  * @swagger
- * /testAssigns/{id}:
+ * /test-assigns/student/{studentId}:
+ *   get:
+ *     summary: Lấy danh sách phân công bài kiểm tra theo sinh viên
+ *     description: Lấy danh sách phân công bài kiểm tra theo sinh viên
+ *     tags: [Test Assigns]
+ *     parameters:
+ *       - in: path
+ *         name: studentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách phân công bài kiểm tra
+ */
+router.get("/student/:studentId", protect, getTestAssignsByStudent) 
+
+/**
+ * @swagger
+ * /test-assigns/{id}:
  *   get:
  *     summary: Lấy thông tin phân công bài kiểm tra (chỉ admin)
  *     description: Lấy thông tin phân công bài kiểm tra (chỉ admin)
@@ -126,7 +148,7 @@ router.get("/:id", protect, getTestAssign)
 
 /**
  * @swagger
- * /testAssigns/{id}:
+ * /test-assigns/{id}:
  *   put:
  *     summary: Cập nhật phân công bài kiểm tra (chỉ admin, teacher)
  *     description: Cập nhật phân công bài kiểm tra (chỉ admin, teacher)
@@ -160,7 +182,7 @@ router.put("/:id", protect, authorize("admin", "teacher"), updateTestAssign)
 
 /**
  * @swagger
- * /testAssigns/{id}:
+ * /test-assigns/{id}:
  *   delete:
  *     summary: Xóa phân công bài kiểm tra (chỉ admin, teacher)
  *     description: Xóa phân công bài kiểm tra (chỉ admin, teacher)
