@@ -505,7 +505,7 @@ const vnpayIpn = async (req, res) => {
   // let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
   //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
-  const paymentStatus = payment && payment.status === "pending";
+  // const paymentStatus = payment && payment.status === "pending";
 
   const checkOrderId = payment ? true : false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
   // let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
@@ -514,7 +514,7 @@ const vnpayIpn = async (req, res) => {
       if(checkOrderId){
           if(checkAmount){
               // if(paymentStatus=="0"){ //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
-              if(paymentStatus){ 
+              if(payment.status === "pending"){ 
                   if(rspCode=="00"){
                       //thanh cong
                       //paymentStatus = '1'
