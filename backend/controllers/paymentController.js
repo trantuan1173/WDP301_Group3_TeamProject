@@ -321,7 +321,7 @@ const courseObjectId = new mongoose.Types.ObjectId(courseId);
   vnp_Params['vnp_Locale'] = locale;
   vnp_Params['vnp_CurrCode'] = currCode;
   vnp_Params['vnp_TxnRef'] = orderId;
-  vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
+  vnp_Params['vnp_OrderInfo'] = `Thanh toan cho ma GD: ${orderId}`;
   vnp_Params['vnp_OrderType'] = 'other';
   vnp_Params['vnp_Amount'] = amount * 100;
   vnp_Params['vnp_ReturnUrl'] = returnUrl;
@@ -466,13 +466,14 @@ const vnpayIpn = async (req, res) => {
 
   // 4. Tạo chuỗi dữ liệu để hash
   const signData = qs.stringify(sortedParams, { encode: false });
-
+  console.log("Original Query for Hashing:", signData);
   // 5. Tạo chữ ký hash bằng secretKey
   const secretKey = config.get('vnp_HashSecret');
   const hmac = crypto.createHmac("sha512", secretKey);
   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
   // 6. Log để debug
+  console.log("SecretKey used for hash:", secretKey);
   console.log("Original Query for Hashing:", signData);
   console.log("Received SecureHash:", secureHash);
   console.log("Generated Signed Hash:", signed);
