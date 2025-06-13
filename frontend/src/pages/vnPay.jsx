@@ -53,7 +53,7 @@ const VNPay = () => {
   //   </div>
   // );
   const createPayment = async () => {
-    const response = await fetch("http://localhost:9999/api/payments/create_payment_url", {
+    const response = await fetch("https://beenglishcenter.gicunhco.com/api/payments/create_payment_url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -8,7 +8,7 @@ const PaymentResult = () => {
     const fetchResult = async () => {
       const params = new URLSearchParams(window.location.search);
       try {
-        const response = await axios.get(`http://localhost:9999/api/payments/vnpay_return?${params.toString()}`);
+        const response = await axios.get(`https://beenglishcenter.gicunhco.com/api/payments/vnpay_return?${params.toString()}`);
         setResult(response.data);
       } catch (error) {
         setResult({ success: false, message: 'Có lỗi xảy ra khi xử lý kết quả thanh toán.' });
