@@ -93,8 +93,14 @@ export default function AdminViewClassDetails() {
             </button>
             <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
               >
-              {classData.courseId ? "Thay đổi khóa học" : "+ Thêm khóa học"}
+              + Thêm học viên
             </button>
+             <button
+  className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+  onClick={() => navigate(`/admin/class/${classId}/schedule`)}
+>
+  Xem lịch học
+</button>
           </div>
         </div>
         <button
