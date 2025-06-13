@@ -6,26 +6,25 @@ const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Users
+ *   description: Quản lý người dùng
+ */
+
+/**
+ * @swagger
  * /users/allTeacher:
  *   get:
  *     summary: Lấy danh sách giáo viên (chỉ admin)
  *     tags: [Users]
  *     security:
- *       - bearerAuth: [
- *           token
- *         ]
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Danh sách giáo viên
  */
-router.get("/allTeacher", protect, authorize("admin"), getAllTeacher)   
+router.get("/allTeacher", protect, authorize("admin"), getAllTeacher)
 
-/**
- * @swagger
- * tags:
- *   name: Users
- *   description: Quản lý người dùng
- */
 
 /**
  * @swagger
@@ -296,6 +295,12 @@ router.post("/forgot-password", forgotPassword);
  *   post:
  *     summary: Reset mật khẩu
  *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:

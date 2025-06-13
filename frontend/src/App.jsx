@@ -22,8 +22,8 @@ import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-
-
+import VNPay from './pages/vnPay';
+import PaymentResult from './pages/PaymentResult';
 
 const App = () => {
   return (
@@ -49,6 +49,8 @@ const App = () => {
         <Route path="/" element={<GuestView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/vnPay" element={<VNPay />} />
+        <Route path="/vnpay_return" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
        
           
