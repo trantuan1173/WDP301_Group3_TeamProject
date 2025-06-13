@@ -461,6 +461,7 @@ const vnpayIpn = async (req, res) => {
   let vnp_Params = req.query;
   let orderId = vnp_Params['vnp_TxnRef'];
   let rspCode = vnp_Params['vnp_ResponseCode'];
+  const vnp_Amount = parseInt(vnp_Params["vnp_Amount"], 10);
 
   // 2. Lưu và xóa SecureHash để xử lý sau
   const secureHash = vnp_Params['vnp_SecureHash'];
@@ -480,7 +481,7 @@ const vnpayIpn = async (req, res) => {
   // const secretKey = config.get('vnp_HashSecret');
   // const hmac = crypto.createHmac("sha512", secretKey);
   // const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
-
+  const payment = await Payment.findOne({ orderId: orderId });
   vnp_Params = sortObject(vnp_Params);
   const signData = qs.stringify(vnp_Params, { encode: false });
   const hmac = crypto.createHmac("sha512", config.get("vnp_HashSecret"));
@@ -505,8 +506,9 @@ const vnpayIpn = async (req, res) => {
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
   //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
   
-  let checkOrderId = true; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
-  let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
+  const checkOrderId = payment ? true : false; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
+  // let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
+  const checkAmount = payment && payment.amount === vnp_Amount / 100;
   if(secureHash === signed){ //kiểm tra checksum
       if(checkOrderId){
           if(checkAmount){
