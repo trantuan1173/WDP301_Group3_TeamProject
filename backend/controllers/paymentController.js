@@ -391,117 +391,33 @@ const vnpayReturn = async (req, res) => {
 };
 
 
-// // VNPay IPN
-// const vnpayIpn = async (req, res) => {
-//   let vnp_Params = req.query;
-//   let secureHash = vnp_Params['vnp_SecureHash'];
-
-//   // Lấy chuỗi query gốc từ URL, không bao gồm vnp_SecureHash ban đầu
-//   // Đây là cách làm an toàn và chính xác nhất
-//   let querystring = require('qs');
-//   const originalQuery = querystring.stringify(req.query, { 
-//       encode: false,
-//       filter: (prefix, value) => value !== '' && prefix !== 'vnp_SecureHash' && prefix !== 'vnp_SecureHashType'
-//   });
-
-//   let config = require('config');
-//   let secretKey = config.get('vnp_HashSecret');
-//   let crypto = require("crypto");
-//   let hmac = crypto.createHmac("sha512", secretKey);
-//   let signed = hmac.update(new Buffer(originalQuery, 'utf-8')).digest("hex");
-
-//   let orderId = vnp_Params['vnp_TxnRef'];
-//   let rspCode = vnp_Params['vnp_ResponseCode'];
-
-//   // Dòng log để debug
-//   console.log("Original Query for Hashing:", originalQuery);
-//   console.log("Received SecureHash:", secureHash);
-//   console.log("Generated Signed Hash:", signed);
-
-//   if (secureHash === signed) {
-//     // Các bước kiểm tra logic của bạn ở đây (checkOrderId, checkAmount, ...)
-//     console.log("Checksum valid. Processing order...");
-
-//     let checkOrderId = true; // Logic kiểm tra orderId tồn tại
-//     let checkAmount = true; // Logic kiểm tra số tiền
-//     let paymentStatus = '0'; // Logic lấy trạng thái thanh toán hiện tại
-
-//     if (checkOrderId) {
-//       if (checkAmount) {
-//         if (paymentStatus == "0") {
-//           if (rspCode == "00") {
-//             // Cập nhật trạng thái thành công
-//             console.log("Transaction successful. Updating status to 'Success'.");
-//             res.status(200).json({ RspCode: '00', Message: 'Success' });
-//           } else {
-//             // Cập nhật trạng thái thất bại
-//             console.log("Transaction failed. Updating status to 'Failed'.");
-//             res.status(200).json({ RspCode: '00', Message: 'Success' }); // Vẫn trả về 'Success' cho VNPay biết đã nhận được IPN
-//           }
-//         } else {
-//           res.status(200).json({ RspCode: '02', Message: 'This order has been updated to the payment status' });
-//         }
-//       } else {
-//         res.status(200).json({ RspCode: '04', Message: 'Amount invalid' });
-//       }
-//     } else {
-//       res.status(200).json({ RspCode: '01', Message: 'Order not found' });
-//     }
-//   } else {
-//     console.log("Checksum FAILED!");
-//     res.status(200).json({ RspCode: '97', Message: 'Checksum failed' });
-//   }
-// };
+// VNPay IPN
 const vnpayIpn = async (req, res) => {
   const crypto = require("crypto");
   const config = require("config");
   const qs = require("qs");
 
-  // 1. Lấy toàn bộ tham số từ query
   let vnp_Params = req.query;
   let orderId = vnp_Params['vnp_TxnRef'];
   let rspCode = vnp_Params['vnp_ResponseCode'];
   const vnp_Amount = parseInt(vnp_Params["vnp_Amount"], 10);
 
-  // 2. Lưu và xóa SecureHash để xử lý sau
   const secureHash = vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
-  // 3. Sắp xếp lại object theo key alphabet
-  // const sortedParams = {};
-  // Object.keys(vnp_Params).sort().forEach(key => {
-  //   sortedParams[key] = vnp_Params[key];
-  // });
-
-  // 4. Tạo chuỗi dữ liệu để hash
-  // const signData = qs.stringify(sortedParams, { encode: false });
-  // console.log("Original Query for Hashing:", signData);
-  // // 5. Tạo chữ ký hash bằng secretKey
-  // const secretKey = config.get('vnp_HashSecret');
-  // const hmac = crypto.createHmac("sha512", secretKey);
-  // const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
   const payment = await Payment.findOne({ orderId: orderId });
   vnp_Params = sortObject(vnp_Params);
   const signData = qs.stringify(vnp_Params, { encode: false });
   const hmac = crypto.createHmac("sha512", config.get("vnp_HashSecret"));
   const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
   const secretKey = config.get("vnp_HashSecret");
-  // 6. Log để debug
+
   console.log("SecretKey used for hash:", secretKey);
   console.log("Original Query for Hashing:", signData);
   console.log("Received SecureHash:", secureHash);
   console.log("Generated Signed Hash:", signed);
 
-  // 7. So sánh hash
-  // if (secureHash === signed) {
-  //   // TODO: Kiểm tra vnp_TxnRef, vnp_Amount, trạng thái đơn hàng trong DB ở đây
-
-  //   // Giả sử đơn hợp lệ
-  //   res.status(200).json({ RspCode: '00', Message: 'Success' });
-  // } else {
-  //   res.status(200).json({ RspCode: '97', Message: 'Checksum failed' });
-  // }
   // let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
   //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
@@ -758,21 +674,7 @@ const refund = (req, res) => {
 
 };
 
-// function sortObject(obj) {
-// 	let sorted = {};
-// 	let str = [];
-// 	let key;
-// 	for (key in obj){
-// 		if (obj.hasOwnProperty(key)) {
-// 		str.push(encodeURIComponent(key));
-// 		}
-// 	}
-// 	str.sort();
-//     for (key = 0; key < str.length; key++) {
-//         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-//     }
-//     return sorted;
-// }
+
 function sortObject(obj) {
   let sorted = {};
   let str = [];
@@ -789,21 +691,7 @@ function sortObject(obj) {
   }
   return sorted;
 }
-// function sortObject(obj) {
-//   let sorted = {};
-//   let str = [];
-//   let key;
-//   for (key in obj) {
-//     if (obj.hasOwnProperty(key)) {
-//       str.push(encodeURIComponent(key));
-//     }
-//   }
-//   str.sort();
-//   for (key = 0; key < str.length; key++) {
-//     sorted[str[key]] = encodeURIComponent(obj[decodeURIComponent(str[key])]).replace(/%20/g, "+");
-//   }
-//   return sorted;
-// }
+
 
 function sortObject2(obj) {
   const sorted = {};
