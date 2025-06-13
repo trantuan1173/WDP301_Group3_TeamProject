@@ -425,12 +425,14 @@ const vnpayIpn = async (req, res) => {
             //thanh cong
             //paymentStatus = '1'
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-            const paymentUpdate = await Payment.findOneAndUpdate(orderId, 
-              { 
+            const paymentUpdate = await Payment.findOneAndUpdate(
+              { orderId: vnp_Params['vnp_TxnRef'] },
+              {
                 transactionId: vnp_Params['vnp_TransactionNo'],
-                status: 'success',
+                status: vnp_Params['vnp_ResponseCode'] === '00' ? 'success' : 'failed',
                 paidAt: vnp_Params['vnp_PayDate'],
-               });
+              }
+            );
             res.status(200).json({ RspCode: '00', Message: 'Success' })
           }
           else {
