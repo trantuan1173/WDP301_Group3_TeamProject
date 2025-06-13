@@ -21,7 +21,7 @@ const router = express.Router()
 
 /**
  * @swagger
- * /courseDetails:
+ * /courseDetail:
  *   get:
  *     summary: Lấy danh sách chi tiết khóa học
  *     description: Lấy danh sách chi tiết khóa học
@@ -36,7 +36,7 @@ router.get("/", getCourseDetails)
 
 /**
  * @swagger
- * /courseDetails/forguest:
+ * /courseDetail/forguest:
  *   get:
  *     summary: Lấy danh sách chi tiết khóa học (không cần đăng nhập)
  *     description: Lấy danh sách chi tiết khóa học (không cần đăng nhập)
@@ -49,7 +49,7 @@ router.get("/forguest", getCourseDetailsForGuest)
 
 /**
  * @swagger
- * /courseDetails:
+ * /courseDetail:
  *   post:
  *     summary: Tạo chi tiết khóa học (chỉ admin)
  *     description: Tạo chi tiết khóa học (chỉ admin)
@@ -77,7 +77,7 @@ router.post("/", protect, authorize("admin"), createCourseDetail)
 
 /**
  * @swagger
- * /courseDetails/course/:courseId:
+ * /courseDetail/course/:courseId:
  *   get:
  *     summary: Lấy danh sách chi tiết khóa học theo khóa học
  *     description: Lấy danh sách chi tiết khóa học theo khóa học
@@ -98,7 +98,7 @@ router.get("/course/:courseId", getCourseDetailsByCourse)
 
 /**
  * @swagger
- * /courseDetails/{id}:
+ * /courseDetail/{id}:
  *   get:
  *     summary: Lấy thông tin chi tiết khóa học (chỉ admin)
  *     description: Lấy thông tin chi tiết khóa học (chỉ admin)
@@ -119,7 +119,7 @@ router.get("/:id", protect, getCourseDetail)
 
 /**
  * @swagger
- * /courseDetails/{id}:
+ * /courseDetail/{id}:
  *   put:
  *     summary: Cập nhật thông tin chi tiết khóa học (chỉ admin)
  *     description: Cập nhật thông tin chi tiết khóa học (chỉ admin)
@@ -153,7 +153,7 @@ router.put("/:id", protect, authorize("admin"), updateCourseDetail)
 
 /**
  * @swagger
- * /courseDetails/{id}:
+ * /courseDetail/{id}:
  *   delete:
  *     summary: Xóa chi tiết khóa học (chỉ admin)
  *     description: Xóa chi tiết khóa học (chỉ admin)
