@@ -402,7 +402,7 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
-  vnp_Params = sortObject2(vnp_Params);
+  vnp_Params = sortObject(vnp_Params);
   let config = require('config');
   let secretKey = config.get('vnp_HashSecret');
   let querystring = require('qs');
@@ -576,22 +576,6 @@ const refund = (req, res) => {
 };
 
 function sortObject(obj) {
-  let sorted = {};
-  let str = [];
-  let key;
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      str.push(encodeURIComponent(key));
-    }
-  }
-  str.sort();
-  for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-  }
-  return sorted;
-}
-
-function sortObject2(obj) {
   const sorted = {};
   const keys = Object.keys(obj).sort();
 
@@ -603,6 +587,19 @@ function sortObject2(obj) {
 
   return sorted;
 }
+
+// function sortObject2(obj) {
+//   const sorted = {};
+//   const keys = Object.keys(obj).sort();
+
+//   for (const key of keys) {
+//     if (Object.prototype.hasOwnProperty.call(obj, key)) {
+//       sorted[key] = obj[key];
+//     }
+//   }
+
+//   return sorted;
+// }
 
 module.exports = {
   getPayments,
