@@ -4,7 +4,6 @@ const User = require("../models/userModel.js")
 const Enrollment = require("../models/enrollmentModel.js")
 const CourseDetail = require("../models/courseDetailModel.js")
 const mongoose = require("mongoose")
-const request = require("request");
 const { Types } = mongoose
 const axios = require("axios");
 const moment = require("moment");
