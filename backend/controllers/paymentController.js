@@ -384,62 +384,65 @@ const vnpayReturn = async (req, res) => {
 
 
 // VNPay IPN
+// VNPay IPN
 const vnpayIpn = async (req, res) => {
   let vnp_Params = req.query;
   let secureHash = vnp_Params['vnp_SecureHash'];
+
+  // Lấy chuỗi query gốc từ URL, không bao gồm vnp_SecureHash ban đầu
+  // Đây là cách làm an toàn và chính xác nhất
+  let querystring = require('qs');
+  const originalQuery = querystring.stringify(req.query, { 
+      encode: false,
+      filter: (prefix, value) => value !== '' && prefix !== 'vnp_SecureHash' && prefix !== 'vnp_SecureHashType'
+  });
   
+  let config = require('config');
+  let secretKey = config.get('vnp_HashSecret');
+  let crypto = require("crypto");
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(new Buffer(originalQuery, 'utf-8')).digest("hex");
+
   let orderId = vnp_Params['vnp_TxnRef'];
   let rspCode = vnp_Params['vnp_ResponseCode'];
 
-  delete vnp_Params['vnp_SecureHash'];
-  delete vnp_Params['vnp_SecureHashType'];
+  // Dòng log để debug
+  console.log("Original Query for Hashing:", originalQuery);
+  console.log("Received SecureHash:", secureHash);
+  console.log("Generated Signed Hash:", signed);
 
-  vnp_Params = sortObject2(vnp_Params);
-  let config = require('config');
-  let secretKey = config.get('vnp_HashSecret');
-  let querystring = require('qs');
-  let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");     
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-  
-  let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
-  //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
-  //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
-  
-  let checkOrderId = true; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
-  let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-  if(secureHash === signed){ //kiểm tra checksum
-      if(checkOrderId){
-          if(checkAmount){
-              if(paymentStatus=="0"){ //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
-                  if(rspCode=="00"){
-                      //thanh cong
-                      //paymentStatus = '1'
-                      // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-                      res.status(200).json({RspCode: '00', Message: 'Success'})
-                  }
-                  else {
-                      //that bai
-                      //paymentStatus = '2'
-                      // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
-                      res.status(200).json({RspCode: '00', Message: 'Success'})
-                  }
-              }
-              else{
-                  res.status(200).json({RspCode: '02', Message: 'This order has been updated to the payment status'})
-              }
+  if (secureHash === signed) {
+    // Các bước kiểm tra logic của bạn ở đây (checkOrderId, checkAmount, ...)
+    console.log("Checksum valid. Processing order...");
+
+    let checkOrderId = true; // Logic kiểm tra orderId tồn tại
+    let checkAmount = true; // Logic kiểm tra số tiền
+    let paymentStatus = '0'; // Logic lấy trạng thái thanh toán hiện tại
+
+    if (checkOrderId) {
+      if (checkAmount) {
+        if (paymentStatus == "0") {
+          if (rspCode == "00") {
+            // Cập nhật trạng thái thành công
+            console.log("Transaction successful. Updating status to 'Success'.");
+            res.status(200).json({ RspCode: '00', Message: 'Success' });
+          } else {
+            // Cập nhật trạng thái thất bại
+            console.log("Transaction failed. Updating status to 'Failed'.");
+            res.status(200).json({ RspCode: '00', Message: 'Success' }); // Vẫn trả về 'Success' cho VNPay biết đã nhận được IPN
           }
-          else{
-              res.status(200).json({RspCode: '04', Message: 'Amount invalid'})
-          }
-      }       
-      else {
-          res.status(200).json({RspCode: '01', Message: 'Order not found'})
+        } else {
+          res.status(200).json({ RspCode: '02', Message: 'This order has been updated to the payment status' });
+        }
+      } else {
+        res.status(200).json({ RspCode: '04', Message: 'Amount invalid' });
       }
-  }
-  else {
-      res.status(200).json({RspCode: '97', Message: 'Checksum failed'})
+    } else {
+      res.status(200).json({ RspCode: '01', Message: 'Order not found' });
+    }
+  } else {
+    console.log("Checksum FAILED!");
+    res.status(200).json({ RspCode: '97', Message: 'Checksum failed' });
   }
 };
 
