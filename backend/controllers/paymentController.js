@@ -395,14 +395,18 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHashType'];
 
   vnp_Params = sortObject(vnp_Params);
-  let config = require('config');
-  let secretKey = config.get('vnp_HashSecret');
-  let querystring = require('qs');
-  let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");     
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-  
+  const config = require('config');
+const secretKey = config.get('vnp_HashSecret');
+const orderedParams = sortObject(vnp_Params);
+const signData = Object.entries(orderedParams)
+  .map(([key, value]) => `${key}=${value}`)
+  .join('&');
+const crypto = require('crypto');
+const hmac = crypto.createHmac('sha512', secretKey);
+const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');    
+console.log('signData:', signData);
+console.log('Received hash:', secureHash);
+console.log('Calculated hash:', signed);
   let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
   //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
@@ -569,19 +573,16 @@ const refund = (req, res) => {
 };
 
 function sortObject(obj) {
-	let sorted = {};
-	let str = [];
-	let key;
-	for (key in obj){
-		if (obj.hasOwnProperty(key)) {
-		str.push(encodeURIComponent(key));
-		}
-	}
-	str.sort();
-    for (key = 0; key < str.length; key++) {
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+  const sorted = {};
+  const keys = Object.keys(obj).sort();
+
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      sorted[key] = obj[key];
     }
-    return sorted;
+  }
+
+  return sorted;
 }
 
 // function sortObject2(obj) {
