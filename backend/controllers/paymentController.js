@@ -331,7 +331,7 @@ const courseObjectId = new mongoose.Types.ObjectId(courseId);
     vnp_Params['vnp_BankCode'] = bankCode;
   }
 
-  vnp_Params = sortObject2(vnp_Params);
+  vnp_Params = sortObject(vnp_Params);
 
   let querystring = require('qs');
   console.log(vnp_Params);
