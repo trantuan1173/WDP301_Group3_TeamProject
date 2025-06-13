@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import TeacherSideMenu from "../../components/Layouts/TeacherSideMenu";
 import NavBar from "../../components/Layouts/NavBar";
 import TeacherViewShedule from "../../components/Teacher/TeacherViewShedule";
+import TeacherOverView from "../../components/Teacher/TeacherOverView";
+import TeacherViewClass from "../../components/Teacher/TeacherMangeClass/TeacherViewClass";
+import TeacherManageTest from "../../components/Teacher/TeacherMangeClass/TeacherManageTest";
+import TeacherViewScore from "../../components/Teacher/TeacherMangeClass/TeacherViewScore";
 
 const TeacherDashboard = () => {
   const [selectedKey, setSelectedKey] = useState("overview");
@@ -17,11 +21,11 @@ const TeacherDashboard = () => {
           onMenuSelect={setSelectedKey}
         />
         <div className="flex-1 p-4">
-          {selectedKey === "overview" && (
-            <h1 className="text-2xl font-bold mb-4">Teacher Dashboard</h1>
-          )}
+          {selectedKey === "overview" && <TeacherOverView />}
           {selectedKey === "schedule" && <TeacherViewShedule />}
-          {/* Thêm các trang khác nếu cần */}
+          {selectedKey === "classes" && <TeacherViewClass />}
+          {selectedKey === "exams" && <TeacherManageTest />}
+          {selectedKey === "scores" && <TeacherViewScore />}
         </div>
       </div>
     </div>
