@@ -303,7 +303,7 @@ const courseObjectId = new mongoose.Types.ObjectId(courseId);
 
   let tmnCode = config.get('vnp_TmnCode');
   let secretKey = config.get('vnp_HashSecret');
-  let vnpUrl = config.get('vnp_Url');
+  // let vnpUrl = config.get('vnp_Url');
   let returnUrl = config.get('vnp_ReturnUrl');
   let orderId = moment(date).format('DDHHmmss');
 
@@ -336,12 +336,19 @@ const courseObjectId = new mongoose.Types.ObjectId(courseId);
 
   let querystring = require('qs');
   console.log(vnp_Params);
-  let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-  vnp_Params['vnp_SecureHash'] = signed;
-  vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+  // let signData = querystring.stringify(vnp_Params, { encode: false });
+  // let crypto = require("crypto");
+  // let hmac = crypto.createHmac("sha512", secretKey);
+  // let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+  // vnp_Params['vnp_SecureHash'] = signed;
+  // vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+  const signData = qs.stringify(vnp_Params, { encode: false });
+  const hmac = crypto.createHmac("sha512", config.get("vnp_HashSecret"));
+  const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+  vnp_Params["vnp_SecureHash"] = signed;
+
+  const vnpUrl = config.get("vnp_Url") + "?" + qs.stringify(vnp_Params, { encode: false });
+  console.log("vnpUrl:", vnpUrl);
   const data = await Payment.create({
     studentId: studentObjectId,
     courseId: courseObjectId,
@@ -459,18 +466,23 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHashType'];
 
   // 3. Sắp xếp lại object theo key alphabet
-  const sortedParams = {};
-  Object.keys(vnp_Params).sort().forEach(key => {
-    sortedParams[key] = vnp_Params[key];
-  });
+  // const sortedParams = {};
+  // Object.keys(vnp_Params).sort().forEach(key => {
+  //   sortedParams[key] = vnp_Params[key];
+  // });
 
   // 4. Tạo chuỗi dữ liệu để hash
-  const signData = qs.stringify(sortedParams, { encode: false });
-  console.log("Original Query for Hashing:", signData);
-  // 5. Tạo chữ ký hash bằng secretKey
-  const secretKey = config.get('vnp_HashSecret');
-  const hmac = crypto.createHmac("sha512", secretKey);
-  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+  // const signData = qs.stringify(sortedParams, { encode: false });
+  // console.log("Original Query for Hashing:", signData);
+  // // 5. Tạo chữ ký hash bằng secretKey
+  // const secretKey = config.get('vnp_HashSecret');
+  // const hmac = crypto.createHmac("sha512", secretKey);
+  // const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+  vnp_Params = sortObject(vnp_Params);
+  const signData = qs.stringify(vnp_Params, { encode: false });
+  const hmac = crypto.createHmac("sha512", config.get("vnp_HashSecret"));
+  const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
   // 6. Log để debug
   console.log("SecretKey used for hash:", secretKey);
@@ -694,20 +706,35 @@ const refund = (req, res) => {
 
 };
 
+// function sortObject(obj) {
+// 	let sorted = {};
+// 	let str = [];
+// 	let key;
+// 	for (key in obj){
+// 		if (obj.hasOwnProperty(key)) {
+// 		str.push(encodeURIComponent(key));
+// 		}
+// 	}
+// 	str.sort();
+//     for (key = 0; key < str.length; key++) {
+//         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+//     }
+//     return sorted;
+// }
 function sortObject(obj) {
-	let sorted = {};
-	let str = [];
-	let key;
-	for (key in obj){
-		if (obj.hasOwnProperty(key)) {
-		str.push(encodeURIComponent(key));
-		}
-	}
-	str.sort();
-    for (key = 0; key < str.length; key++) {
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+  let sorted = {};
+  let str = [];
+  let key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      str.push(encodeURIComponent(key));
     }
-    return sorted;
+  }
+  str.sort();
+  for (key = 0; key < str.length; key++) {
+    sorted[str[key]] = encodeURIComponent(obj[decodeURIComponent(str[key])]).replace(/%20/g, "+");
+  }
+  return sorted;
 }
 
 function sortObject2(obj) {
