@@ -229,7 +229,7 @@ const getSchedulesByStudent = async (req, res) => {
     // Lấy danh sách classId
     const classIds = classItem.map(cls => cls._id);
 
-    const schedules = await Schedule.find({ classId: { $in: classIds } })
+    const schedules = await Schedule.find({ classId: { $in: classIds } }).populate("classId", "course")
 
     res.status(200).json({
       success: true,
