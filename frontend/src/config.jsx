@@ -38,7 +38,8 @@ export const API_ENDPOINTS = {
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
-
+// Teacher endpoints
+  GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
