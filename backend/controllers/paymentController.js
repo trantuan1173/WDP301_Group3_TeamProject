@@ -387,30 +387,54 @@ const vnpayReturn = async (req, res) => {
 // VNPay IPN
 // VNPay IPN
 const vnpayIpn = async (req, res) => {
-  let vnp_Params = req.query;
-  let secureHash = vnp_Params['vnp_SecureHash'];
+  // let vnp_Params = req.query;
+  // let secureHash = vnp_Params['vnp_SecureHash'];
 
-  // Lấy chuỗi query gốc từ URL, không bao gồm vnp_SecureHash ban đầu
-  // Đây là cách làm an toàn và chính xác nhất
-  let querystring = require('qs');
-  const originalQuery = querystring.stringify(req.query, { 
-      encode: false,
-      filter: (prefix, value) => value !== '' && prefix !== 'vnp_SecureHash' && prefix !== 'vnp_SecureHashType'
-  });
+  // // Lấy chuỗi query gốc từ URL, không bao gồm vnp_SecureHash ban đầu
+  // // Đây là cách làm an toàn và chính xác nhất
+  // let querystring = require('qs');
+  // const originalQuery = querystring.stringify(req.query, { 
+  //     encode: false,
+  //     filter: (prefix, value) => value !== '' && prefix !== 'vnp_SecureHash' && prefix !== 'vnp_SecureHashType'
+  // });
   
-  let config = require('config');
-  let secretKey = config.get('vnp_HashSecret');
-  let crypto = require("crypto");
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(originalQuery, 'utf-8')).digest("hex");
+  // let config = require('config');
+  // let secretKey = config.get('vnp_HashSecret');
+  // let crypto = require("crypto");
+  // let hmac = crypto.createHmac("sha512", secretKey);
+  // let signed = hmac.update(new Buffer(originalQuery, 'utf-8')).digest("hex");
 
-  let orderId = vnp_Params['vnp_TxnRef'];
-  let rspCode = vnp_Params['vnp_ResponseCode'];
+  // let orderId = vnp_Params['vnp_TxnRef'];
+  // let rspCode = vnp_Params['vnp_ResponseCode'];
 
-  // Dòng log để debug
-  console.log("Original Query for Hashing:", originalQuery);
-  console.log("Received SecureHash:", secureHash);
-  console.log("Generated Signed Hash:", signed);
+  // // Dòng log để debug
+  // console.log("Original Query for Hashing:", originalQuery);
+  // console.log("Received SecureHash:", secureHash);
+  // console.log("Generated Signed Hash:", signed);
+  let vnp_Params = req.query;
+
+// Gỡ bỏ SecureHash
+const secureHash = vnp_Params['vnp_SecureHash'];
+delete vnp_Params['vnp_SecureHash'];
+delete vnp_Params['vnp_SecureHashType'];
+
+// Sắp xếp lại object theo thứ tự alphabet
+const sortedParams = {};
+Object.keys(vnp_Params).sort().forEach(function (key) {
+  sortedParams[key] = vnp_Params[key];
+});
+
+// Chuỗi để hash
+const signData = querystring.stringify(sortedParams, { encode: false });
+
+// Tạo SecureHash
+const secretKey = config.get('vnp_HashSecret');
+const hmac = crypto.createHmac("sha512", secretKey);
+const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+console.log("Original Query for Hashing:", signData);
+console.log("Received SecureHash:", secureHash);
+console.log("Generated Signed Hash:", signed);
 
   if (secureHash === signed) {
     // Các bước kiểm tra logic của bạn ở đây (checkOrderId, checkAmount, ...)
