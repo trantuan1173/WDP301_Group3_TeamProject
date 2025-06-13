@@ -284,7 +284,7 @@ const createVNPayUrl = async (req, res) => {
   const { studentId, courseId, amount, bankCode, language } = req.body;
 
   const studentObjectId = new mongoose.Types.ObjectId(studentId);
-const courseObjectId = new mongoose.Types.ObjectId(courseId);
+  const courseObjectId = new mongoose.Types.ObjectId(courseId);
   console.log(">>> req.body:", req.body);
   console.log(">>> studentId:", studentId);
   console.log(">>> courseId:", courseId);
@@ -331,16 +331,29 @@ const courseObjectId = new mongoose.Types.ObjectId(courseId);
     vnp_Params['vnp_BankCode'] = bankCode;
   }
 
-  vnp_Params = sortObject(vnp_Params);
+  // vnp_Params = sortObject(vnp_Params);
 
-  let querystring = require('qs');
-  console.log(vnp_Params);
-  let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-  vnp_Params['vnp_SecureHash'] = signed;
-  vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+  // let querystring = require('qs');
+  // console.log(vnp_Params);
+  // let signData = querystring.stringify(vnp_Params, { encode: false });
+  // let crypto = require("crypto");
+  // let hmac = crypto.createHmac("sha512", secretKey);
+  // let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+  // vnp_Params['vnp_SecureHash'] = signed;
+  const orderedParams = sortObject(vnp_Params);
+
+  const signData = Object.entries(orderedParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+
+  const hmac = crypto.createHmac('sha512', secretKey);
+  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+
+  orderedParams['vnp_SecureHash'] = signed;
+  // vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+  vnpUrl += '?' + Object.entries(orderedParams)
+  .map(([key, value]) => `${key}=${value}`)
+  .join('&');
   const data = await Payment.create({
     studentId: studentObjectId,
     courseId: courseObjectId,
@@ -369,16 +382,16 @@ const vnpayReturn = async (req, res) => {
 
   let querystring = require('qs');
   let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");     
+  let crypto = require("crypto");
   let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
+  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
 
-  if(secureHash === signed){
-      //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+  if (secureHash === signed) {
+    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
 
-      res.render('success', {code: vnp_Params['vnp_ResponseCode']})
-  } else{
-      res.render('success', {code: '97'})
+    res.render('success', { code: vnp_Params['vnp_ResponseCode'] })
+  } else {
+    res.render('success', { code: '97' })
   }
 };
 
@@ -387,7 +400,7 @@ const vnpayReturn = async (req, res) => {
 const vnpayIpn = async (req, res) => {
   let vnp_Params = req.query;
   let secureHash = vnp_Params['vnp_SecureHash'];
-  
+
   let orderId = vnp_Params['vnp_TxnRef'];
   let rspCode = vnp_Params['vnp_ResponseCode'];
 
@@ -396,54 +409,54 @@ const vnpayIpn = async (req, res) => {
 
   vnp_Params = sortObject(vnp_Params);
   const config = require('config');
-const secretKey = config.get('vnp_HashSecret');
-const orderedParams = sortObject(vnp_Params);
-const signData = Object.entries(orderedParams)
-  .map(([key, value]) => `${key}=${value}`)
-  .join('&');
-const crypto = require('crypto');
-const hmac = crypto.createHmac('sha512', secretKey);
-const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');    
-console.log('signData:', signData);
-console.log('Received hash:', secureHash);
-console.log('Calculated hash:', signed);
+  const secretKey = config.get('vnp_HashSecret');
+  const orderedParams = sortObject(vnp_Params);
+  const signData = Object.entries(orderedParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+  const crypto = require('crypto');
+  const hmac = crypto.createHmac('sha512', secretKey);
+  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+  console.log('signData:', signData);
+  console.log('Received hash:', secureHash);
+  console.log('Calculated hash:', signed);
   let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
   //let paymentStatus = '2'; // Giả sử '2' là trạng thái thất bại bạn cập nhật sau IPN được gọi và trả kết quả về nó
-  
+
   let checkOrderId = true; // Mã đơn hàng "giá trị của vnp_TxnRef" VNPAY phản hồi tồn tại trong CSDL của bạn
   let checkAmount = true; // Kiểm tra số tiền "giá trị của vnp_Amout/100" trùng khớp với số tiền của đơn hàng trong CSDL của bạn
-  if(secureHash === signed){ //kiểm tra checksum
-      if(checkOrderId){
-          if(checkAmount){
-              if(paymentStatus=="0"){ //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
-                  if(rspCode=="00"){
-                      //thanh cong
-                      //paymentStatus = '1'
-                      // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-                      res.status(200).json({RspCode: '00', Message: 'Success'})
-                  }
-                  else {
-                      //that bai
-                      //paymentStatus = '2'
-                      // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
-                      res.status(200).json({RspCode: '00', Message: 'Success'})
-                  }
-              }
-              else{
-                  res.status(200).json({RspCode: '02', Message: 'This order has been updated to the payment status'})
-              }
+  if (secureHash === signed) { //kiểm tra checksum
+    if (checkOrderId) {
+      if (checkAmount) {
+        if (paymentStatus == "0") { //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
+          if (rspCode == "00") {
+            //thanh cong
+            //paymentStatus = '1'
+            // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
+            res.status(200).json({ RspCode: '00', Message: 'Success' })
           }
-          else{
-              res.status(200).json({RspCode: '04', Message: 'Amount invalid'})
+          else {
+            //that bai
+            //paymentStatus = '2'
+            // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
+            res.status(200).json({ RspCode: '00', Message: 'Success' })
           }
-      }       
-      else {
-          res.status(200).json({RspCode: '01', Message: 'Order not found'})
+        }
+        else {
+          res.status(200).json({ RspCode: '02', Message: 'This order has been updated to the payment status' })
+        }
       }
+      else {
+        res.status(200).json({ RspCode: '04', Message: 'Amount invalid' })
+      }
+    }
+    else {
+      res.status(200).json({ RspCode: '01', Message: 'Order not found' })
+    }
   }
   else {
-      res.status(200).json({RspCode: '97', Message: 'Checksum failed'})
+    res.status(200).json({ RspCode: '97', Message: 'Checksum failed' })
   }
 };
 
