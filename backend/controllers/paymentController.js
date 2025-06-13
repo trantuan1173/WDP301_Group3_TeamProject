@@ -402,14 +402,17 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
-  vnp_Params = sortObject(vnp_Params);
   let config = require('config');
   let secretKey = config.get('vnp_HashSecret');
-  let querystring = require('qs');
-  let signData = querystring.stringify(vnp_Params, { encode: false });
-  let crypto = require("crypto");
-  let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+
+  // Build signData for signature (no encoding, ordered keys)
+  const orderedParams = sortObject(vnp_Params);
+  const signData = Object.entries(orderedParams)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+  const crypto = require('crypto');
+  const hmac = crypto.createHmac('sha512', secretKey);
+  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
   let paymentStatus = '0'; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
