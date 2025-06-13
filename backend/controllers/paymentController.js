@@ -483,7 +483,7 @@ const vnpayIpn = async (req, res) => {
   const signData = qs.stringify(vnp_Params, { encode: false });
   const hmac = crypto.createHmac("sha512", config.get("vnp_HashSecret"));
   const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-
+  const secretKey = config.get("vnp_HashSecret");
   // 6. Log để debug
   console.log("SecretKey used for hash:", secretKey);
   console.log("Original Query for Hashing:", signData);
