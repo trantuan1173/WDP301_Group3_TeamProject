@@ -69,7 +69,7 @@ const ViewCourseDetails = () => {
         }}>
           <div>
             <h1 style={{ color: "#fff", fontSize: 48, fontWeight: 700, marginBottom: 12, textShadow: "0 2px 8px #0006" }}>
-              {course.courseName || course.nameCourses || "Name Courses"}
+              { course.courseId.nameCourses || "Name Courses"}
             </h1>
             <div style={{ color: "#fff", fontSize: 22, marginBottom: 4, textShadow: "0 2px 8px #0006" }}>
               Level: {course.level}
