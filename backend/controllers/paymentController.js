@@ -726,16 +726,32 @@ function sortObject(obj) {
   let str = [];
   let key;
   for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       str.push(encodeURIComponent(key));
     }
   }
   str.sort();
-  for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[decodeURIComponent(str[key])]).replace(/%20/g, "+");
+  for (let i = 0; i < str.length; i++) {
+    let decodedKey = decodeURIComponent(str[i]);
+    sorted[str[i]] = encodeURIComponent(obj[decodedKey]).replace(/%20/g, "+");
   }
   return sorted;
 }
+// function sortObject(obj) {
+//   let sorted = {};
+//   let str = [];
+//   let key;
+//   for (key in obj) {
+//     if (obj.hasOwnProperty(key)) {
+//       str.push(encodeURIComponent(key));
+//     }
+//   }
+//   str.sort();
+//   for (key = 0; key < str.length; key++) {
+//     sorted[str[key]] = encodeURIComponent(obj[decodeURIComponent(str[key])]).replace(/%20/g, "+");
+//   }
+//   return sorted;
+// }
 
 function sortObject2(obj) {
   const sorted = {};
