@@ -21,24 +21,25 @@ const router = express.Router()
 
 
 // Thanh toán VNPAY
+router.post("/querydr", querydr);
 router.get("/create_payment_url", createVNPayUrl);
 router.post("/create_payment_url", createVNPayUrl);
 router.get("/vnpay_return", vnpayReturn);
 router.get("/vnpay_ipn", vnpayIpn);
-router.post("/querydr", querydr);
+
 router.post("/refund", refund);
 
-router.get("/", protect, authorize("admin"), getPayments)
+router.get("/", getPayments)
 
-router.post("/", protect, createPayment)
+router.post("/", createPayment)
 
-router.get("/stats", protect, authorize("admin"), getPaymentStats)
+router.get("/stats", getPaymentStats)
 
-router.get("/student/:studentId", protect, getPaymentsByStudent)
+router.get("/student/:studentId", getPaymentsByStudent)
 
-router.get("/course/:courseId", protect, authorize("admin", "teacher"), getPaymentsByCourse)
+router.get("/course/:courseId", getPaymentsByCourse)
 
-router.get("/:id", protect, getPayment)
+router.get("/:id", getPayment)
 
 router.put("/:id", protect, authorize("admin"), updatePayment)
 

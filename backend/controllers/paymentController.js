@@ -4,8 +4,9 @@ const User = require("../models/userModel.js")
 const Enrollment = require("../models/enrollmentModel.js")
 const CourseDetail = require("../models/courseDetailModel.js")
 const mongoose = require("mongoose")
+const request = require("request");
 const { Types } = mongoose
-
+const axios = require("axios");
 const moment = require("moment");
 const config = require("config");
 const crypto = require("crypto");
@@ -447,20 +448,79 @@ const vnpayIpn = async (req, res) => {
 };
 
 
-const querydr = (req, res) => {
+// const querydr = (req, res) => {
 
+//   process.env.TZ = 'Asia/Ho_Chi_Minh';
+//   let date = new Date();
+
+//   let config = require('config');
+//   let crypto = require("crypto");
+
+//   let vnp_TmnCode = config.get('vnp_TmnCode');
+//   let secretKey = config.get('vnp_HashSecret');
+//   let vnp_Api = config.get('vnp_Api');
+
+//   let vnp_TxnRef = req.body.orderId;
+//   let vnp_TransactionDate = req.body.transDate;
+
+//   let vnp_RequestId = moment(date).format('HHmmss');
+//   let vnp_Version = '2.1.0';
+//   let vnp_Command = 'querydr';
+//   let vnp_OrderInfo = 'Truy van GD ma:' + vnp_TxnRef;
+
+//   let vnp_IpAddr = req.headers['x-forwarded-for'] ||
+//     req.connection.remoteAddress ||
+//     req.socket.remoteAddress ||
+//     req.connection.socket.remoteAddress;
+
+//   let currCode = 'VND';
+//   let vnp_CreateDate = moment(date).format('YYYYMMDDHHmmss');
+
+//   let data = vnp_RequestId + "|" + vnp_Version + "|" + vnp_Command + "|" + vnp_TmnCode + "|" + vnp_TxnRef + "|" + vnp_TransactionDate + "|" + vnp_CreateDate + "|" + vnp_IpAddr + "|" + vnp_OrderInfo;
+
+//   let hmac = crypto.createHmac("sha512", secretKey);
+//   let vnp_SecureHash = hmac.update(new Buffer(data, 'utf-8')).digest("hex");
+
+//   let dataObj = {
+//     'vnp_RequestId': vnp_RequestId,
+//     'vnp_Version': vnp_Version,
+//     'vnp_Command': vnp_Command,
+//     'vnp_TmnCode': vnp_TmnCode,
+//     'vnp_TxnRef': vnp_TxnRef,
+//     'vnp_OrderInfo': vnp_OrderInfo,
+//     'vnp_TransactionDate': vnp_TransactionDate,
+//     'vnp_CreateDate': vnp_CreateDate,
+//     'vnp_IpAddr': vnp_IpAddr,
+//     'vnp_SecureHash': vnp_SecureHash
+//   };
+//   // /merchant_webapi/api/transaction
+//   request({
+//     url: vnp_Api,
+//     method: "POST",
+//     json: true,
+//     body: dataObj
+//   }, function (error, response, body) {
+//     console.log(response);
+//   });
+
+// };
+
+const querydr = (req, res) => {
   process.env.TZ = 'Asia/Ho_Chi_Minh';
   let date = new Date();
-
   let config = require('config');
   let crypto = require("crypto");
 
+  // --- LOG DỮ LIỆU ĐẦU VÀO ---
+  console.log("--- Bắt đầu gọi API QueryDR ---");
+  console.log("Request Body nhận được:", req.body);
+
   let vnp_TmnCode = config.get('vnp_TmnCode');
-  let secretKey = config.get('vnp_HashSecret');
+  let secretKey = config.get('vnp_HashSecret'); // QUAN TRỌNG: Kiểm tra lại key này
   let vnp_Api = config.get('vnp_Api');
 
   let vnp_TxnRef = req.body.orderId;
-  let vnp_TransactionDate = req.body.transDate;
+  let vnp_TransactionDate = req.body.transDate; // Định dạng phải là YYYYMMDDHHmmss
 
   let vnp_RequestId = moment(date).format('HHmmss');
   let vnp_Version = '2.1.0';
@@ -468,40 +528,61 @@ const querydr = (req, res) => {
   let vnp_OrderInfo = 'Truy van GD ma:' + vnp_TxnRef;
 
   let vnp_IpAddr = req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket.remoteAddress;
 
-  let currCode = 'VND';
   let vnp_CreateDate = moment(date).format('YYYYMMDDHHmmss');
 
   let data = vnp_RequestId + "|" + vnp_Version + "|" + vnp_Command + "|" + vnp_TmnCode + "|" + vnp_TxnRef + "|" + vnp_TransactionDate + "|" + vnp_CreateDate + "|" + vnp_IpAddr + "|" + vnp_OrderInfo;
 
+  // --- LOG CÁC THÀNH PHẦN CỦA CHUỖI DATA ---
+  console.log("--- Các thành phần tạo chuỗi hash ---");
+  console.log("vnp_RequestId:", vnp_RequestId);
+  console.log("vnp_Version:", vnp_Version);
+  console.log("vnp_Command:", vnp_Command);
+  console.log("vnp_TmnCode:", vnp_TmnCode);
+  console.log("vnp_TxnRef (orderId):", vnp_TxnRef);
+  console.log("vnp_TransactionDate (transDate):", vnp_TransactionDate);
+  console.log("vnp_CreateDate:", vnp_CreateDate);
+  console.log("vnp_IpAddr:", vnp_IpAddr);
+  console.log("vnp_OrderInfo:", vnp_OrderInfo);
+  console.log("secretKey (kiểm tra xem có load được không):", secretKey ? "OK" : "FAILED TO LOAD");
+
+  // --- LOG CHUỖI DATA CUỐI CÙNG ---
+  console.log("Chuỗi data để hash (QUAN TRỌNG):", data);
+
   let hmac = crypto.createHmac("sha512", secretKey);
   let vnp_SecureHash = hmac.update(new Buffer(data, 'utf-8')).digest("hex");
+  
+  console.log("SecureHash đã tạo:", vnp_SecureHash);
+  console.log("--- Kết thúc Log ---");
 
   let dataObj = {
-    'vnp_RequestId': vnp_RequestId,
-    'vnp_Version': vnp_Version,
-    'vnp_Command': vnp_Command,
-    'vnp_TmnCode': vnp_TmnCode,
-    'vnp_TxnRef': vnp_TxnRef,
-    'vnp_OrderInfo': vnp_OrderInfo,
-    'vnp_TransactionDate': vnp_TransactionDate,
-    'vnp_CreateDate': vnp_CreateDate,
-    'vnp_IpAddr': vnp_IpAddr,
-    'vnp_SecureHash': vnp_SecureHash
+      'vnp_RequestId': vnp_RequestId,
+      'vnp_Version': vnp_Version,
+      'vnp_Command': vnp_Command,
+      'vnp_TmnCode': vnp_TmnCode,
+      'vnp_TxnRef': vnp_TxnRef,
+      'vnp_OrderInfo': vnp_OrderInfo,
+      'vnp_TransactionDate': vnp_TransactionDate,
+      'vnp_CreateDate': vnp_CreateDate,
+      'vnp_IpAddr': vnp_IpAddr,
+      'vnp_SecureHash': vnp_SecureHash
   };
-  // /merchant_webapi/api/transaction
-  request({
-    url: vnp_Api,
-    method: "POST",
-    json: true,
-    body: dataObj
-  }, function (error, response, body) {
-    console.log(response);
-  });
 
+  // /merchant_webapi/api/transaction
+  const axios = require("axios");
+
+  axios.post(vnp_Api, dataObj)
+    .then(response => {
+      console.log("Kết quả trả về từ VNP:", response.data);
+      res.status(200).json(response.data);
+    })
+    .catch(error => {
+      console.error("Lỗi gọi API VNPay:", error.message);
+      res.status(500).json({ success: false, message: "Lỗi gọi API VNPay", error: error.message });
+    });
 };
 
 const refund = (req, res) => {
@@ -560,14 +641,15 @@ const refund = (req, res) => {
     'vnp_SecureHash': vnp_SecureHash
   };
 
-  request({
-    url: vnp_Api,
-    method: "POST",
-    json: true,
-    body: dataObj
-  }, function (error, response, body) {
-    console.log(response);
-  });
+  axios.post(vnp_Api, dataObj)
+    .then(response => {
+      console.log("Kết quả trả về từ VNP:", response.data);
+      res.status(200).json(response.data);
+    })
+    .catch(error => {
+      console.error("Lỗi gọi API VNPay:", error.message);
+      res.status(500).json({ success: false, message: "Lỗi gọi API VNPay", error: error.message });
+    });
 
 };
 
