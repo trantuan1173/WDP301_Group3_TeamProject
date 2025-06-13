@@ -351,8 +351,11 @@ const createVNPayUrl = async (req, res) => {
 
   orderedParams['vnp_SecureHash'] = signed;
   // vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+  // vnpUrl += '?' + Object.entries(orderedParams)
+  // .map(([key, value]) => `${key}=${value}`)
+  // .join('&');
   vnpUrl += '?' + Object.entries(orderedParams)
-  .map(([key, value]) => `${key}=${value}`)
+  .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
   .join('&');
 
   console.log('SignData:', signData);
