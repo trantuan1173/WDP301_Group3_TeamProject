@@ -459,6 +459,8 @@ const vnpayIpn = async (req, res) => {
 
   // 1. Lấy toàn bộ tham số từ query
   let vnp_Params = req.query;
+  let orderId = vnp_Params['vnp_TxnRef'];
+  let rspCode = vnp_Params['vnp_ResponseCode'];
 
   // 2. Lưu và xóa SecureHash để xử lý sau
   const secureHash = vnp_Params['vnp_SecureHash'];
