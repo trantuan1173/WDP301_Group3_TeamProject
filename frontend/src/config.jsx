@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+  UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
 
 // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,

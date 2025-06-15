@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from "react";
-import Scheduler from "devextreme-react/scheduler";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import vi from "date-fns/locale/vi";
+import enUS from "date-fns/locale/en-US";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import { API_ENDPOINTS } from "../../config";
+import { jwtDecode } from "jwt-decode";import { API_ENDPOINTS } from "../../config";
+
+const locales = {
+  "en-US": enUS,
+  "vi": vi,
+};
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  getDay,
+  locales,
+});
 
 const TeacherViewShedule = () => {
   const [schedules, setSchedules] = useState([]);
@@ -25,35 +40,32 @@ const TeacherViewShedule = () => {
   }, []);
 
   // Chuyển đổi dữ liệu sang format của DevExtreme Scheduler
-  const appointments = schedules.map(sch => ({
+   const events = schedules.map(sch => ({
     id: sch._id,
-    text: sch.classId?.course || "Buổi học",
-    startDate: new Date(sch.start_time),
-    endDate: new Date(sch.end_time),
+    title: sch.classId?.course || "Buổi học",
+    start: new Date(sch.start_time),
+    end: new Date(sch.end_time),
+    allDay: false,
   }));
 
   // Tối ưu hiển thị ca tối
-  const getHour = (dateStr) => new Date(dateStr).getHours();
-  const minHour = schedules.length
-    ? Math.min(...schedules.map(sch => getHour(sch.start_time)), 7)
-    : 7;
-  const maxHour = schedules.length
-    ? Math.max(...schedules.map(sch => getHour(sch.end_time)), 21)
-    : 21;
+ 
 
   return (
     <div className="p-8 bg-white min-h-screen">
       <h2 className="text-2xl font-bold mb-6">Lịch dạy của tôi</h2>
-      <div className="mt-6">
-        <Scheduler
-          dataSource={appointments}
-          views={['week', 'month']}
-          defaultCurrentView="week"
-          defaultCurrentDate={appointments[0]?.startDate || new Date()}
-          height={600}
-          startDayHour={minHour - 1 < 0 ? 0 : minHour - 1}
-          endDayHour={maxHour + 1 > 23 ? 23 : maxHour + 1}
-          showAllDayPanel={false}
+      <div className="mt-6" style={{ height: 600 }}>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          titleAccessor="title"
+          defaultView="week"
+          views={["week", "month"]}
+          style={{ height: 600 }}
+          popup
+          culture="vi"
         />
       </div>
     </div>
