@@ -15,7 +15,7 @@ const paymentRoutes = require('./paymentRoutes.js');
 const enrollmentRoutes = require('./enrollmentRoutes.js');
 
 const router = express.Router();
-
+router.use('/payments', paymentRoutes);
 router.use('/attendance', attendanceRoutes);
 router.use('/classes', classRoutes);
 router.use('/courseDetail', courseDetailRoutes);
@@ -27,7 +27,7 @@ router.use('/schedule', scheduleRoutes);
 router.use('/tests', testRoutes);
 router.use('/testSubmission', testSubmissionRoutes);
 router.use('/test-assigns', testAssignRoutes);
-router.use('/payments', paymentRoutes);
+
 router.use('/enrollments', enrollmentRoutes);
 router.use('/users', userRoutes);
 

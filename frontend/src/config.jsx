@@ -25,9 +25,22 @@ export const API_ENDPOINTS = {
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
+  
+
+  GET_ALL_CLASSES: `${baseUrl}/api/classes`,
+  GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
+  CREATE_CLASS: `${baseUrl}/api/classes`,
+  GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
+  UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
+  CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
+  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
+// Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
-
+  GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
+// Teacher endpoints
+  GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,

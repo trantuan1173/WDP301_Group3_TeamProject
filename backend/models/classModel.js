@@ -5,7 +5,7 @@ const classSchema = new mongoose.Schema(
     teacherId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // required: true,
     },
     students: [
       {
@@ -39,7 +39,7 @@ const classSchema = new mongoose.Schema(
     },
     end_time: {
       type: Date,
-      required: true,
+      // required: true,
     },
     createdAt: {
       type: Date,

@@ -9,25 +9,42 @@ const {
   deletePayment,
   processPayment,
   getPaymentStats,
+  createVNPayUrl,
+  vnpayReturn,
+  vnpayIpn,
+  querydr,
+  refund,
 } = require("../controllers/paymentController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
 const router = express.Router()
 
-router.route("/").get(protect, authorize("admin"), getPayments).post(protect, createPayment)
 
-router.route("/stats").get(protect, authorize("admin"), getPaymentStats)
+// Thanh toán VNPAY
+router.post("/querydr", querydr);
+router.get("/create_payment_url", createVNPayUrl);
+router.post("/create_payment_url", createVNPayUrl);
+router.get("/vnpay_return", vnpayReturn);
+router.get("/vnpay_ipn", vnpayIpn);
 
-router.route("/student/:studentId").get(protect, getPaymentsByStudent)
+router.post("/refund", refund);
 
-router.route("/course/:courseId").get(protect, authorize("admin", "teacher"), getPaymentsByCourse)
+router.get("/", getPayments)
 
-router
-  .route("/:id")
-  .get(protect, getPayment)
-  .put(protect, authorize("admin"), updatePayment)
-  .delete(protect, authorize("admin"), deletePayment)
+router.post("/", createPayment)
 
-router.route("/:id/process").put(protect, authorize("admin"), processPayment)
+router.get("/stats", getPaymentStats)
+
+router.get("/student/:studentId", getPaymentsByStudent)
+
+router.get("/course/:courseId", getPaymentsByCourse)
+
+router.get("/:id", getPayment)
+
+router.put("/:id", protect, authorize("admin"), updatePayment)
+
+router.delete("/:id", protect, authorize("admin"), deletePayment)
+
+router.put("/:id/process", protect, authorize("admin"), processPayment)
 
 module.exports = router

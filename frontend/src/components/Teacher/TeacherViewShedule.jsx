@@ -4,7 +4,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../config";
 
-const UserSchedule = () => {
+const TeacherViewShedule = () => {
   const [schedules, setSchedules] = useState([]);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ const UserSchedule = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.id;
-        const res = await axios.get(API_ENDPOINTS.GET_STUDENT_SCHEDULE(userId), {
+        const res = await axios.get(API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId), {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSchedules(res.data.data || []);
@@ -32,7 +32,7 @@ const UserSchedule = () => {
     endDate: new Date(sch.end_time),
   }));
 
-  // Tối ưu hiển thị ca tối (nếu cần)
+  // Tối ưu hiển thị ca tối
   const getHour = (dateStr) => new Date(dateStr).getHours();
   const minHour = schedules.length
     ? Math.min(...schedules.map(sch => getHour(sch.start_time)), 7)
@@ -43,14 +43,14 @@ const UserSchedule = () => {
 
   return (
     <div className="p-8 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Lịch học của tôi</h2>
+      <h2 className="text-2xl font-bold mb-6">Lịch dạy của tôi</h2>
       <div className="mt-6">
         <Scheduler
           dataSource={appointments}
           views={['week', 'month']}
           defaultCurrentView="week"
           defaultCurrentDate={appointments[0]?.startDate || new Date()}
-          height={1000}
+          height={600}
           startDayHour={minHour - 1 < 0 ? 0 : minHour - 1}
           endDayHour={maxHour + 1 > 23 ? 23 : maxHour + 1}
           showAllDayPanel={false}
@@ -60,4 +60,4 @@ const UserSchedule = () => {
   );
 };
 
-export default UserSchedule;
+export default TeacherViewShedule;
