@@ -16,7 +16,7 @@ const classSchema = new mongoose.Schema(
     courseId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
-      // required: true,
+      required: true,
     },
     course: {
       type: String,
@@ -39,7 +39,7 @@ const classSchema = new mongoose.Schema(
     },
     end_time: {
       type: Date,
-      required: true,
+      // required: true,
     },
     createdAt: {
       type: Date,

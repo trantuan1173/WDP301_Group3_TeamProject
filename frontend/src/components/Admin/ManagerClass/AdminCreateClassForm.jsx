@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
 export default function AdminCreateClassForm({ onSuccess, onCancel }) {
     const [form, setForm] = useState({
-        
         course: "",
+        courseId: "",
         progress: 0,
         note: "",
         start_time: "",
@@ -13,6 +13,46 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [courses, setCourses] = useState([]);
+    const [courseQuery, setCourseQuery] = useState("");
+    const [showCourseOptions, setShowCourseOptions] = useState(false);
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(API_ENDPOINTS.GET_ALL_COURSE, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setCourses(res.data.data || res.data);
+            } catch (err) {}
+        };
+        fetchCourses();
+    }, []);
+
+    const filteredCourses = courses.filter((c) =>
+        c.nameCourses.toLowerCase().includes(courseQuery.toLowerCase())
+    );
+
+    const handleSelectCourse = (course) => {
+        setForm((f) => ({
+            ...f,
+            courseId: course._id,
+            course: course.nameCourses,
+        }));
+        setCourseQuery(course.nameCourses);
+        setShowCourseOptions(false);
+    };
+
+    const handleCourseQueryChange = (e) => {
+        setCourseQuery(e.target.value);
+        setShowCourseOptions(true);
+        setForm((f) => ({
+            ...f,
+            course: e.target.value,
+            courseId: "",
+        }));
+    };
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,6 +60,10 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!form.courseId) {
+            setError("Vui lòng chọn khóa học từ danh sách gợi ý.");
+            return;
+        }
         setLoading(true);
         setError("");
         try {
@@ -59,28 +103,32 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                     </div>
                 )}
                 <form className="space-y-4" onSubmit={handleSubmit}>
-                    {/* <div>
-    <label className="block mb-1 font-medium">ID giáo viên</label>
-    <input
-      type="text"
-      name="teacherId"
-      value={form.teacherId}
-      onChange={handleChange}
-      className="w-full bg-blue-100 p-2 rounded"
-      placeholder="ID giáo viên"
-    />
-  </div>
-  <div>
-    <label className="block mb-1 font-medium">ID khóa học</label>
-    <input
-      type="text"
-      name="courseId"
-      value={form.courseId}
-      onChange={handleChange}
-      className="w-full bg-blue-100 p-2 rounded"
-      placeholder="ID khóa học"
-    />
-  </div> */}
+                    <div className="relative">
+                        <label className="block mb-1 font-medium">Khóa học</label>
+                        <input
+                            type="text"
+                            value={courseQuery}
+                            onChange={handleCourseQueryChange}
+                            className="w-full bg-blue-100 p-2 rounded"
+                            placeholder="Nhập tên khóa học"
+                            autoComplete="off"
+                            onFocus={() => setShowCourseOptions(true)}
+                        />
+                        {showCourseOptions && courseQuery && filteredCourses.length > 0 && (
+                            <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
+                                {filteredCourses.map((c) => (
+                                    <li
+                                        key={c._id}
+                                        className="px-3 py-1 hover:bg-blue-100 cursor-pointer"
+                                        onClick={() => handleSelectCourse(c)}
+                                    >
+                                        {c.nameCourses}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                    <input type="hidden" name="courseId" value={form.courseId} />
                     <div>
                         <label className="block mb-1 font-medium">Tên lớp học</label>
                         <input
@@ -115,30 +163,7 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                                 placeholder="Ngày bắt đầu"
                             />
                         </div>
-                        <div className="flex-1">
-                            <label className="block mb-1 font-medium">Ngày kết thúc</label>
-                            <input
-                                type="datetime-local"
-                                name="end_time"
-                                value={form.end_time}
-                                onChange={handleChange}
-                                className="w-full bg-blue-100 p-2 rounded"
-                                placeholder="Ngày kết thúc"
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <label className="block mb-1 font-medium">Tiến độ (%)</label>
-                        <input
-                            type="number"
-                            name="progress"
-                            value={form.progress}
-                            onChange={handleChange}
-                            min={0}
-                            max={100}
-                            className="w-full bg-blue-100 p-2 rounded"
-                            placeholder="Tiến độ (%)"
-                        />
+                        
                     </div>
                     <div className="flex justify-end gap-4 pt-4">
                         <button

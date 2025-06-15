@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import NavBar from "../../Layouts/NavBar";
+import AdminCreateClassForm from "./AdminCreateClassForm";
+import AdminAddTeacherClassForm from "./AdminAddTeacherClassForm";
 
 
 
@@ -28,26 +30,34 @@ export default function AdminViewClassDetails() {
   const { classId } = useParams();
   const [classData, setClassData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAddTeacherForm, setShowAddTeacherForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from;
 
-  useEffect(() => {
-    const fetchClass = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setClassData(res.data.data || res.data);
-      } catch (err) {
-        setClassData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleAddTeacherSuccess = () => {
+    setShowAddTeacherForm(false);
     fetchClass();
+  };
+
+  const fetchClass = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClassData(res.data.data || res.data);
+    } catch (err) {
+      setClassData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClass();
+    // eslint-disable-next-line
   }, [classId]);
 
   if (loading) {
@@ -77,13 +87,21 @@ export default function AdminViewClassDetails() {
       <div className="flex items-center mb-4 w-full">
         <div className="flex gap-4 flex-1">
           <div className="flex gap-4 flex-1">
-  <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150">
-    {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
-  </button>
-  <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150">
-    {classData.courseId ? "Thay đổi khóa học" : "+ Thêm khóa học"}
-  </button>
-</div>
+            <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+            onClick={() => setShowAddTeacherForm(true)}>
+              {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
+            </button>
+            <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+              >
+              + Thêm học viên
+            </button>
+             <button
+  className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+  onClick={() => navigate(`/admin/class/${classId}/schedule`)}
+>
+  Xem lịch học
+</button>
+          </div>
         </div>
         <button
           className="ml-auto bg-gray-200 text-gray-800 rounded-full min-w-[110px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
@@ -91,7 +109,15 @@ export default function AdminViewClassDetails() {
         >
           Quay lại
         </button>
+        
       </div>
+      {showAddTeacherForm && (
+        <AdminAddTeacherClassForm
+        classId={classId}
+        onSuccess={handleAddTeacherSuccess}
+        onCancel={() => setShowAddTeacherForm(false)}
+        />
+        )}
       <hr className="mb-6" />
 
       <div className="mb-8">
@@ -101,7 +127,7 @@ export default function AdminViewClassDetails() {
             {classData.teacherId?.email || "Chưa có giáo viên"}
           </div>
           <div className="font-medium">Tên lớp:</div>
-          <div>{ classData.course  || "Chưa đặt tên"}</div>
+          <div>{classData.course || "Chưa đặt tên"}</div>
           <div className="font-medium">Thời gian học:</div>
           <div>Chưa có API</div>
           <div className="font-medium">Khóa học:</div>

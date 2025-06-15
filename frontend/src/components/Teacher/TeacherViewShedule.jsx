@@ -18,6 +18,7 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
 const TeacherViewShedule = () => {
   const [schedules, setSchedules] = useState([]);
 
@@ -27,7 +28,7 @@ const TeacherViewShedule = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.id;
-        const res = await axios.get(API_ENDPOINTS.GET_STUDENT_SCHEDULE(userId), {
+        const res = await axios.get(API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId), {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSchedules(res.data.data || []);
