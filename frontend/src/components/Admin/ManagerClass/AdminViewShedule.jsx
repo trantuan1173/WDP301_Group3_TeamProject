@@ -9,6 +9,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import vi from "date-fns/locale/vi";
 import enUS from "date-fns/locale/en-US";
+import { useNavigate } from "react-router-dom";
 
 const locales = {
   "en-US": enUS,
@@ -28,6 +29,7 @@ export default function AdminViewSchedule() {
   const [showCreate, setShowCreate] = useState(false);
   const [className, setClassName] = useState("");
   const [editEvent, setEditEvent] = useState(null);
+  const navigate = useNavigate();
   const handleSelectEvent = (event) => {
     setEditEvent(event);
   };
@@ -126,6 +128,14 @@ export default function AdminViewSchedule() {
           event={editEvent}
           onSave={handleSaveEdit}
         />
+      </div>
+      <div className="mt-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow"
+        >
+          ← Quay lại
+        </button>
       </div>
     </div>
   );

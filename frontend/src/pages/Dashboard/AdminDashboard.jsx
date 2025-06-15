@@ -5,6 +5,7 @@ import AdminSideMenu from '../../components/Layouts/AdminSideMenu';
 import AdminManageAccount from '../../components/Admin/ManagerAccount/AdminManageAccount';
 import AdminManageCourse from '../../components/Admin/ManagerCourse/AdminManageCourse';
 import AdminManageClass from '../../components/Admin/ManagerClass/AdminManageClass';
+import AdminOverView from '../../components/Admin/AdminOverView/AdminOverView';
 
 
 
@@ -28,6 +29,7 @@ function AdminDashboard() {
           selectedKey={selectedPage}
         />
         <div className="flex-1">
+          {selectedPage === 'overview' && <AdminOverView onQuickAction={setSelectedPage} />}
           {selectedPage === 'account' && <AdminManageAccount />}
           {selectedPage === 'courses' && <AdminManageCourse />}
           {selectedPage === 'classes' && <AdminManageClass/>}

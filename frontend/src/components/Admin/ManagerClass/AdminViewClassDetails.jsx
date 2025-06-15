@@ -3,8 +3,8 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import NavBar from "../../Layouts/NavBar";
-import AdminCreateClassForm from "./AdminCreateClassForm";
 import AdminAddTeacherClassForm from "./AdminAddTeacherClassForm";
+import LoadingSpinner from "../../LoadingSpinner";
 
 
 
@@ -60,9 +60,7 @@ export default function AdminViewClassDetails() {
     // eslint-disable-next-line
   }, [classId]);
 
-  if (loading) {
-    return <div className="p-8">Đang tải dữ liệu...</div>;
-  }
+  if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
   if (!classData) {
     return <div className="p-8 text-red-500">Không tìm thấy dữ liệu lớp học.</div>;
@@ -88,36 +86,36 @@ export default function AdminViewClassDetails() {
         <div className="flex gap-4 flex-1">
           <div className="flex gap-4 flex-1">
             <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-            onClick={() => setShowAddTeacherForm(true)}>
+              onClick={() => setShowAddTeacherForm(true)}>
               {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
             </button>
             <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-              >
+            >
               + Thêm học viên
             </button>
-             <button
-  className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-  onClick={() => navigate(`/admin/class/${classId}/schedule`)}
->
-  Xem lịch học
-</button>
+            <button
+              className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+              onClick={() => navigate(`/admin/class/${classId}/schedule`)}
+            >
+              Xem lịch học
+            </button>
           </div>
         </div>
         <button
           className="ml-auto bg-gray-200 text-gray-800 rounded-full min-w-[110px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
           onClick={handleBack}
         >
-          Quay lại
+          ← Quay lại
         </button>
-        
+
       </div>
       {showAddTeacherForm && (
         <AdminAddTeacherClassForm
-        classId={classId}
-        onSuccess={handleAddTeacherSuccess}
-        onCancel={() => setShowAddTeacherForm(false)}
+          classId={classId}
+          onSuccess={handleAddTeacherSuccess}
+          onCancel={() => setShowAddTeacherForm(false)}
         />
-        )}
+      )}
       <hr className="mb-6" />
 
       <div className="mb-8">

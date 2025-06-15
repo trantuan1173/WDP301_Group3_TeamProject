@@ -35,6 +35,8 @@ export const API_ENDPOINTS = {
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
 
+  GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
+
 // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
