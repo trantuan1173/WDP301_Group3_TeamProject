@@ -20,7 +20,7 @@ router.use('/attendance', attendanceRoutes);
 router.use('/classes', classRoutes);
 router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
-router.use('/feedback', feedbackRoutes);
+router.use('/feedbacks', feedbackRoutes);
 router.use('/profiles', profileRoutes);
 router.use('/roles', roleRoutes);
 router.use('/schedule', scheduleRoutes);

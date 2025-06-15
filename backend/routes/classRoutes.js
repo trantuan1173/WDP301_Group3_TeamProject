@@ -8,6 +8,7 @@ const {
   addStudentToClass,
   removeStudentFromClass,
   getClassByStudentId,
+  getClassByTeacherId,
 } = require("../controllers/classController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
@@ -215,5 +216,26 @@ router.delete("/:id/students", protect, authorize("admin", "teacher"), removeStu
  *         description: Danh sách sinh viên trong lớp
  */
 router.get("/student/:studentId", protect, getClassByStudentId)  
+
+/**
+ * @swagger
+ * /classes/teacher/:teacherId:
+ *   get:
+ *     summary: Lấy danh sách lớp học của giáo viên (chỉ admin, teacher)
+ *     description: Lấy danh sách lớp học của giáo viên (chỉ admin, teacher)
+ *     tags: [Classes]
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách lớp học của giáo viên
+ */
+router.get("/teacher/:teacherId", protect, authorize("admin", "teacher"), getClassByTeacherId)
 
 module.exports = router;

@@ -31,7 +31,7 @@ const router = express.Router()
  *       200:
  *         description: Danh sách phản hồi
  */
-router.get("/", protect, getFeedbacks)
+router.get("/", getFeedbacks)
 
 /**
  * @swagger
