@@ -109,7 +109,7 @@ router.post("/bulk", protect, authorize("admin", "teacher"), markBulkAttendance)
  *       200:
  *         description: Danh sách điểm danh
  */
-router.get("/class/:classId",  getAttendancesByClass)
+router.get("/class/:classId", protect, getAttendancesByClass)
 
 /**
  * @swagger

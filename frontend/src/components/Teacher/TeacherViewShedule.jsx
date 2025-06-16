@@ -46,13 +46,33 @@ const TeacherViewShedule = () => {
 
   // Chuyển đổi dữ liệu sang format của DevExtreme Scheduler
   const events = schedules.map((sch) => ({
-    id: sch._id,
+    id: sch._id, // ID lịch học
+    classId: sch.classId?._id, // ✅ đảm bảo lấy đúng ID lớp
     title: sch.classId?.course || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
-    allDay: false,
-    id: sch.classId?._id,
   }));
+
+  const CustomEvent = ({ event }) => {
+    return (
+      <div className="flex flex-col items-center justify-between h-full px-1 py-1">
+        <span className="text-white text-sm font-semibold text-center leading-tight">
+          {event.title}
+        </span>
+        <div className="mt-1 mb-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/teacher/attendance/${event.classId}`);
+            }}
+            className="px-2 py-[2px] text-[10px] bg-white text-blue-600 rounded hover:bg-gray-200 transition"
+          >
+            Điểm danh
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // Tối ưu hiển thị ca tối
 
@@ -71,13 +91,15 @@ const TeacherViewShedule = () => {
           style={{ height: 600 }}
           popup
           culture="vi"
-          onSelectEvent={(event) => {
-            navigate(
-              `/teacher/attendance/${event.id}?date=${event.start
-                .toISOString()
-                .slice(0, 10)}`
-            );
+          onSelectEvent={() => {}}
+          components={{
+            event: CustomEvent,
           }}
+          slotPropGetter={() => ({
+            style: {
+              minHeight: "30px", // 👈 tăng chiều cao mỗi dòng giờ
+            },
+          })}
         />
       </div>
     </div>

@@ -31,8 +31,36 @@ export default function AttendanceForm() {
           }
         );
 
-        setStudents(res.data.students || []);
-        setClassName(res.data.className || ""); // cập nhật tên lớp
+        const rawStudents = res.data.students || [];
+
+        // Chuẩn hóa dữ liệu học sinh
+        const mapped = rawStudents.map((student) => ({
+          _id: student._id,
+          email: student.email,
+          name: student.profileId?.name || "Không rõ",
+          gender: student.profileId?.gender || "Không rõ",
+          dob: student.profileId?.dob || "",
+          attendance: student.attendance || {},
+        }));
+
+        // Gán sẵn trạng thái điểm danh và ghi chú vào state
+        const prefillAttendance = {};
+        const prefillNotes = {};
+        mapped.forEach((stu) => {
+          if (stu.attendance) {
+            // prefillAttendance[stu._id] = stu.attendance.status;
+            prefillAttendance[stu._id] =
+              typeof stu.attendance.status === "boolean"
+                ? stu.attendance.status
+                : null;
+            prefillNotes[stu._id] = stu.attendance.note || "";
+          }
+        });
+
+        setStudents(mapped);
+        setClassName(res.data.className || "");
+        setAttendances(prefillAttendance);
+        setNotes(prefillNotes);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách học sinh:", error);
       }
@@ -95,7 +123,7 @@ export default function AttendanceForm() {
     <div className="p-6 bg-white rounded-xl shadow-md">
       <div className="mb-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/teacher")}
           className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded shadow"
         >
           Quay lại
@@ -103,7 +131,7 @@ export default function AttendanceForm() {
       </div>
 
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        {className ? `Lớp ${className}` : "Thông tin lớp..."} - Khóa học
+        {className ? `Lớp ${className}` : "Thông tin lớp..."}
       </h2>
 
       {/* Search & Filter */}

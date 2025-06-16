@@ -21,25 +21,80 @@ const getAttendances = async function(req, res) {
 }
 
 // Get attendances by class
-const getAttendancesByClass = async function(req, res) {
-  try {
-    const { classId } = req.params
+// const getAttendancesByClass = async function(req, res) {
+//   try {
+//     const { classId } = req.params
 
-    const attendances = await Attendance.find({ classId }).populate("studentId")
+//     const attendances = await Attendance.find({ classId }).populate("studentId")
+
+//     res.status(200).json({
+//       success: true,
+//       count: attendances.length,
+//       data: attendances,
+//     })
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch attendances",
+//       error: error.message,
+//     })
+//   }
+// }
+const getAttendancesByClass = async function (req, res) {
+  try {
+    const { classId } = req.params;
+
+    // Lấy thông tin lớp và populate danh sách học sinh (bao gồm profile)
+    const classData = await Class.findById(classId).populate({
+      path: "students",
+      populate: {
+        path: "profileId",
+      },
+    });
+
+    if (!classData) {
+      return res.status(404).json({
+        success: false,
+        message: "Class not found",
+      });
+    }
+
+    // Lấy tất cả điểm danh theo classId
+    const attendances = await Attendance.find({ classId });
+
+    // Map student list + attendance info
+    const studentsWithAttendance = classData.students.map((student) => {
+      const attendanceRecord = attendances.find(
+        (att) => att.studentId.toString() === student._id.toString()
+      );
+
+      return {
+        ...student.toObject(),
+        attendance: attendanceRecord
+          ? {
+              date: attendanceRecord.date,
+              status: attendanceRecord.status,
+              note: attendanceRecord.note,
+            }
+          : null,
+      };
+    });
 
     res.status(200).json({
       success: true,
-      count: attendances.length,
-      data: attendances,
-    })
+      classId,
+      className: classData.course,
+      students: studentsWithAttendance,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to fetch attendances",
+      message: "Failed to fetch attendance by class",
       error: error.message,
-    })
+    });
   }
-}
+};
+
 
 // Get attendances by student
 const getAttendancesByStudent = async function(req, res) {
@@ -63,61 +118,134 @@ const getAttendancesByStudent = async function(req, res) {
 }
 
 // Create attendance
+// const createAttendance = async (req, res) => {
+//   try {
+//     const { classId, studentId, date, status, note } = req.body
+
+//     // Check if class exists
+//     const classExists = await Class.findById(classId)
+//     if (!classExists) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Class not found",
+//       })
+//     }
+
+//     // Check if student is in class
+//     if (!classExists.students.includes(studentId)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Student not in class",
+//       })
+//     }
+
+//     // Check if attendance already exists
+//     const existingAttendance = await Attendance.findOne({
+//       classId,
+//       studentId,
+//       date: new Date(date),
+//     })
+
+//     if (existingAttendance) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Attendance already recorded for this date",
+//       })
+//     }
+
+//     const attendance = await Attendance.create({
+//       classId,
+//       studentId,
+//       date,
+//       status,
+//       note,
+//     })
+
+//     res.status(201).json({
+//       success: true,
+//       data: attendance,
+//     })
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to create attendance",
+//       error: error.message,
+//     })
+//   }
+// }
 const createAttendance = async (req, res) => {
   try {
-    const { classId, studentId, date, status, note } = req.body
+    const { classId, date, attendances } = req.body;
 
-    // Check if class exists
-    const classExists = await Class.findById(classId)
+    const classExists = await Class.findById(classId);
     if (!classExists) {
-      return res.status(404).json({
-        success: false,
-        message: "Class not found",
-      })
+      return res.status(404).json({ success: false, message: "Class not found" });
     }
 
-    // Check if student is in class
-    if (!classExists.students.includes(studentId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Student not in class",
-      })
+    const results = [];
+
+    for (const record of attendances) {
+      const { studentId, status, note } = record;
+
+      // Check if student is in class
+      if (!classExists.students.includes(studentId)) {
+        results.push({
+          studentId,
+          success: false,
+          message: "Student not in class",
+        });
+        continue;
+      }
+
+      const existingAttendance = await Attendance.findOne({
+        classId,
+        studentId,
+        date: new Date(date),
+      });
+
+      if (existingAttendance) {
+        // Cập nhật nếu đã tồn tại
+        existingAttendance.status = status;
+        existingAttendance.note = note;
+        await existingAttendance.save();
+
+        results.push({
+          studentId,
+          success: true,
+          message: "Attendance updated",
+        });
+      } else {
+        // Tạo mới nếu chưa có
+        await Attendance.create({
+          classId,
+          studentId,
+          date,
+          status,
+          note,
+        });
+
+        results.push({
+          studentId,
+          success: true,
+          message: "Attendance created",
+        });
+      }
     }
 
-    // Check if attendance already exists
-    const existingAttendance = await Attendance.findOne({
-      classId,
-      studentId,
-      date: new Date(date),
-    })
-
-    if (existingAttendance) {
-      return res.status(400).json({
-        success: false,
-        message: "Attendance already recorded for this date",
-      })
-    }
-
-    const attendance = await Attendance.create({
-      classId,
-      studentId,
-      date,
-      status,
-      note,
-    })
-
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      data: attendance,
-    })
+      message: "Attendance records processed",
+      results,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to create attendance",
+      message: "Failed to process attendance",
       error: error.message,
-    })
+    });
   }
-}
+};
+
 
 // Update attendance
 const updateAttendance = async (req, res) => {
