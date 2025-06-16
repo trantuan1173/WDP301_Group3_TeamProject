@@ -38,7 +38,28 @@ const getSchedulesByClass = async (req, res) => {
       message: "Failed to fetch schedules",
       error: error.message,
     })
-  } 
+  }
+}
+
+// Delete schedules by class
+const deleteSchedulesByClass = async (req, res) => {
+  try {
+    const { classId } = req.params
+
+    const schedules = await Schedule.deleteMany({ classId })
+
+    res.status(200).json({
+      success: true,
+      count: schedules.deletedCount,
+      message: "Schedules deleted successfully",
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete schedules",
+      error: error.message,
+    })
+  }
 }
 
 // Get single schedule
@@ -210,12 +231,83 @@ const deleteSchedule = async (req, res) => {
   }
 }
 
-module.exports={
-    getSchedules,
-    getSchedulesByClass,
-    getSchedule,
-    createSchedule,
-    updateSchedule,
-    deleteSchedule
+// Get schedules by student
+const getSchedulesByStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params
+
+    // Tìm tất cả lớp mà học sinh này đang học
+    const classItem = await Class.find({ students: studentId });
+
+    // Nếu không có lớp nào
+    if (!classItem.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Student is not enrolled in any class",
+      });
+    }
+
+    // Lấy danh sách classId
+    const classIds = classItem.map(cls => cls._id);
+
+    const schedules = await Schedule.find({ classId: { $in: classIds } }).populate("classId", "course")
+
+    res.status(200).json({
+      success: true,
+      count: schedules.length,
+      data: schedules,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch schedules",
+      error: error.message,
+    })
+  }
 }
-    
+
+// Get schedules by teacher
+const getSchedulesByTeacher = async (req, res) => {
+  try {
+    const { teacherId } = req.params
+
+    // Tìm tất cả lớp mà giáo viên này đang dạy
+    const classItem = await Class.find({ teacherId });
+
+    // Nếu không có lớp nào
+    if (!classItem.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Teacher is not teaching any class",
+      });
+    }
+
+    // Lấy danh sách classId
+    const classIds = classItem.map(cls => cls._id);
+
+    const schedules = await Schedule.find({ classId: { $in: classIds } }).populate("classId", "course")
+
+    res.status(200).json({
+      success: true,
+      count: schedules.length,
+      data: schedules,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch schedules",
+      error: error.message,
+    })
+  }
+}
+module.exports = {
+  getSchedules,
+  getSchedulesByClass,
+  getSchedule,
+  createSchedule,
+  updateSchedule,
+  deleteSchedule,
+  getSchedulesByStudent,
+  getSchedulesByTeacher,
+  deleteSchedulesByClass
+}

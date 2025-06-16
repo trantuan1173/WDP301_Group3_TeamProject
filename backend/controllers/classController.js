@@ -198,6 +198,62 @@ const removeStudentFromClass = async (req, res) => {
   }
 }
 
+// Get class by student id
+const getClassByStudentId = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const classes = await Class.find({ students: studentId })
+      .populate("teacherId", "email")
+      .populate("students", "email")
+      .populate("courseId");
+
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data: classes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch class",
+      error: error.message,
+    })
+  }
+}
+
+// Get class by teacher id
+const getClassByTeacherId = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const classes = await Class.find({ teacherId })
+      .populate("courseId");
+
+      const formattedClasses = classes.map((cls) => ({
+        _id: cls._id,
+        teacherId: cls.teacherId._id,
+        courseId: cls.courseId._id,
+        course: cls.course,
+        progress: cls.progress,
+        note: cls.note,
+        start_time: cls.start_time,
+        end_time: cls.end_time,
+      }));
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data:  formattedClasses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch class",
+      error: error.message,
+    })
+  }
+}
+
 module.exports = {
   getClasses,
   getClass,
@@ -206,5 +262,7 @@ module.exports = {
   deleteClass,
   addStudentToClass,
   removeStudentFromClass,
+  getClassByStudentId,
+  getClassByTeacherId,
 }
 

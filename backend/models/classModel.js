@@ -39,7 +39,7 @@ const classSchema = new mongoose.Schema(
     },
     end_time: {
       type: Date,
-      required: true,
+      // required: true,
     },
     createdAt: {
       type: Date,
