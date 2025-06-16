@@ -12,7 +12,6 @@ const WEEKDAYS = [
   { label: "Chủ nhật", value: 6 },
 ];
 
-
 export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
   const [selectedWeekdays, setSelectedWeekdays] = useState([]);
   const [weekdayTimes, setWeekdayTimes] = useState({});
@@ -21,7 +20,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
   const [error, setError] = useState("");
   const [durationDays, setDurationDays] = useState(0);
 
-  // Lấy số buổi học
+  // Lấy số buổi học từ course
   useEffect(() => {
     const fetchClassAndCourse = async () => {
       try {
@@ -64,83 +63,98 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
 
   // Hàm sinh lịch học
   function generateScheduleDates(firstDate, weekdays, duration, weekdayTimes) {
-    let start = new Date(firstDate);
     let result = [];
     let count = 0;
-    // Tuần đầu chỉ lấy các thứ >= hôm nay
-    let firstWeekDates = weekdays
-      .filter(weekday => weekday >= start.getDay())
-      .map(weekday => {
-        let date = new Date(start);
-        let diff = (weekday + 7 - date.getDay()) % 7;
-        date.setDate(date.getDate() + diff);
-        return { weekday, date };
-      });
-    // Các tuần sau lấy đủ các thứ
-    let otherWeekdays = weekdays.filter(weekday => weekday < start.getDay());
-    let week = 0;
+    let currentDate = new Date(firstDate);
+
+    // Sắp xếp weekdays tăng dần
+    weekdays = [...weekdays].sort((a, b) => a - b);
+
     while (count < duration) {
-      // Tuần đầu
-      if (week === 0) {
-        for (let { weekday, date } of firstWeekDates) {
-          if (count >= duration) break;
-          const { start: startHour = "09:00", end: endHour = "12:00" } = weekdayTimes[weekday] || {};
-          let dateStr = date.toISOString().split("T")[0];
-          let start_time = new Date(`${dateStr}T${startHour}:00.000Z`);
-          let end_time = new Date(`${dateStr}T${endHour}:00.000Z`);
-          result.push({
-            date: dateStr,
-            start_time: start_time.toISOString(),
-            end_time: end_time.toISOString(),
-          });
-          count++;
-        }
-      } else {
-        for (let weekday of weekdays) {
-          if (count >= duration) break;
-          let date = new Date(start);
-          let diff = (weekday + 7 - start.getDay()) % 7 + week * 7;
-          date.setDate(date.getDate() + diff);
-          const { start: startHour = "09:00", end: endHour = "12:00" } = weekdayTimes[weekday] || {};
-          let dateStr = date.toISOString().split("T")[0];
-          let start_time = new Date(`${dateStr}T${startHour}:00.000Z`);
-          let end_time = new Date(`${dateStr}T${endHour}:00.000Z`);
-          result.push({
-            date: dateStr,
-            start_time: start_time.toISOString(),
-            end_time: end_time.toISOString(),
-          });
-          count++;
-        }
+      for (let i = 0; i < weekdays.length && count < duration; i++) {
+        // Tìm ngày tiếp theo có thứ là weekdays[i]
+        let day = weekdays[i];
+        let nextDate = new Date(currentDate);
+        let diff = (day + 7 - nextDate.getDay()) % 7;
+        nextDate.setDate(nextDate.getDate() + diff);
+
+        // Lấy giờ start/end
+        const { start: startHour = "09:00", end: endHour = "11:00" } = weekdayTimes[day] || {};
+        let dateStr = nextDate.toISOString().split("T")[0];
+        let start_time = new Date(`${dateStr}T${startHour}`);
+        let end_time = new Date(`${dateStr}T${endHour}`);
+
+        result.push({
+          date: dateStr,
+          start_time: start_time.toISOString(),
+          end_time: end_time.toISOString(),
+        });
+
+        count++;
       }
-      week++;
+      // Sau mỗi tuần, tăng currentDate lên 7 ngày
+      currentDate.setDate(currentDate.getDate() + 7);
     }
     return result;
   }
 
+  // Khi chọn thứ, set giờ mặc định nếu chưa có
   const handleWeekdayChange = (value) => {
     setSelectedWeekdays((prev) =>
       prev.includes(value)
         ? prev.filter((v) => v !== value)
         : [...prev, value]
     );
-    // Nếu chọn mới thì set giờ mặc định cho thứ đó
     setWeekdayTimes((prev) =>
       prev[value]
         ? prev
-        : { ...prev, [value]: { start: "09:00", end: "12:00" } }
+        : { ...prev, [value]: { start: "09:00", end: "11:00" } }
     );
   };
 
+  // Khi chọn giờ bắt đầu, tự động set giờ kết thúc +2h nếu chưa chỉnh end
   const handleTimeChange = (weekday, type, val) => {
-    setWeekdayTimes((prev) => ({
-      ...prev,
-      [weekday]: {
-        ...prev[weekday],
-        [type]: val,
-      },
-    }));
+    setWeekdayTimes((prev) => {
+      if (type === "start") {
+        let [h, m] = val.split(":").map(Number);
+        let endH = (h + 2) % 24;
+        let endStr = `${endH.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+        // Nếu end chưa chỉnh hoặc end đang đúng theo start+2h thì tự động cập nhật
+        const prevEnd = prev[weekday]?.end || "11:00";
+        const prevStart = prev[weekday]?.start || "09:00";
+        let autoEnd = prevEnd;
+        if (!prev[weekday]?.userSetEnd || prevEnd === getAutoEnd(prevStart)) {
+          autoEnd = endStr;
+        }
+        return {
+          ...prev,
+          [weekday]: {
+            ...prev[weekday],
+            start: val,
+            end: autoEnd,
+            userSetEnd: false,
+          },
+        };
+      }
+      if (type === "end") {
+        return {
+          ...prev,
+          [weekday]: {
+            ...prev[weekday],
+            end: val,
+            userSetEnd: true,
+          },
+        };
+      }
+      return prev;
+    });
   };
+
+  function getAutoEnd(start) {
+    let [h, m] = start.split(":").map(Number);
+    let endH = (h + 2) % 24;
+    return `${endH.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -197,14 +211,20 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
                         onChange={e => handleTimeChange(day.value, "start", e.target.value)}
                         className="bg-blue-100 p-1 rounded"
                         style={{ width: 130 }}
+                        step={60}
+                        min="00:00"
+                        max="23:59"
                       />
                       <span>-</span>
                       <input
                         type="time"
-                        value={weekdayTimes[day.value]?.end || "12:00"}
+                        value={weekdayTimes[day.value]?.end || getAutoEnd(weekdayTimes[day.value]?.start || "09:00")}
                         onChange={e => handleTimeChange(day.value, "end", e.target.value)}
                         className="bg-blue-100 p-1 rounded"
                         style={{ width: 130 }}
+                        step={60}
+                        min="00:00"
+                        max="23:59"
                       />
                     </>
                   )}
@@ -217,7 +237,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
             <div className="max-h-40 overflow-auto border rounded p-2 bg-gray-50">
               {preview.map((sch, idx) => (
                 <div key={idx}>
-                  {new Date(sch.date).toLocaleDateString()} | {new Date(sch.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(sch.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(sch.date).toLocaleDateString()} | {new Date(sch.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })} - {new Date(sch.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
                 </div>
               ))}
             </div>
