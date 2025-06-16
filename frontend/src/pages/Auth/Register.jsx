@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Register = () => {
   const [formData, setFormData] = useState({
     profileData: {
+      
       name: '',
     },
     password: '',
@@ -84,19 +85,35 @@ const Register = () => {
 
   if (isLoading) return <LoadingSpinner size={120} text="ĐANG ĐĂNG KÝ" />;
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-white">
-      <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-6">REGISTER</h2>
+ return (
+  <div className="w-full h-screen flex items-center justify-center bg-gray-100">
+    <div className="flex w-[90%] max-w-5xl h-[90%] bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+      {/* Left Side: Background Image with Text Overlay */}
+      <div
+        className="w-1/2 relative bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/BannerRegister.png')" }} // Đổi path đúng ảnh bạn đã upload
+      >
+        <div className="absolute inset-0  flex flex-col items-center justify-end px-6 text-white">
+          
+          <p className="text-sm text-center max-w-[300px] drop-shadow-md ">
+            Join us to improve your English skills with top-quality courses!
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side: Registration Form */}
+      <div className="w-1/2 flex flex-col justify-center px-10 py-8">
+        <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Registration Form</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
             name="profileData.name"
-            placeholder="Fullname"
+            placeholder="First Name"
             value={formData.profileData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <input
             type="email"
@@ -105,7 +122,7 @@ const Register = () => {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <input
             type="password"
@@ -114,7 +131,7 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <input
             type="password"
@@ -123,35 +140,29 @@ const Register = () => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className={`w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'focus:ring-red-500' : 'focus:ring-indigo-500'
-              }`}
+            className={`w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'focus:ring-red-500' : 'focus:ring-indigo-500'}`}
           />
           {errors.confirmPassword && (
-            <p className="text-left text-sm text-red-500 mt-1">
-              {errors.confirmPassword}
-            </p>
+            <p className="text-sm text-red-500">{errors.confirmPassword}</p>
           )}
           <button
             type="submit"
-            className="mt-4 w-full px-4 py-2 border-2 border-indigo-500 text-indigo-500 font-semibold rounded-lg hover:bg-indigo-500 hover:text-white transition duration-200"
+            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
           >
             Register
           </button>
         </form>
 
-        {/* Thông báo xác thực email */}
         {showVerifyMsg && (
-          <p className="mt-4 text-sm text-red-500">
-            Please check your email to verify account.
+          <p className="mt-4 text-sm text-red-500 text-center">
+            Please check your email to verify your account.
           </p>
         )}
 
-        {/* 👇 Dòng chữ nhỏ bên dưới form */}
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-gray-600 text-center">
           Already have an account?{' '}
           <span
-            className="underline text-indigo-500 cursor-pointer hover:text-indigo-700"
+            className="underline text-indigo-600 cursor-pointer hover:text-indigo-800"
             onClick={() => navigate('/login')}
           >
             Sign In
@@ -159,7 +170,10 @@ const Register = () => {
         </p>
       </div>
     </div>
-  );
+  </div>
+);
+
+
 };
 
 export default Register;
