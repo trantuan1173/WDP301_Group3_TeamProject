@@ -1,4 +1,6 @@
 const Class = require("../models/classModel.js");
+const User = require("../models/userModel.js");
+const Course = require("../models/courseModel.js");
 
 // Get all classes
 const getClasses = async function(req, res) {
@@ -228,12 +230,12 @@ const getClassByTeacherId = async (req, res) => {
     const { teacherId } = req.params;
 
     const classes = await Class.find({ teacherId })
-      .populate("courseId");
+      .populate("courseId")
 
       const formattedClasses = classes.map((cls) => ({
         _id: cls._id,
-        teacherId: cls.teacherId._id,
-        courseId: cls.courseId._id,
+        teacherId: cls.teacherId?._id?.toString() ?? cls.teacherId?.toString(),
+        courseId: cls.courseId?._id?.toString() ?? cls.courseId?.toString(),
         course: cls.course,
         progress: cls.progress,
         note: cls.note,

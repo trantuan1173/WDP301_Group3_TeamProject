@@ -16,8 +16,9 @@ const enrollmentRoutes = require('./enrollmentRoutes.js');
 
 const router = express.Router();
 router.use('/payments', paymentRoutes);
-router.use('/attendance', attendanceRoutes);
 router.use('/classes', classRoutes);
+router.use('/attendance', attendanceRoutes);
+
 router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
 router.use('/feedbacks', feedbackRoutes);
