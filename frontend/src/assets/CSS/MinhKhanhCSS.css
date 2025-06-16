@@ -301,12 +301,26 @@
 
 
 /* ====================================== */
+/* Modal  */
 .create-test-modal-at-teacher-create-test {
-  width: 700px !important;
-  max-width: 100% !important;
+    width: 700px !important;
+    max-width: 100% !important;
 }
 
 .choose-test-modal-at-teacher-choose-test {
-  width: 700px !important;
-  max-width: 100% !important;
+    width: 700px !important;
+    max-width: 100% !important;
 }
+
+
+/* ====================================== */
+/* TeacherCreateTestQuestion.jsx */
+
+.option-card {
+  transition: all 0.2s ease;
+}
+.option-card:hover {
+  background-color: #f1f1f1;
+}
+
+

@@ -5,12 +5,14 @@ import { FaSearch } from "react-icons/fa";
 import "../../../assets/CSS/MinhKhanhCSS.css";
 import { API_ENDPOINTS } from '../../../config'
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 
 
 
 
 const ChooseTestModal = ({ show, onHide, onBack }) => {
+    const navigate = useNavigate();
+
     const [testBank, setTestBank] = useState([]);
     const [types, setTypes] = useState([]);
     const [levels, setLevels] = useState([]);
@@ -18,8 +20,9 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
     const [selectedLevel, setSelectedLevel] = useState("");
     const [selectedSkill, setSelectedSkill] = useState("");
     //const [selectedTopic, setSelectedTopic] = useState("");
-    const [dropdown, setDropdown] = useState(""); 
+    const [dropdown, setDropdown] = useState("");
     const [selectedId, setSelectedId] = useState(null);
+    const token = localStorage.getItem("token");
 
     const filtered = testBank.filter(
         t =>
@@ -45,6 +48,26 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                 console.error("Failed to fetch course details:", error);
             });
     }, []);
+
+    useEffect(() => {
+        axios.get(API_ENDPOINTS.TEACHER_GET_TESTS, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                const data = res.data.data.map(test => ({
+                    id: test._id,
+                    name: test.title,
+                    questions: test.questions.length,
+                    level: "N/A", // you can update this if you have level data
+                    date: new Date(test.createdAt).toLocaleDateString()
+                }));
+                setTestBank(data);
+            })
+            .catch(err => console.error("Failed to fetch tests", err));
+    }, []);
+
 
     return (
         <Modal show={show} onHide={onHide} centered dialogClassName="choose-test-modal-at-teacher-choose-test">
@@ -158,6 +181,30 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                             </div>
                         )}
                     </div>
+                    {/* Create Test Button */}
+                    <div style={{ position: "relative", minWidth: 140 }}>
+                        <Button
+                            style={{
+                                background: "#3b82f6",         // Use a solid blue for primary action
+                                color: "#fff",                 // White text for contrast
+                                border: "none",
+                                borderRadius: 12,
+                                fontWeight: 600,
+                                fontSize: 18,
+                                width: "100%",
+                                height: 44,
+                                boxShadow: "0 4px 10px rgba(59,130,246,0.3)", // Subtle blue shadow
+                                transition: "all 0.2s ease-in-out"
+                            }}
+                            onClick={() => navigate("/teacher/exams-create")}
+                            onMouseOver={(e) => e.currentTarget.style.background = "#2563eb"}  // Darker on hover
+                            onMouseOut={(e) => e.currentTarget.style.background = "#3b82f6"}   // Revert on mouse out
+                        >
+                            Tạo đề <span style={{ marginLeft: 8 }}>＋</span>
+                        </Button>
+
+
+                    </div>
                     {/* Topic Dropdown */}
                     {/* <div style={{ position: "relative", minWidth: 140 }}>
                         <Button
@@ -227,6 +274,7 @@ const ChooseTestModal = ({ show, onHide, onBack }) => {
                                     <td></td>
                                 </tr>
                             ))}
+
                         </tbody>
                     </table>
                 </div>
