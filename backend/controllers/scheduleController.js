@@ -41,6 +41,27 @@ const getSchedulesByClass = async (req, res) => {
   }
 }
 
+// Delete schedules by class
+const deleteSchedulesByClass = async (req, res) => {
+  try {
+    const { classId } = req.params
+
+    const schedules = await Schedule.deleteMany({ classId })
+
+    res.status(200).json({
+      success: true,
+      count: schedules.deletedCount,
+      message: "Schedules deleted successfully",
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete schedules",
+      error: error.message,
+    })
+  }
+}
+
 // Get single schedule
 const getSchedule = async (req, res) => {
   try {
@@ -287,5 +308,6 @@ module.exports = {
   updateSchedule,
   deleteSchedule,
   getSchedulesByStudent,
-  getSchedulesByTeacher
+  getSchedulesByTeacher,
+  deleteSchedulesByClass
 }
