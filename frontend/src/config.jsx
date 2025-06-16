@@ -35,4 +35,8 @@ export const API_ENDPOINTS = {
 
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
+  //student endpoints
+GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`
+
+
 };

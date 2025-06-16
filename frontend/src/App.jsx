@@ -38,6 +38,7 @@ const App = () => {
            <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
           <Route path="/attendance/:courseName" element={<AttendanceDetails />} />
+          
 
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
