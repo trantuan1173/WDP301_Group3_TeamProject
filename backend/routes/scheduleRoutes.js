@@ -7,7 +7,8 @@ const {
   updateSchedule,
   deleteSchedule,
   getSchedulesByStudent,
-  getSchedulesByTeacher
+  getSchedulesByTeacher,
+  deleteSchedulesByClass
 } = require("../controllers/scheduleController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -205,5 +206,26 @@ router.get("/student/:studentId", protect, getSchedulesByStudent)
  *         description: Danh sách lịch học
  */
 router.get("/teacher/:teacherId", protect, authorize("admin", "teacher"), getSchedulesByTeacher)
+
+/**
+ * @swagger
+ * /schedule/class/:classId:
+ *   delete:
+ *     summary: Xóa lịch học theo lớp (chỉ admin)
+ *     description: Xóa lịch học theo lớp (chỉ admin)
+ *     tags: [Schedules]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Xóa lịch học thành công
+ */
+router.delete("/class/:classId", protect, authorize("admin", "teacher"), deleteSchedulesByClass)
 
 module.exports = router
