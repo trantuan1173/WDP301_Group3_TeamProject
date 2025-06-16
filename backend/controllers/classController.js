@@ -222,6 +222,38 @@ const getClassByStudentId = async (req, res) => {
   }
 }
 
+// Get class by teacher id
+const getClassByTeacherId = async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+
+    const classes = await Class.find({ teacherId })
+      .populate("courseId");
+
+      const formattedClasses = classes.map((cls) => ({
+        _id: cls._id,
+        teacherId: cls.teacherId._id,
+        courseId: cls.courseId._id,
+        course: cls.course,
+        progress: cls.progress,
+        note: cls.note,
+        start_time: cls.start_time,
+        end_time: cls.end_time,
+      }));
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data:  formattedClasses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch class",
+      error: error.message,
+    })
+  }
+}
+
 module.exports = {
   getClasses,
   getClass,
@@ -231,5 +263,6 @@ module.exports = {
   addStudentToClass,
   removeStudentFromClass,
   getClassByStudentId,
+  getClassByTeacherId,
 }
 
