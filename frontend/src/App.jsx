@@ -5,7 +5,7 @@ import AdminDashboard from './pages/Dashboard/AdminDashboard'
 import Register from './pages/Auth/Register'
 import Login from './pages/Auth/Login'
 import VerifyPage from './pages/Auth/VerifyPage'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
 import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCourse'
 import GuestView from './pages/GuestView'
@@ -16,7 +16,6 @@ import UserProfileForm from './components/Student/UserProfileForm'
 import RequireAuth from './context/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
 import ViewCourseDetails from './pages/ViewCourseDetails'
-import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
 import AdminViewClassDetails from './components/Admin/ManagerClass/AdminViewClassDetails'
 import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -24,6 +23,11 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import VNPay from './pages/vnPay';
 import PaymentResult from './pages/PaymentResult';
+import { UserDoingTest } from './components/Student/UserDoingTest';
+import TeacherManageTest from './components/Teacher/TeacherMangeClass/TeacherManageTest'
+import TeacherCreateTestQuestion from './components/Teacher/TeacherMangeClass/TeacherCreateTestQuestion';
+import TeacherOverview from './components/Teacher/TeacherMangeClass/TeacherOverview'
+import TeacherDashboardLayout from './components/Layouts/TeacherDashboardLayout'
 
 const App = () => {
   return (
@@ -42,9 +46,15 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
           <Route path="/user" element={<UserDashboard />} />
         </Route>
-        <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
-           <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+          <Route path="/teacher/*" element={<TeacherDashboardLayout />}>
+            <Route index element={<TeacherOverview />} />
+            <Route path="overview" element={<TeacherOverview />} />
+            <Route path="exams" element={<TeacherManageTest />} />
+            <Route path="exams-create" element={<TeacherCreateTestQuestion />} />
+          </Route>
         </Route>
+
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -52,9 +62,8 @@ const App = () => {
         <Route path="/vnPay" element={<VNPay />} />
         <Route path="/vnpay_return" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
-       
-          
-        
+
+
       </Routes>
     </AuthProvider>
   )

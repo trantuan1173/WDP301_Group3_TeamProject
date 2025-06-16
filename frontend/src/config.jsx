@@ -1,4 +1,5 @@
 // API Configuration
+//const baseUrl = 'https://beenglishcenter.davidmusic.site/';
 const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
@@ -44,6 +45,8 @@ export const API_ENDPOINTS = {
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
 // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
+  TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
+  TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
