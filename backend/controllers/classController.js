@@ -1,6 +1,5 @@
 const Class = require("../models/classModel.js");
-const User = require("../models/userModel.js");
-const Course = require("../models/courseModel.js");
+const CourseDetail = require("../models/courseDetailModel.js");
 
 // Get all classes
 const getClasses = async function(req, res) {
@@ -29,6 +28,28 @@ const getClass = async function(req, res) {
       .populate("students", "email")
       .populate("courseId")
 
+      const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
+      const courseDetails = await CourseDetail.find({ courseId: courseId });
+  
+
+  
+      const formattedClasses = {
+          _id: classItem._id,
+          teacherId: classItem.teacherId, 
+          students: classItem.students, 
+          className: classItem.course,
+          course: {
+            _id: courseId,
+            name: classItem.courseId?.nameCourses,
+            detail: courseDetails || null,
+          },
+          progress: classItem.progress,
+          note: classItem.note,
+          start_time: classItem.start_time,
+          end_time: classItem.end_time,
+        };
+      
+
     if (!classItem) {
       return res.status(404).json({
         success: false,
@@ -38,7 +59,7 @@ const getClass = async function(req, res) {
 
     res.status(200).json({
       success: true,
-      data: classItem,
+      data: formattedClasses,
     })
   } catch (error) {
     res.status(500).json({
@@ -201,28 +222,81 @@ const removeStudentFromClass = async (req, res) => {
 }
 
 // Get class by student id
+// const getClassByStudentId = async (req, res) => {
+//   try {
+//     const { studentId } = req.params;
+
+//     const classes = await Class.find({ students: studentId })
+//       .populate("teacherId", "email")
+//       .populate("students", "email")
+//       .populate("courseId");
+
+//     res.status(200).json({
+//       success: true,
+//       count: classes.length,
+//       data: classes,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch class",
+//       error: error.message,
+//     })
+//   }
+// }
+
 const getClassByStudentId = async (req, res) => {
   try {
     const { studentId } = req.params;
 
     const classes = await Class.find({ students: studentId })
-      .populate("teacherId", "email")
-      .populate("students", "email")
-      .populate("courseId");
+      .populate("teacherId", "email")      
+      .populate("students", "email")       
+      .populate("courseId");               
+
+    const courseIdList = classes.map((cls) => cls.courseId?._id?.toString() ?? cls.courseId?.toString());
+    const courseDetails = await CourseDetail.find({ courseId: { $in: courseIdList } });
+
+    const courseDetailMap = {};
+    courseDetails.forEach(detail => {
+      courseDetailMap[detail.courseId.toString()] = detail;
+    });
+
+    const formattedClasses = classes.map((cls) => {
+      const courseIdStr = cls.courseId?._id?.toString() ?? cls.courseId?.toString();
+      const courseDetail = courseDetailMap[courseIdStr];
+
+      return {
+        _id: cls._id,
+        teacher: cls.teacherId, 
+        students: cls.students, 
+        className: cls.course,
+        course: {
+          _id: courseIdStr,
+          name: cls.courseId?.nameCourses,
+          detail: courseDetail || null,
+        },
+        progress: cls.progress,
+        note: cls.note,
+        start_time: cls.start_time,
+        end_time: cls.end_time,
+      };
+    });
 
     res.status(200).json({
       success: true,
-      count: classes.length,
-      data: classes,
+      count: formattedClasses.length,
+      data: formattedClasses,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch class",
       error: error.message,
-    })
+    });
   }
-}
+};
 
 // Get class by teacher id
 const getClassByTeacherId = async (req, res) => {
@@ -230,7 +304,7 @@ const getClassByTeacherId = async (req, res) => {
     const { teacherId } = req.params;
 
     const classes = await Class.find({ teacherId })
-      .populate("courseId")
+      .populate("courseId");
 
       const formattedClasses = classes.map((cls) => ({
         _id: cls._id,
