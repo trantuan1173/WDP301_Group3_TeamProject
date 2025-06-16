@@ -19,6 +19,7 @@ import ViewCourseDetails from './pages/ViewCourseDetails'
 import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
 import AdminViewClassDetails from './components/Admin/ManagerClass/AdminViewClassDetails'
 import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
+import AttendanceForm from './components/Teacher/AttendanceForm'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -42,9 +43,11 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
           <Route path="/user" element={<UserDashboard />} />
         </Route>
-        <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
-           <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+          <Route path="/teacher" element={<TeacherDashboard />} />
+          <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />
         </Route>
+
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

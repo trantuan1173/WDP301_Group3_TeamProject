@@ -5,11 +5,12 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import vi from "date-fns/locale/vi";
 import enUS from "date-fns/locale/en-US";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";import { API_ENDPOINTS } from "../../config";
-
+import { jwtDecode } from "jwt-decode";
+import { API_ENDPOINTS } from "../../config";
+import { useNavigate } from "react-router-dom";
 const locales = {
   "en-US": enUS,
-  "vi": vi,
+  vi: vi,
 };
 const localizer = dateFnsLocalizer({
   format,
@@ -21,6 +22,7 @@ const localizer = dateFnsLocalizer({
 
 const TeacherViewShedule = () => {
   const [schedules, setSchedules] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -28,9 +30,12 @@ const TeacherViewShedule = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.id;
-        const res = await axios.get(API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId), {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(
+          API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId),
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setSchedules(res.data.data || []);
       } catch (error) {
         setSchedules([]);
@@ -40,16 +45,16 @@ const TeacherViewShedule = () => {
   }, []);
 
   // Chuyển đổi dữ liệu sang format của DevExtreme Scheduler
-   const events = schedules.map(sch => ({
+  const events = schedules.map((sch) => ({
     id: sch._id,
     title: sch.classId?.course || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
     allDay: false,
+    id: sch.classId?._id,
   }));
 
   // Tối ưu hiển thị ca tối
- 
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -66,6 +71,13 @@ const TeacherViewShedule = () => {
           style={{ height: 600 }}
           popup
           culture="vi"
+          onSelectEvent={(event) => {
+            navigate(
+              `/teacher/attendance/${event.id}?date=${event.start
+                .toISOString()
+                .slice(0, 10)}`
+            );
+          }}
         />
       </div>
     </div>
