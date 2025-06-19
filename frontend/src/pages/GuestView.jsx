@@ -3,6 +3,7 @@ import Footer from "../components/Layouts/Footer";
 import RouteCourse from "../components/Guest/RouteCourse";
 import GuestViewTeacher from "../components/Guest/GuestViewTeacher";
 import GuestViewFeedBack from "../components/Guest/GuestViewFeedBack";
+import GuestGetAdive from "../components/Guest/GuestGetAdvise";
 
 export default function GuestView() {
   return (
@@ -23,6 +24,10 @@ export default function GuestView() {
 
           <div className="w-full mt-12">
             <GuestViewFeedBack />
+          </div>
+
+          <div className="w-full mt-12">
+            <GuestGetAdive />
           </div>
         </section>
       </main>

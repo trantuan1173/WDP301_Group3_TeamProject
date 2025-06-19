@@ -44,7 +44,7 @@ const roadmapData = {
             title: "TỪ MẤT GỐC - 5.0",
             desc: "Cá nhân hóa lộ trình học IELTS theo level từ mất gốc đến 5.0/9.0",
             levels: [
-                { name: "IELTS Foundation", desc: "-3.0/9.0" },
+                { name: "IELTS Foundation", desc: "3.0/9.0" },
                 { name: "IELTS Beginner", desc: "3.5-4.0/9.0" },
                 { name: "IELTS Pre-Intermediate", desc: "4.5-5.0/9.0" }
             ]

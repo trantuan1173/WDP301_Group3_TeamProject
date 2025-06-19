@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import AdminAddAccount from "./AdminAddAccountForm";
 import AdminEditAccount from "./AdminEditAccountForm";
 import AdminViewAccount from "./AdminViewAccountForm";
 import axios from "axios";
-import { useEffect } from "react";
 import { API_ENDPOINTS } from "../../../config";
 import LoadingSpinner from "../../LoadingSpinner";
 
@@ -17,107 +16,105 @@ export default function AdminManageAccount() {
   const [selectedRole, setSelectedRole] = useState("All");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState([]);
 
+  const [roles, setRoles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showIds, setShowIds] = useState({});
+  const usersPerPage = 15;
 
   const handleAddUser = async (newUser) => {
-  const token = localStorage.getItem("token");
-  const endpoint =
-    newUser.role === "teacher"
-      ? API_ENDPOINTS.REGISTER_TEACHER
-      : API_ENDPOINTS.REGISTER;
+    const token = localStorage.getItem("token");
+    const endpoint =
+      newUser.role === "teacher"
+        ? API_ENDPOINTS.REGISTER_TEACHER
+        : API_ENDPOINTS.REGISTER;
 
-  try {
-    const response = await axios.post(endpoint, newUser, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const response = await axios.post(endpoint, newUser, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    if (response.status === 200 || response.status === 201) {
-      alert("Tạo tài khoản thành công");
-      setShowAddForm(false);
-      fetchUsers(); // refresh danh sách từ API
+      if (response.status === 200 || response.status === 201) {
+        alert("Tạo tài khoản thành công");
+        setShowAddForm(false);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo tài khoản:", error);
+      alert("Tạo tài khoản thất bại");
     }
-  } catch (error) {
-    console.error("Lỗi khi tạo tài khoản:", error);
-    alert("Tạo tài khoản thất bại");
-  }
-};
+  };
 
   const handleUpdateUser = async (updatedUser) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const payload = {
-      email: updatedUser.email,
-      roleId: updatedUser.role,
-      profileData: {
-        name: updatedUser.profile.name,
-        dob: updatedUser.profile.dob,
-        gender: updatedUser.profile.gender,
-        phone: updatedUser.profile.phone,
-        address: updatedUser.profile.address || "",
-        imageURL: updatedUser.profile.imageURL || ""
-      },
-    };
-    
-    const response = await axios.put(
-      `${API_ENDPOINTS.ADMIN_UPDATE_USER.replace(":userId", updatedUser._id)}`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.status === 200) {
-      alert("Cập nhật người dùng thành công");
-      setShowEditForm(null);
-      fetchUsers(); // Làm mới danh sách
-    }
-  } catch (error) {
-    console.error("Lỗi cập nhật người dùng:", error);
-    alert("Cập nhật người dùng thất bại");
-  }
-};
-
-
-
-  const handleDeleteUser = async (id) => {
-  if (window.confirm("Bạn có chắc muốn xoá tài khoản này?")) {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(API_ENDPOINTS.DELETE_USER.replace(":userId", id), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert("Xóa tài khoản thành công");
-      fetchUsers(); // Làm mới danh sách
-    } catch (error) {
-      console.error("Lỗi khi xóa tài khoản:", error);
-      alert("Xóa tài khoản thất bại");
-    }
-  }
-};
 
-  // Chỉ đếm giáo viên và học viên
-  const totalTeachers = users.filter((u) => u.role.nameRole.toLowerCase() === "teacher").length;
-  const totalStudents = users.filter((u) => u.role.nameRole.toLowerCase() === "student").length;
-  const totalUsers = totalTeachers + totalStudents;
+      const payload = {
+        email: updatedUser.email,
+        roleId: updatedUser.role,
+        profileData: {
+          name: updatedUser.profile.name,
+          dob: updatedUser.profile.dob,
+          gender: updatedUser.profile.gender,
+          phone: updatedUser.profile.phone,
+          address: updatedUser.profile.address || "",
+          imageURL: updatedUser.profile.imageURL || "",
+        },
+      };
+
+      const response = await axios.put(
+        API_ENDPOINTS.ADMIN_UPDATE_USER.replace(":userId", updatedUser._id),
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Cập nhật người dùng thành công");
+        setShowEditForm(null);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error("Lỗi cập nhật người dùng:", error);
+      alert("Cập nhật người dùng thất bại");
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (window.confirm("Bạn có chắc muốn xoá tài khoản này?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(API_ENDPOINTS.DELETE_USER.replace(":userId", id), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        alert("Xóa tài khoản thành công");
+        fetchUsers();
+      } catch (error) {
+        console.error("Lỗi khi xóa tài khoản:", error);
+        alert("Xóa tài khoản thất bại");
+      }
+    }
+  };
+
+  const toggleShowId = (id) => {
+    setShowIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
       setLoading(true);
       const response = await axios.get(API_ENDPOINTS.GET_ALL_ACCOUNT, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        const mappedUsers = response.data.data.map((item, index) => ({
+        const mappedUsers = response.data.data.map((item) => ({
           id: item._id,
           name: item.profileId?.name || "",
           email: item.email,
@@ -128,8 +125,8 @@ export default function AdminManageAccount() {
           imageURL: item.profileId?.imageURL || "",
           role: {
             _id: item.roleId?._id || "",
-            nameRole: item.roleId?.nameRole || ""
-          }
+            nameRole: item.roleId?.nameRole || "",
+          },
         }));
         setUsers(mappedUsers);
       }
@@ -145,14 +142,11 @@ export default function AdminManageAccount() {
       const token = localStorage.getItem("token");
       setLoading(true);
       const response = await axios.get(API_ENDPOINTS.GET_ALL_ROLE, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
-        const mappedRoles = response.data.data.map((item, index) => item);
-        setRoles(mappedRoles);
+        setRoles(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -165,24 +159,39 @@ export default function AdminManageAccount() {
     fetchUsers();
     fetchRoles();
   }, []);
-  // Lọc theo search và role
+
   const filteredUsers = users.filter((user) => {
     const keyword = searchQuery.toLowerCase().trim();
-    const name = user.name?.toLowerCase() || "";
-    const email = user.email?.toLowerCase() || "";
-    const matchesSearch = name.includes(keyword) || email.includes(keyword);
-    const matchesRole = selectedRole === "All" || user.role.nameRole.toLowerCase() === selectedRole.toLowerCase();
+    const matchesSearch =
+      user.name.toLowerCase().includes(keyword) ||
+      user.email.toLowerCase().includes(keyword);
+    const matchesRole =
+      selectedRole === "All" ||
+      user.role.nameRole.toLowerCase() === selectedRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
+
+  const totalTeachers = users.filter(
+    (u) => u.role.nameRole.toLowerCase() === "teacher"
+  ).length;
+  const totalStudents = users.filter(
+    (u) => u.role.nameRole.toLowerCase() === "student"
+  ).length;
+  const totalUsers = totalTeachers + totalStudents;
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
-  // Danh sách roles cho dropdown chỉnh sửa
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">QUẢN LÝ TÀI KHOẢN</h2>
 
-      {/* Cards thống kê */}
+      {/* Thống kê */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-[#00224D] text-white p-4 rounded-lg text-center font-semibold shadow">
           Tổng người dùng: {totalUsers}
@@ -195,7 +204,7 @@ export default function AdminManageAccount() {
         </div>
       </div>
 
-      {/* Search + Filter + Thêm */}
+      {/* Tìm kiếm + Lọc + Thêm */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Danh sách</span>
@@ -234,7 +243,7 @@ export default function AdminManageAccount() {
         </div>
       </div>
 
-      {/* Form Thêm/Chỉnh sửa/Xem */}
+      {/* Form */}
       {showAddForm && (
         <AdminAddAccount
           onClose={() => setShowAddForm(false)}
@@ -242,10 +251,7 @@ export default function AdminManageAccount() {
         />
       )}
       {showViewForm && (
-        <AdminViewAccount
-          user={showViewForm}
-          onClose={() => setShowViewForm(null)}
-        />
+        <AdminViewAccount user={showViewForm} onClose={() => setShowViewForm(null)} />
       )}
       {showEditForm && (
         <AdminEditAccount
@@ -256,7 +262,7 @@ export default function AdminManageAccount() {
         />
       )}
 
-      {/* Table danh sách người dùng */}
+      {/* Bảng người dùng */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="min-w-full table-auto text-sm text-left">
           <thead className="bg-gray-200 font-semibold">
@@ -272,9 +278,15 @@ export default function AdminManageAccount() {
             </tr>
           </thead>
           <tbody className="divide-y">
-            {filteredUsers.map((user) => (
+            {currentUsers.map((user) => (
               <tr key={user.id}>
-                <td className="px-4 py-2">{user.id}</td>
+                <td className="px-4 py-2">
+                  {showIds[user.id] ? user.id : "****"}
+                  <FaEye
+                    className="inline-block ml-2 text-blue-600 cursor-pointer"
+                    onClick={() => toggleShowId(user.id)}
+                  />
+                </td>
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
                 <td className="px-4 py-2">{user.gender}</td>
@@ -297,18 +309,30 @@ export default function AdminManageAccount() {
                 </td>
               </tr>
             ))}
-            {filteredUsers.length === 0 && (
+            {currentUsers.length === 0 && (
               <tr>
-                <td
-                  colSpan={8}
-                  className="text-center py-4 text-gray-500 italic"
-                >
+                <td colSpan={8} className="text-center py-4 text-gray-500 italic">
                   Không tìm thấy người dùng nào.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-4 gap-2">
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+            className={`px-3 py-1 rounded ${currentPage === page
+              ? "bg-indigo-600 text-white"
+              : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}
+          >
+            {page}
+          </button>
+        ))}
       </div>
     </div>
   );
