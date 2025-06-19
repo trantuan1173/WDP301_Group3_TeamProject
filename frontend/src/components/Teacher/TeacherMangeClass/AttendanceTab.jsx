@@ -65,6 +65,7 @@ export default function AttendanceTab({ classId, students }) {
 
   if (!currentSchedule) {
   // Không có buổi học hiện tại, hiển thị buổi gần nhất trong tương lai
+  
   if (schedules.length === 0) {
     return <div>Không có lịch học nào cho lớp này.</div>;
   }
