@@ -116,7 +116,7 @@ export default function AttendanceTab({ classId, students }) {
                   disabled={attendance[student._id]?.absent}
                 />
               </td>
-              <td className="border px-2 py-1 text-center">
+              <td className="border px-2 py-1 text-center"> // oke 
                 <input
                   type="checkbox"
                   checked={attendance[student._id]?.absent || false}
