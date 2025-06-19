@@ -19,6 +19,7 @@ import ViewCourseDetails from './pages/ViewCourseDetails'
 import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
 import AdminViewClassDetails from './components/Admin/ManagerClass/AdminViewClassDetails'
 import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
+import TeacherClassDetail from './components/Teacher/TeacherMangeClass/TeacherClassDetail'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="/user" element={<UserDashboard />} />
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
+        <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
            <Route path="/teacher" element={<TeacherDashboard />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />

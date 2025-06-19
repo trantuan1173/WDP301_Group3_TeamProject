@@ -50,13 +50,24 @@ export default function AdminViewSchedule() {
   };
 
   // Lấy tên lớp học
-  const fetchClassName = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setClassName(res.data.data?.course || "Buổi học");
-  };
+  // Lấy tên lớp học
+const fetchClassName = async () => {
+  const token = localStorage.getItem("token");
+  const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  // Nếu res.data.data.course là object, lấy trường name hoặc nameCourses
+  const course = res.data.data?.course;
+  let name = "";
+  if (typeof course === "string") {
+    name = course;
+  } else if (typeof course === "object" && course !== null) {
+    name = course.name || course.nameCourses || course._id || "Buổi học";
+  } else {
+    name = "Buổi học";
+  }
+  setClassName(name);
+};
 
   // Lấy lịch học
   const fetchSchedules = async () => {
@@ -136,6 +147,7 @@ export default function AdminViewSchedule() {
             Lớp này chưa có lịch học
           </div>
         ) : (
+          <div className="container mx-auto"> 
           <Calendar
             localizer={localizer}
             events={events}
@@ -154,10 +166,11 @@ export default function AdminViewSchedule() {
               previous: "Trước",
               next: "Sau",
             }}
-            min={new Date(1970, 1, 1, 1, 0, 0)}   // 1:00 AM
+            min={new Date(1970, 1, 1, 7, 0, 0)}   // 1:00 AM
             max={new Date(1970, 1, 1, 23, 59, 59)}   // 11:59:59 PM
             onSelectEvent={handleSelectEvent}
           />
+          </div>
         )}
         <AdminUpdateSheduleForm
           open={!!editEvent}

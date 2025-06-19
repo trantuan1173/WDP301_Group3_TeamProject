@@ -28,7 +28,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
         const resClass = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
           headers: { Authorization: `Bearer ${token}` }
         });
-        const courseId = resClass.data.data?.courseId?._id || resClass.data.data?.courseId;
+        const courseId = resClass.data.data?.course?._id || resClass.data.data?.courseId;
         if (courseId) {
           const resCourse = await axios.get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId), {
             headers: { Authorization: `Bearer ${token}` }

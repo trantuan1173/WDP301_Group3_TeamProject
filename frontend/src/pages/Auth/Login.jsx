@@ -42,7 +42,7 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        setErrorMessage(""); // ✅ Reset lỗi cũ
+        setErrorMessage(""); 
 
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { FaTachometerAlt, FaCalendarAlt, FaChalkboardTeacher, FaUsers, FaClipboardList, FaChartBar, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaTachometerAlt, FaUser, FaCalendarAlt, FaChalkboardTeacher, FaUsers, FaClipboardList, FaChartBar, FaChevronDown, FaChevronRight } from "react-icons/fa";
 
 const menuItems = [
   { key: "overview", label: "OverView", icon: FaTachometerAlt },
+  { key: "profile", label: "Thông tin cá nhân", icon: FaUser },
   { key: "schedule", label: "Lịch dạy", icon: FaCalendarAlt },
   {
     key: "class-management",
