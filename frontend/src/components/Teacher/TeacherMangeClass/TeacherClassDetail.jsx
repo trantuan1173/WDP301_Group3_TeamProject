@@ -1,9 +1,11 @@
+// frontend/src/components/Teacher/TeacherMangeClass/TeacherClassDetail.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import ClassInfoTab from "./ClassInfoTab";
 import StudentListTab from "./StudentListTab";
 import AttendanceTab from "./AttendanceTab";
+import TestTab from "./TestTab";
 
 const TAB = {
   INFO: "INFO",
@@ -25,6 +27,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
           headers: { Authorization: `Bearer ${token}` }
         });
         setClassInfo(resClass.data.data);
+        console.log("Class info fetched successfully:", resClass.data.data);
+
       } catch (err) {
         setClassInfo(null);
       }
@@ -57,8 +61,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <button
           className={`border-2 rounded-lg p-4 font-bold text-lg bg-white transition ${activeTab === TAB.INFO
-              ? "border-blue-600 shadow text-blue-700"
-              : "border-red-500 text-gray-700"
+            ? "border-blue-600 shadow text-blue-700"
+            : "border-red-500 text-gray-700"
             }`}
           onClick={() => setActiveTab(TAB.INFO)}
         >
@@ -66,8 +70,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
         </button>
         <button
           className={`border-2 rounded-lg p-4 font-bold text-lg bg-white transition ${activeTab === TAB.STUDENTS
-              ? "border-blue-600 shadow text-blue-700"
-              : "border-red-500 text-gray-700"
+            ? "border-blue-600 shadow text-blue-700"
+            : "border-red-500 text-gray-700"
             }`}
           onClick={() => setActiveTab(TAB.STUDENTS)}
         >
@@ -75,8 +79,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
         </button>
         <button
           className={`border-2 rounded-lg p-4 font-bold text-lg bg-white transition ${activeTab === TAB.ATTENDANCE
-              ? "border-blue-600 shadow text-blue-700"
-              : "border-red-500 text-gray-700"
+            ? "border-blue-600 shadow text-blue-700"
+            : "border-red-500 text-gray-700"
             }`}
           onClick={() => setActiveTab(TAB.ATTENDANCE)}
         >
@@ -84,8 +88,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
         </button>
         <button
           className={`border-2 rounded-lg p-4 font-bold text-lg bg-white transition ${activeTab === TAB.TEST
-              ? "border-blue-600 shadow text-blue-700"
-              : "border-red-500 text-gray-700"
+            ? "border-blue-600 shadow text-blue-700"
+            : "border-red-500 text-gray-700"
             }`}
           onClick={() => setActiveTab(TAB.TEST)}
         >
@@ -99,7 +103,13 @@ export default function TeacherClassDetail({ classId, onBack }) {
         {activeTab === TAB.ATTENDANCE && (
           <AttendanceTab classId={classInfo?._id} students={classInfo?.students || []} />
         )}
-        {activeTab === TAB.TEST && <div>Bài kiểm tra (đang phát triển)</div>}
+        {activeTab === TAB.TEST &&
+          <div>
+            <TestTab
+              classId={classInfo?._id}
+              courseId={classInfo?.course?.detail?.courseId}
+            />
+          </div>}
       </div>
     </div>
   );

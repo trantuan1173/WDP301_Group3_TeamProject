@@ -6,4 +6,4 @@ const TeacherManageTest = () => {
   )
 }
 
-export default TeacherManageTest
+export default TeacherManageTest 
