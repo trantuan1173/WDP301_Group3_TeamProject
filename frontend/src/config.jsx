@@ -1,4 +1,5 @@
 // API Configuration
+//const baseUrl = 'https://beenglishcenter.davidmusic.site/';
 const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
@@ -34,6 +35,9 @@ export const API_ENDPOINTS = {
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
+  DELETE_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
+  GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
 // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
@@ -44,12 +48,13 @@ export const API_ENDPOINTS = {
   GET_ATTENDANCES_BY_CLASS: (classId) => `${baseUrl}/api/attendance/class/${classId}`,
   CREATE_ATTENDANCE: `${baseUrl}/api/attendance`,
 
+  TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
+  TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
-
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
 };
