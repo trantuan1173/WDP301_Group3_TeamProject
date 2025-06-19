@@ -1,7 +1,7 @@
 // frontend/src/components/Layouts/TeacherSideMenu.jsx
 import React, { useState } from "react";
 import {
-  FaTachometerAlt, FaCalendarAlt, FaChalkboardTeacher,
+  FaTachometerAlt, FaUser, FaCalendarAlt, FaChalkboardTeacher,
   FaUsers, FaClipboardList, FaChartBar, FaChevronDown, FaChevronRight
 } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 // Menu configuration
 const menuItems = [
   { key: "overview", label: "OverView", icon: FaTachometerAlt },
+  { key: "profile", label: "Thông tin cá nhân", icon: FaUser },
   { key: "schedule", label: "Lịch dạy", icon: FaCalendarAlt },
   {
     key: "class-management", label: "Quản lý lớp", icon: FaChalkboardTeacher, children: [

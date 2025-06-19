@@ -47,7 +47,7 @@ export default function AdminViewClassDetails() {
       const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setClassData(res.data.data || res.data);
+      setClassData(res.data.data);
     } catch (err) {
       setClassData(null);
     } finally {
@@ -80,7 +80,12 @@ export default function AdminViewClassDetails() {
     <div className="bg-white min-h-screen p-8">
       <NavBar />
       <h2 className="text-2xl font-bold mb-4 p-8 ">
-        Khóa học {classData.course || ""} - {classData.courseId?.nameCourses || "Tên lớp"}
+        Khóa học {
+          typeof classData.course === "object"
+            ? (classData.course.name || classData.course._id || "Không rõ")
+            : (classData.course || "Không rõ")
+        }
+
       </h2>
       <div className="flex items-center mb-4 w-full">
         <div className="flex gap-4 flex-1">
@@ -122,14 +127,24 @@ export default function AdminViewClassDetails() {
         <div className="grid grid-cols-2 gap-y-2 gap-x-12 max-w-2xl">
           <div className="font-medium">Giáo viên phụ trách:</div>
           <div className={classData.teacherId ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}>
-            {classData.teacherId?.email || "Chưa có giáo viên"}
+            {
+              classData.teacherId && typeof classData.teacherId === "object"
+                ? (classData.teacherId.email || classData.teacherId.name || "Chưa có giáo viên")
+                : (classData.teacherId || "Chưa có giáo viên")
+            }
           </div>
           <div className="font-medium">Tên lớp:</div>
-          <div>{classData.course || "Chưa đặt tên"}</div>
+          <div>
+            {
+              typeof classData.course === "object"
+                ? (classData.course.name || classData.course._id || "Chưa đặt tên")
+                : (classData.course || "Chưa đặt tên")
+            }
+          </div>
           <div className="font-medium">Thời gian học:</div>
-          <div>Chưa có API</div>
+          <div>{classData.course?.detail?.durationDays } Buổi</div>
           <div className="font-medium">Khóa học:</div>
-          <div>{classData.courseId?.nameCourses || ""}</div>
+          <div>{classData.course?.name || ""}</div>
           <div className="font-medium">Tháng mở:</div>
           <div>{getMonthYear(classData.start_time)}</div>
           <div className="font-medium">Trạng thái lớp:</div>
@@ -146,7 +161,14 @@ export default function AdminViewClassDetails() {
       ) : (
         <ul className="list-disc ml-8">
           {classData.students.map((student, idx) => (
-            <li key={student._id || idx}>{student.email || "Không rõ"}</li>
+            <li key={student._id || idx}>
+              {
+                typeof student === "object"
+                  ? (student.email || student.name || JSON.stringify(student) || "Không rõ")
+                  : (student || "Không rõ")
+              }
+
+            </li>
           ))}
         </ul>
       )}

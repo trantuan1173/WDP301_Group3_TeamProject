@@ -45,6 +45,9 @@ export const API_ENDPOINTS = {
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
 // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
+  GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
+  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
   GET_ATTENDANCES_BY_CLASS: (classId) => `${baseUrl}/api/attendance/class/${classId}`,
   CREATE_ATTENDANCE: `${baseUrl}/api/attendance`,
 

@@ -18,6 +18,7 @@ import { AuthProvider } from './context/AuthContext'
 import ViewCourseDetails from './pages/ViewCourseDetails'
 import AdminViewClassDetails from './components/Admin/ManagerClass/AdminViewClassDetails'
 import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
+import TeacherClassDetail from './components/Teacher/TeacherMangeClass/TeacherClassDetail'
 import AttendanceForm from './components/Teacher/AttendanceForm'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/user" element={<UserDashboard />} />
         </Route>
         <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+        <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />
           <Route path="/teacher/*" element={<TeacherDashboardLayout />}>
