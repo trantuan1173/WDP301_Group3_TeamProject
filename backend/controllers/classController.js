@@ -29,7 +29,7 @@ const getClass = async function(req, res) {
       .populate("courseId")
 
       const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
-      const courseDetails = await CourseDetail.find({ courseId: courseId });
+      const courseDetails = await CourseDetail.findOne({ courseId: courseId });
   
 
   

@@ -15,6 +15,9 @@ import RequireAuth from './context/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
 import ViewCourseDetails from './pages/ViewCourseDetails'
 import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
+import AdminViewClassDetails from './components/Admin/ManagerClass/AdminViewClassDetails'
+import AdminViewSchedule from './components/Admin/ManagerClass/AdminViewShedule'
+import TeacherClassDetail from './components/Teacher/TeacherMangeClass/TeacherClassDetail'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -30,6 +33,9 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/course/:id" element={<AdminDetailCourse />} />
+        <Route path="/admin/class/:classId/schedule" element={<AdminViewSchedule />} />
+
+        <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
         <Route element={<RequireAuth allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
@@ -42,6 +48,7 @@ const App = () => {
 
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
+        <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
            <Route path="/teacher" element={<TeacherDashboard />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />

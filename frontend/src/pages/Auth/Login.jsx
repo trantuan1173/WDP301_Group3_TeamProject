@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { useNavigate } from "react-router-dom"; // Thêm dòng này
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
     const [language, setLanguage] = useState("vi");
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(""); // ✅ Thêm state lưu lỗi
     const { setUser } = useAuth();
-    const navigate = useNavigate(); // Thêm dòng này
+    const navigate = useNavigate();
 
     const t = {
         vi: {
@@ -41,28 +42,31 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setErrorMessage(""); 
+
         try {
             const response = await axios.post(`${API_ENDPOINTS.LOGIN}`, form);
             if (response.status === 200) {
                 const { token, profile } = response.data.data;
                 localStorage.setItem('token', token);
-                localStorage.setItem('imageURL', profile.imageURL)
+                localStorage.setItem('imageURL', profile.imageURL);
 
                 const authProfile = await axios.get(`${API_ENDPOINTS.AUTH_PROFILE}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                
+
                 const afterAuthProfile = authProfile.data.data;
                 setUser(afterAuthProfile);
+
                 if (!afterAuthProfile.profile.isUpdated) {
                     navigate("/update-profile");
                 } else if (afterAuthProfile.role === "admin") {
                     navigate("/admin");
                 } else if (afterAuthProfile.role === "student") {
                     navigate("/user");
-                   }   else if (afterAuthProfile.role === "teacher") {
+                } else if (afterAuthProfile.role === "teacher") {
                     navigate("/teacher");
                 } else {
                     navigate("/");
@@ -72,25 +76,24 @@ export default function Login() {
             if (error.response) {
                 const status = error.response.status;
                 const message = error.response.data.message || "Đăng nhập thất bại";
-    
-                if (status === 401) {
-                    alert(message); // Sai tài khoản/mật khẩu
-                } else if (status === 403) {
-                    alert(message); // Chưa xác thực
+
+                if (status === 401 || status === 403) {
+                    setErrorMessage(message); // ✅ Hiển thị lỗi xác thực
                 } else {
-                    alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+                    setErrorMessage("Đã có lỗi xảy ra. Vui lòng thử lại."); // ✅ Lỗi chung
                 }
             } else {
-                alert("Không thể kết nối đến máy chủ.");
+                setErrorMessage("Không thể kết nối đến máy chủ."); // ✅ Lỗi kết nối
             }
         } finally {
             setIsLoading(false);
         }
     };
+
     return (
         <div className="min-h-screen flex">
             {/* Left form */}
-            <div className="w-full md:w-7/10 lg:w-7/10 flex justify-center pt-6  py-30 lg:px-30">
+            <div className="w-full md:w-7/10 lg:w-7/10 flex justify-center pt-6 py-30 lg:px-30">
                 <div className="max-w-md w-full space-y-8">
                     <div className="flex justify-between items-center">
                         <img
@@ -142,7 +145,16 @@ export default function Login() {
                                 />
                             </div>
                         </div>
-                        {isLoading && <LoadingSpinner size={50} textSize={20}/>}
+
+                        {isLoading && <LoadingSpinner size={50} textSize={20} />}
+
+                        {/* ✅ Hiển thị thông báo lỗi */}
+                        {errorMessage && (
+                            <div className="text-red-600 font-semibold text-sm text-center">
+                                {errorMessage}
+                            </div>
+                        )}
+
                         <div>
                             <button
                                 type="submit"
@@ -152,7 +164,8 @@ export default function Login() {
                                 {t[language].login}
                             </button>
                         </div>
-                        {/* Thêm dòng quên mật khẩu */}
+
+                        {/* Quên mật khẩu */}
                         <div className="text-center mt-4 text-sm text-gray-600">
                             <span
                                 className="text-blue-600 hover:underline cursor-pointer font-semibold"
@@ -161,6 +174,8 @@ export default function Login() {
                                 {t[language].forgotPassword}
                             </span>
                         </div>
+
+                        {/* Đăng ký */}
                         <div className="text-center text-sm text-gray-600">
                             {t[language].noAccount}{" "}
                             <span
