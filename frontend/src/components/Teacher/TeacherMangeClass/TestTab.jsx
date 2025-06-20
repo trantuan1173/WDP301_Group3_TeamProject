@@ -8,6 +8,7 @@ import { faClock, faEdit, faTrash, faPlus, faFileExport, faSearch } from "@forta
 import "../../../assets/CSS/MinhKhanhCSS.css"
 import ChooseTestModal from "../teacherModal/ChooseTestModal";
 import AssignTestModal from "../teacherModal/AssignTestModal";
+import { jwtDecode } from "jwt-decode";
 
 const testData = [
     {
@@ -28,6 +29,10 @@ const testData = [
 const TestTab = ({ classId, courseId }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showChooseModal, setShowChooseModal] = useState(false);
+    const [selectedTestId, setSelectedTestId] = useState(null);
+          const token = localStorage.getItem("token");
+          const decodedToken = jwtDecode(token);
+          const teacherId = decodedToken.id;
 
     const [testData, setTestData] = useState([]);
 
@@ -108,7 +113,7 @@ const TestTab = ({ classId, courseId }) => {
                                             onClick={() => setShowCreateModal(true)}
                                         >
                                             <FontAwesomeIcon icon={faPlus} className="me-2" />
-                                            Tạo mới
+                                            Giao bài kiểm tra
                                         </Button>
                                     </div>
                                     <div className="d-flex align-items-center mb-3 mt-3">
@@ -191,7 +196,12 @@ const TestTab = ({ classId, courseId }) => {
                         setShowCreateModal(false);
                         setShowChooseModal(true);
                     }}
+                    courseId={courseId}
+                    classId={classId}
+                    testId={selectedTestId}
+                    teacherId={teacherId}
                 />
+
                 <ChooseTestModal
                     show={showChooseModal}
                     onHide={() => setShowChooseModal(false)}
@@ -199,9 +209,15 @@ const TestTab = ({ classId, courseId }) => {
                         setShowChooseModal(false);
                         setShowCreateModal(true);
                     }}
-                    courseId={courseId}   // <-- add this line
-                    classId={classId}     // <-- add this line
+                    courseId={courseId}
+                    classId={classId}
+                    onTestSelect={(id) => {
+                        setSelectedTestId(id);     // 👈 set it here
+                        setShowChooseModal(false); // 👈 hide modal after selecting
+                        setShowCreateModal(true);  // 👈 show assign modal after selecting
+                    }}
                 />
+
 
 
             </div>

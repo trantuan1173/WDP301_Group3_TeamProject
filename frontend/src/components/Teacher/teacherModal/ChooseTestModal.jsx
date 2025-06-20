@@ -10,7 +10,7 @@ import CreateTestQuestionModal from "./CreateTestQuestionModal";
 
 
 
-const ChooseTestModal = ({ show, onHide, onBack, courseId, classId }) => {
+const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect }) => {
 
     const [testBank, setTestBank] = useState([]);
     const [types, setTypes] = useState([]);
@@ -303,19 +303,24 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId }) => {
                             fontSize: 20,
                             minWidth: 120
                         }}
-                        onClick={onHide}
+                        onClick={() => {
+                            if (selectedId) {
+                                onTestSelect(selectedId); // 👈 call parent with selected test ID
+                            }
+                        }}
                         disabled={!selectedId}
                     >
                         Lưu
                     </Button>
+
                 </div>
             </Modal.Body>
             <CreateTestQuestionModal
                 show={showCreateModal}
                 onHide={() => setShowCreateModal(false)}
                 onSubmit={() => setShowCreateModal(false)}
-                courseId={courseId} 
-                classId={classId}   
+                courseId={courseId}
+                classId={classId}
             />
 
         </Modal>
