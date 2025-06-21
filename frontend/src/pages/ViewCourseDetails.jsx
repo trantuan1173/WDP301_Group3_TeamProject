@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from '../config';
-import { useNavigate, Link } from "react-router-dom";
+import NavBar from '../components/Layouts/NavBar';
 
 const ViewCourseDetails = () => {
   const { courseId } = useParams();
@@ -14,7 +14,7 @@ const ViewCourseDetails = () => {
     axios.get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId))
       .then(res => {
         console.log("API DATA:", res.data);
-        setCourse((res.data.data ) || null);
+        setCourse((res.data.data) || null);
 
         setLoading(false);
       })
@@ -28,17 +28,21 @@ const ViewCourseDetails = () => {
   if (!course) return <div>Course not found.</div>;
 
   return (
+    <div className="h-screen flex flex-col">
+          <header className="w-full ">
+            <NavBar />
+          </header>
     <div style={{ background: "#f3f7fd", minHeight: "100vh", padding: 0 }}>
       {/* Header section with background image */}
       <div
         style={{
-                background: `url(/images/viewcourse.png) center/cover no-repeat`,
-                padding: "32px 0 56px 0",
-                position: "relative",
-                minHeight: 320,
-                display: "flex",
-                alignItems: "center"
-              }}
+          background: `url(/images/viewcourse.png) center/cover no-repeat`,
+          padding: "32px 0 56px 0",
+          position: "relative",
+          minHeight: 320,
+          display: "flex",
+          alignItems: "center"
+        }}
       >
         <button
           onClick={() => navigate(-1)}
@@ -170,6 +174,7 @@ const ViewCourseDetails = () => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };
