@@ -417,6 +417,7 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
+
   const payment = await Payment.findOne({ orderId: orderId });
   vnp_Params = sortObject(vnp_Params);
   const signData = qs.stringify(vnp_Params, { encode: false });
@@ -452,6 +453,13 @@ const vnpayIpn = async (req, res) => {
             payment.paidAt = new Date();
 
             await payment.save(); 
+            const enrollmentData ={
+              courseId: payment.courseId,
+              studentId: payment.studentId,
+            }
+
+            await Enrollment.create(enrollmentData);
+
             res.status(200).json({ RspCode: '00', Message: 'Success' })
           }
           else {
