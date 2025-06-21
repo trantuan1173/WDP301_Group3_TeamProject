@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from '../config';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const ViewCourseDetails = () => {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId))
       .then(res => {
         // Log để kiểm tra cấu trúc dữ liệu
         console.log("API DATA:", res.data);
-        setCourse((res.data.data && res.data.data[0]) || res.data[0] || null);
+        setCourse((res.data.data ) || null);
 
         setLoading(false);
       })
@@ -23,7 +23,7 @@ const ViewCourseDetails = () => {
         setLoading(false);
         setCourse(null);
       });
-  }, [courseId]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (!course) return <div>Course not found.</div>;
@@ -33,13 +33,13 @@ const ViewCourseDetails = () => {
       {/* Header section with background image */}
       <div
         style={{
-    background: `url(/images/viewcourse.png) center/cover no-repeat`,
-    padding: "32px 0 56px 0",
-    position: "relative",
-    minHeight: 320,
-    display: "flex",
-    alignItems: "center"
-  }}
+          background: `url(/images/viewcourse.png) center/cover no-repeat`,
+          padding: "32px 0 56px 0",
+          position: "relative",
+          minHeight: 320,
+          display: "flex",
+          alignItems: "center"
+        }}
       >
         <button
           onClick={() => navigate(-1)}
@@ -69,7 +69,7 @@ const ViewCourseDetails = () => {
         }}>
           <div>
             <h1 style={{ color: "#fff", fontSize: 48, fontWeight: 700, marginBottom: 12, textShadow: "0 2px 8px #0006" }}>
-              { course.courseId.nameCourses || "Name Courses"}
+              {course.courseId.nameCourses || "Name Courses"}
             </h1>
             <div style={{ color: "#fff", fontSize: 22, marginBottom: 4, textShadow: "0 2px 8px #0006" }}>
               Level: {course.level}
@@ -78,7 +78,7 @@ const ViewCourseDetails = () => {
               Duration: {course.durationDays} days
             </div>
           </div>
-          
+
         </div>
       </div>
 
@@ -91,24 +91,24 @@ const ViewCourseDetails = () => {
         gap: 32,
         alignItems: "flex-start",
         flexWrap: "wrap",
-          position: "relative", // Thêm dòng này
-          minHeight: 400
+        position: "relative", // Thêm dòng này
+        minHeight: 400
 
       }}>
         {/* Description box */}
         <div style={{
-  flex: 2,
-  background: "#eaf4ff",
-  borderRadius: 16,
-  padding: 32,
-  minHeight: 220,
-  fontSize: 20,
-  fontWeight: 500,
-  boxShadow: "0 8px 32px #0003",
-  marginTop: "150px" // Thêm dòng này để cách bg 10px
-}}>
-  <span style={{ fontWeight: 700 }}>Description:</span> {course.description || "Mô tả chi tiết ...."}
-</div>
+          flex: 2,
+          background: "#eaf4ff",
+          borderRadius: 16,
+          padding: 32,
+          minHeight: 220,
+          fontSize: 20,
+          fontWeight: 500,
+          boxShadow: "0 8px 32px #0003",
+          marginTop: "150px" // Thêm dòng này để cách bg 10px
+        }}>
+          <span style={{ fontWeight: 700 }}>Description:</span> {course.description || "Mô tả chi tiết ...."}
+        </div>
 
         {/* Card bên phải */}
         <div style={{
@@ -137,6 +137,7 @@ const ViewCourseDetails = () => {
             Ưu đãi đặc biệt tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
           </div>
           <button
+            onClick={() => navigate(`/enroll/${courseId}`)}
             style={{
               marginTop: 24,
               width: "100%",
@@ -151,7 +152,7 @@ const ViewCourseDetails = () => {
               letterSpacing: 1
             }}
           >
-            Đăng ký
+            Enroll
           </button>
         </div>
       </div>

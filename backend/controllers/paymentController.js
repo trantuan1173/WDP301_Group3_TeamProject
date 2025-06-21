@@ -282,7 +282,15 @@ const getPaymentStats = async (req, res) => {
 // Create VNPay URL
 const createVNPayUrl = async (req, res) => {
 
-  const { studentId, courseId, amount, bankCode, language } = req.body;
+  const { courseId, language } = req.body;
+  const courseDetails = await CourseDetail.findOne({ courseId:courseId })
+
+
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findById(decodedToken.id)
+  .populate("profileId", "name dob phone address gender isUpdated imageURL")  
+
 
   const studentObjectId = new mongoose.Types.ObjectId(studentId);
   const courseObjectId = new mongoose.Types.ObjectId(courseId);
@@ -323,7 +331,7 @@ const createVNPayUrl = async (req, res) => {
   vnp_Params['vnp_TxnRef'] = orderId;
   vnp_Params['vnp_OrderInfo'] = `Thanh toan cho ma GD:${orderId}`;
   vnp_Params['vnp_OrderType'] = 'other';
-  vnp_Params['vnp_Amount'] = amount * 100;
+  vnp_Params['vnp_Amount'] = courseDetails.details.price * 100;
   vnp_Params['vnp_ReturnUrl'] = returnUrl;
   // vnp_Params['vnp_IpnUrl'] = ipnUrl;
   vnp_Params['vnp_IpAddr'] = ipAddr;
@@ -350,11 +358,11 @@ const createVNPayUrl = async (req, res) => {
   const vnpUrl = config.get("vnp_Url") + "?" + qs.stringify(vnp_Params, { encode: false });
   console.log("vnpUrl:", vnpUrl);
   const data = await Payment.create({
-    studentId: studentObjectId,
-    courseId: courseObjectId,
-    amount,
+    studentId: user._id,
+    courseId: courseId,
+    amount: courseDetails.details.price,
     orderId,
-    note: "Payment for course " + courseId,
+    note: "Payment for course " + courseDetails.nameCourses + " by " + user.profileId.name,
   });
   // res.redirect(vnpUrl)
   res.json({ success: true, redirectUrl: vnpUrl });
