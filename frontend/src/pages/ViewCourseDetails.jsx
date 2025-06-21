@@ -120,7 +120,7 @@ const ViewCourseDetails = () => {
           marginTop: 150,
           whiteSpace: "pre-line"
         }}>
-          <span style={{ fontWeight: 700 }}>Description:</span> {course.description || "Mô tả chi tiết ...."}
+          <span style={{ fontWeight: 700 }}></span> {course.description || "Mô tả chi tiết ...."}
         </div>
 
         {/* Card bên phải cố định khi cuộn */}
