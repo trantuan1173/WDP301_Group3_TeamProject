@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
@@ -45,7 +46,7 @@ export const API_ENDPOINTS = {
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
-  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+  
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
 
