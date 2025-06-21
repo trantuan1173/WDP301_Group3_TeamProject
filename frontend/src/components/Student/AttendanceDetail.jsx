@@ -1,93 +1,102 @@
-// AttendanceDetails.js
-import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { 
+  FaArrowLeft, 
+  FaCalendarDay, 
+  FaCheckCircle, 
+  FaTimesCircle, 
+  FaRegStickyNote, 
+  FaChalkboardTeacher, 
+  FaBookOpen, 
+  FaLayerGroup 
+} from "react-icons/fa";
 
-const mockSessionDetails = [
-  {
-    no: 1,
-    date: "2025-06-01",
-    slot: "1 (08:00 - 10:00)",
-    room: "A101",
-    lecturer: "Mr. John Doe",
-    group: "TOEIC F-01",
-    status: "Present",
-    comment: "On time",
-  },
-  {
-    no: 2,
-    date: "2025-06-03",
-    slot: "2 (10:00 - 12:00)",
-    room: "A101",
-    lecturer: "Mr. John Doe",
-    group: "TOEIC F-01",
-    status: "Absent",
-    comment: "Sick leave",
-  },
-  {
-    no: 3,
-    date: "2025-06-05",
-    slot: "1 (08:00 - 10:00)",
-    room: "A101",
-    lecturer: "Mr. John Doe",
-    group: "TOEIC F-01",
-    status: "Present",
-    comment: "",
-  },
-];
-
-const AttendanceDetails = () => {
-  const { courseName } = useParams();
+export default function AttendanceDetail() {
+  const { state } = useLocation();
+  const { records = [], classInfo = {} } = state || {};
   const navigate = useNavigate();
 
+  if (!state) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        No attendance detail found. Please return to overview.
+      </div>
+    );
+  }
+
+  const total = records.length;
+  const presentCount = records.filter(r => r.status === true).length;
+  const absentCount = total - presentCount;
+  const attendanceRate = total ? Math.round((presentCount / total) * 100) : 0;
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Attendance Details: {courseName}</h2>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 space-y-6">
+        
+        {/* Back button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+        >
+          <FaArrowLeft /> Back to Overview
+        </button>
 
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
-      >
-        ← Back
-      </button>
+        {/* Header info */}
+        <div>
+          <h1 className="text-3xl font-bold text-indigo-700 flex items-center gap-2">
+            {classInfo.course || "Unnamed Course"}
+          </h1>
+          <p className="text-gray-600 mt-4 flex items-center gap-2">
+            <FaLayerGroup className="text-indigo-400" />
+            <span className="font-medium">Class:</span> {classInfo.className || classInfo._id}
+          </p>
+          <p className="text-gray-600 flex items-center gap-2">
+            <FaChalkboardTeacher className="text-indigo-400" /> 
+            <span className="font-medium">Teacher ID:</span> {classInfo.teacherId || "N/A"}
+          </p>
+        </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2 text-sm">No.</th>
-              <th className="border p-2 text-sm">Date</th>
-              <th className="border p-2 text-sm">Slot</th>
-              <th className="border p-2 text-sm">Room</th>
-              <th className="border p-2 text-sm">Lecturer</th>
-              <th className="border p-2 text-sm">Group Name</th>
-              <th className="border p-2 text-sm">Attendance Status</th>
-              <th className="border p-2 text-sm">Lecturer's Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockSessionDetails.map((session, index) => (
-              <tr key={index} className="text-center">
-                <td className="border p-2">{session.no}</td>
-                <td className="border p-2">{session.date}</td>
-                <td className="border p-2">{session.slot}</td>
-                <td className="border p-2">{session.room}</td>
-                <td className="border p-2">{session.lecturer}</td>
-                <td className="border p-2">{session.group}</td>
-                <td
-                  className={`border p-2 font-semibold ${
-                    session.status === "Present" ? "text-green-600" : "text-red-600"
-                  }`}
-                >
-                  {session.status}
-                </td>
-                <td className="border p-2">{session.comment || "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Summary bar */}
+        <div>
+          <div className="flex justify-between items-center text-sm mb-2">
+            <span className="flex items-center gap-1 text-green-600">
+              <FaCheckCircle /> Present: {presentCount}/{total}
+            </span>
+            <span className="flex items-center gap-1 text-red-500">
+              <FaTimesCircle /> Absent: {absentCount}/{total}
+            </span>
+            <span className="font-semibold">{attendanceRate}% Attendance</span>
+          </div>
+          <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className="h-4 bg-green-500"
+              style={{ width: `${attendanceRate}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Attendance records */}
+        <div className="space-y-3">
+          {records.map((rec) => (
+            <div 
+              key={rec._id}
+              className="border rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 hover:bg-gray-100 transition"
+            >
+              <div className="flex items-center gap-2 text-gray-700 text-sm">
+                <FaCalendarDay className="text-indigo-500" /> 
+                {new Date(rec.date).toLocaleDateString()}
+              </div>
+              <div className={`flex items-center gap-1 text-sm font-medium ${rec.status ? 'text-green-600' : 'text-red-500'}`}>
+                {rec.status ? <FaCheckCircle /> : <FaTimesCircle />}
+                {rec.status ? 'Present' : 'Absent'}
+              </div>
+              <div className="flex items-center gap-1 text-sm text-gray-500 mt-1 sm:mt-0">
+                <FaRegStickyNote /> {rec.note || "No note"}
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
-};
-
-export default AttendanceDetails;
+}

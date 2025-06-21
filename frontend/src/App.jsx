@@ -25,6 +25,8 @@ import StudentProfileDashboard from './pages/Dashboard/StudentProfileDashboard'
 import AttendanceDetails from "./components/Student/AttendanceDetail";
 import VNPay from './pages/vnPay';
 import PaymentResult from './pages/PaymentResult';
+import CourseDetailPage from "./components/Student/CourseDetailPage";
+import AttendanceDetail from "./components/Student/AttendanceDetail";
 
 const App = () => {
   return (
@@ -43,8 +45,8 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
            <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
-          <Route path="/attendance/:courseName" element={<AttendanceDetails />} />
-          
+          {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
+          <Route path="/attendance/:id" element={<AttendanceDetail />} />
 
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
@@ -58,7 +60,7 @@ const App = () => {
         <Route path="/vnPay" element={<VNPay />} />
         <Route path="/vnpay_return" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
-       
+        <Route path="/courses/:id" element={<CourseDetailPage />} />
           
         
       </Routes>

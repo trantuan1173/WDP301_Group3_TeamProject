@@ -52,7 +52,7 @@ const TeacherViewShedule = () => {
 
   return (
     <div className="p-8 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Lịch dạy của tôi</h2>
+      <h2 className="text-2xl font-bold mb-6">Lịch học của tôi</h2>
       <div className="mt-6" style={{ height: 600 }}>
         <Calendar
           localizer={localizer}

@@ -14,7 +14,7 @@ const StudentSideProfile = ({ onMenuSelect, selectedKey }) => {
   return (
     <>
       <div
-        className="flex-1 shadow p-6  w-64 bg-white h-screen"
+        className="flex-1 shadow p-6  w-64 min-h-full"
         style={{ backgroundColor: "#FFFFFF" }}
       >
         <ul

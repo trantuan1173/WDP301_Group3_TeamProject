@@ -23,7 +23,7 @@ const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
   };
 
   return (
-    <div className="flex-1 shadow p-6 w-64 bg-white h-screen">
+    <div className="flex-1 shadow p-6  bg-white  w-64 min-h-full">
       <ul
         className="space-y-3 pl-0 text-left"
         style={{ paddingLeft: 0, marginLeft: 0 }}
