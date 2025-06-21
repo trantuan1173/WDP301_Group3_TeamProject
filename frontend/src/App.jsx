@@ -25,7 +25,8 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import VNPay from './pages/vnPay';
 import PaymentResult from './pages/PaymentResult';
-
+import UserEnrollCourse from './components/Student/UserEnrollCourse';
+import UserPaymentProcess from './components/Student/UserPaymentProcess';
 const App = () => {
   return (
     <AuthProvider>
@@ -52,10 +53,12 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/vnPay" element={<VNPay />} />
-        <Route path="/vnpay_return" element={<PaymentResult />} />
+        <Route path="/vnpay_return/" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
+        <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
+        <Route path="/payment-process" element={<UserPaymentProcess />} />
        
-          
+      
         
       </Routes>
     </AuthProvider>

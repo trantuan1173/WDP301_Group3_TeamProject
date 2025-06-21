@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_ENDPOINTS } from '../config';
+import { useNavigate, Link } from "react-router-dom";
 
 const ViewCourseDetails = () => {
   const { courseId } = useParams();
@@ -13,14 +14,15 @@ const ViewCourseDetails = () => {
     axios.get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId))
       .then(res => {
         console.log("API DATA:", res.data);
-        setCourse((res.data.data && res.data.data[0]) || res.data[0] || null);
+        setCourse((res.data.data ) || null);
+
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
         setCourse(null);
       });
-  }, [courseId]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (!course) return <div>Course not found.</div>;
@@ -30,13 +32,13 @@ const ViewCourseDetails = () => {
       {/* Header section with background image */}
       <div
         style={{
-          background: `url(/images/viewcourse.png) center/cover no-repeat`,
-          padding: "32px 0 56px 0",
-          position: "relative",
-          minHeight: 320,
-          display: "flex",
-          alignItems: "center"
-        }}
+                background: `url(/images/viewcourse.png) center/cover no-repeat`,
+                padding: "32px 0 56px 0",
+                position: "relative",
+                minHeight: 320,
+                display: "flex",
+                alignItems: "center"
+              }}
       >
         <button
           onClick={() => navigate(-1)}
@@ -67,13 +69,7 @@ const ViewCourseDetails = () => {
           zIndex: 1
         }}>
           <div>
-            <h1 style={{
-              color: "#fff",
-              fontSize: 48,
-              fontWeight: 700,
-              marginBottom: 12,
-              textShadow: "0 2px 8px #0006"
-            }}>
+            <h1 style={{ color: "#fff", fontSize: 48, fontWeight: 700, marginBottom: 12, textShadow: "0 2px 8px #0006" }}>
               {course.courseId.nameCourses || "Name Courses"}
             </h1>
             <div style={{
@@ -92,6 +88,7 @@ const ViewCourseDetails = () => {
               Duration: {course.durationDays} days
             </div>
           </div>
+
         </div>
       </div>
 
@@ -106,6 +103,7 @@ const ViewCourseDetails = () => {
         flexWrap: "wrap",
         position: "relative",
         minHeight: 400
+
       }}>
         {/* Description box */}
         <div style={{
@@ -117,10 +115,10 @@ const ViewCourseDetails = () => {
           fontSize: 20,
           fontWeight: 500,
           boxShadow: "0 8px 32px #0003",
-          marginTop: 150,
+          marginTop: "150px",
           whiteSpace: "pre-line"
         }}>
-          <span style={{ fontWeight: 700 }}></span> {course.description || "Mô tả chi tiết ...."}
+          <span style={{ fontWeight: 700 }}>Description:</span> {course.description || "Mô tả chi tiết ...."}
         </div>
 
         {/* Card bên phải cố định khi cuộn */}
@@ -135,8 +133,8 @@ const ViewCourseDetails = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          position: "sticky",   // 👈 Giúp dính
-          top: 100,             // 👈 Vị trí bắt đầu dính khi cuộn
+          position: "sticky",
+          top: 100,
           height: "fit-content"
         }}>
           <img
@@ -153,6 +151,7 @@ const ViewCourseDetails = () => {
             Ưu đãi đặc biệt tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}
           </div>
           <button
+            onClick={() => navigate(`/enroll/${courseId}`)}
             style={{
               marginTop: 24,
               width: "100%",
@@ -167,7 +166,7 @@ const ViewCourseDetails = () => {
               letterSpacing: 1
             }}
           >
-            Đăng ký
+            Enroll
           </button>
         </div>
       </div>

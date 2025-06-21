@@ -1,5 +1,5 @@
 // API Configuration
-const baseUrl = 'http://localhost:9999';
+const baseUrl = 'https://beenglishcenter.gicunhco.com';
 
 export const API_ENDPOINTS = {
 
@@ -43,7 +43,8 @@ export const API_ENDPOINTS = {
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
-  // Teacher endpoints
+  GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
+// Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
   
@@ -56,5 +57,8 @@ export const API_ENDPOINTS = {
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
+
+
+  PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
 
 };
