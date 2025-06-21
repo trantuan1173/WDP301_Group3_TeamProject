@@ -18,6 +18,15 @@ export default function AttendanceForm() {
   const queryParams = new URLSearchParams(location.search);
   const currentDate =
     queryParams.get("date") || new Date().toISOString().split("T")[0];
+  const isToday = (() => {
+    const today = new Date();
+    const input = new Date(currentDate);
+    return (
+      input.getFullYear() === today.getFullYear() &&
+      input.getMonth() === today.getMonth() &&
+      input.getDate() === today.getDate()
+    );
+  })();
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -195,6 +204,7 @@ export default function AttendanceForm() {
                       type="radio"
                       name={`attend-${student._id}`}
                       checked={attendances[student._id] === true}
+                      disabled={!isToday}
                       onChange={() => handleAttendanceChange(student._id, true)}
                     />
                     <span className="ml-2">Có</span>
@@ -204,6 +214,7 @@ export default function AttendanceForm() {
                       type="radio"
                       name={`attend-${student._id}`}
                       checked={attendances[student._id] === false}
+                      disabled={!isToday}
                       onChange={() =>
                         handleAttendanceChange(student._id, false)
                       }
@@ -216,6 +227,7 @@ export default function AttendanceForm() {
                     type="text"
                     placeholder="Ghi chú..."
                     value={notes[student._id] || ""}
+                    disabled={!isToday}
                     onChange={(e) =>
                       setNotes((prev) => ({
                         ...prev,
@@ -239,14 +251,21 @@ export default function AttendanceForm() {
       </div>
 
       {/* Save Button */}
-      <div className="text-right mt-6">
-        <button
-          onClick={handleSaveAttendance}
-          className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-        >
-          Lưu điểm danh
-        </button>
-      </div>
+      {isToday && (
+        <div className="text-right mt-6">
+          <button
+            onClick={handleSaveAttendance}
+            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+          >
+            Lưu điểm danh
+          </button>
+        </div>
+      )}
+      {!isToday && (
+        <div className="text-right mt-6 text-gray-600 italic">
+          Hết thời gian chỉnh sửa điểm danh.
+        </div>
+      )}
     </div>
   );
 }

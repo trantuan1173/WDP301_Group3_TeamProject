@@ -30,6 +30,8 @@ import TeacherManageTest from './components/Teacher/TeacherMangeClass/TeacherMan
 import TeacherCreateTestQuestion from './components/Teacher/TeacherMangeClass/TeacherCreateTestQuestion';
 import TeacherOverview from './components/Teacher/TeacherMangeClass/TeacherOverview'
 import TeacherDashboardLayout from './components/Layouts/TeacherDashboardLayout'
+import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
+import TeacherViewShedule from './components/Teacher/TeacherViewShedule'
 
 const App = () => {
   return (
@@ -57,6 +59,7 @@ const App = () => {
             <Route path="overview" element={<TeacherOverview />} />
             <Route path="exams" element={<TeacherManageTest />} />
             <Route path="exams-create" element={<TeacherCreateTestQuestion />} />
+            <Route path="schedule" element={<TeacherViewShedule />} />
           </Route>
         </Route>
 

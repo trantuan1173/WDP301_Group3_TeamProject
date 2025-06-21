@@ -182,12 +182,25 @@ const createAttendance = async (req, res) => {
       return res.status(404).json({ success: false, message: "Class not found" });
     }
 
+    const inputDate = new Date(date);
+    const today = new Date();
+    const isSameDay =
+      inputDate.getFullYear() === today.getFullYear() &&
+      inputDate.getMonth() === today.getMonth() &&
+      inputDate.getDate() === today.getDate();
+
+    if (!isSameDay) {
+      return res.status(403).json({
+        success: false,
+        message: "Chỉ có thể sửa điểm danh trong ngày.",
+      });
+    }
+
     const results = [];
 
     for (const record of attendances) {
       const { studentId, status, note } = record;
 
-      // Check if student is in class
       if (!classExists.students.includes(studentId)) {
         results.push({
           studentId,
@@ -200,11 +213,10 @@ const createAttendance = async (req, res) => {
       const existingAttendance = await Attendance.findOne({
         classId,
         studentId,
-        date: new Date(date),
+        date: inputDate,
       });
 
       if (existingAttendance) {
-        // Cập nhật nếu đã tồn tại
         existingAttendance.status = status;
         existingAttendance.note = note;
         await existingAttendance.save();
@@ -215,11 +227,10 @@ const createAttendance = async (req, res) => {
           message: "Attendance updated",
         });
       } else {
-        // Tạo mới nếu chưa có
         await Attendance.create({
           classId,
           studentId,
-          date,
+          date: inputDate,
           status,
           note,
         });

@@ -51,28 +51,43 @@ const TeacherViewShedule = () => {
     title: sch.classId?.course || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
+    date: sch.date,
   }));
 
   const CustomEvent = ({ event }) => {
-    return (
-      <div className="flex flex-col items-center justify-between h-full px-1 py-1">
-        <span className="text-white text-sm font-semibold text-center leading-tight">
-          {event.title}
-        </span>
-        <div className="mt-1 mb-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/teacher/attendance/${event.classId}`);
-            }}
-            className="px-2 py-[2px] text-[10px] bg-white text-blue-600 rounded hover:bg-gray-200 transition"
-          >
-            Điểm danh
-          </button>
-        </div>
+  const now = new Date();
+  const eventDate = new Date(event.date);
+  const isSameDay =
+    now.getFullYear() === eventDate.getFullYear() &&
+    now.getMonth() === eventDate.getMonth() &&
+    now.getDate() === eventDate.getDate();
+
+  return (
+    <div className="flex flex-col items-center justify-between h-full px-1 py-1">
+      <span className="text-white text-sm font-semibold text-center leading-tight">
+        {event.title}
+      </span>
+      <div className="mt-1 mb-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(
+              `/teacher/attendance/${event.classId}?date=${event.date}`
+            );
+          }}
+          className={`px-2 py-[2px] text-[10px] rounded transition ${
+            isSameDay
+              ? "bg-white text-blue-600 hover:bg-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          {isSameDay ? "Điểm danh" : "Xem điểm danh"}
+        </button>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
   // Tối ưu hiển thị ca tối
 
