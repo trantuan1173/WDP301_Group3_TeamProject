@@ -4,6 +4,7 @@ const User = require("../models/userModel.js")
 const Enrollment = require("../models/enrollmentModel.js")
 const CourseDetail = require("../models/courseDetailModel.js")
 const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken");
 
 const { Types } = mongoose
 const axios = require("axios");
