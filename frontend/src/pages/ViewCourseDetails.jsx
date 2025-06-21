@@ -91,7 +91,7 @@ const ViewCourseDetails = () => {
         gap: 32,
         alignItems: "flex-start",
         flexWrap: "wrap",
-        position: "relative", // Thêm dòng này
+        position: "relative",
         minHeight: 400
 
       }}>
@@ -105,7 +105,8 @@ const ViewCourseDetails = () => {
           fontSize: 20,
           fontWeight: 500,
           boxShadow: "0 8px 32px #0003",
-          marginTop: "150px" // Thêm dòng này để cách bg 10px
+          marginTop: "150px",
+          whiteSpace: "pre-line"
         }}>
           <span style={{ fontWeight: 700 }}>Description:</span> {course.description || "Mô tả chi tiết ...."}
         </div>
@@ -121,7 +122,10 @@ const ViewCourseDetails = () => {
           maxWidth: 380,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center"
+          alignItems: "center",
+          position: "sticky",
+          top: 100,
+          height: "fit-content"
         }}>
           <img
             src={course.imageURL}
