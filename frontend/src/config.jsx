@@ -55,4 +55,7 @@ export const API_ENDPOINTS = {
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
+
+  PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
+
 };

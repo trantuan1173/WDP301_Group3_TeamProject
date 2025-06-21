@@ -292,10 +292,10 @@ const createVNPayUrl = async (req, res) => {
   .populate("profileId", "name dob phone address gender isUpdated imageURL")  
 
 
-  const studentObjectId = new mongoose.Types.ObjectId(studentId);
-  const courseObjectId = new mongoose.Types.ObjectId(courseId);
-  console.log(">>> req.body:", req.body);
-  console.log(">>> studentId:", studentId);
+  // const studentObjectId = new mongoose.Types.ObjectId(studentId);
+  // const courseObjectId = new mongoose.Types.ObjectId(courseId);
+  // console.log(">>> req.body:", req.body);
+  // console.log(">>> studentId:", studentId);
   console.log(">>> courseId:", courseId);
   process.env.TZ = 'Asia/Ho_Chi_Minh';
 
