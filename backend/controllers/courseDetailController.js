@@ -25,11 +25,10 @@ const getCourseDetailsByCourse = async (req, res) => {
   try {
     const { courseId } = req.params
 
-    const courseDetails = await CourseDetail.find({ courseId }).populate("courseId")
+    const courseDetails = await CourseDetail.findOne({ courseId }).populate("courseId")
 
     res.status(200).json({
       success: true,
-      count: courseDetails.length,
       data: courseDetails,
     })
   } catch (error) {
