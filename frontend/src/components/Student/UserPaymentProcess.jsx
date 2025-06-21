@@ -24,8 +24,8 @@ const UserPaymentProcess = () => {
     const handlePayment = async () => {
         if (paymentMethod === "VNPay") {
             const token = localStorage.getItem("token");
-            const res = await axios.post(
-                "https://beenglishcenter.gicunhco.com/api/payments/create_payment_url",
+            const response = await axios.post(
+                API_ENDPOINTS.PAYMENT_CREATE_PAYMENT_URL,
                 {
                     courseId: courseDetailData._id,
                     language: "vi",
@@ -37,10 +37,10 @@ const UserPaymentProcess = () => {
                     }
                 }
             );
-            console.log(res.data);
-            if (res.data.success) {
-                window.location.href = res.data.data.redirectUrl;
-            }
+            console.log(response.data);
+            if (response.data.redirectUrl) {
+                window.location.href = response.data.redirectUrl;
+              }
         }
     }
     return (

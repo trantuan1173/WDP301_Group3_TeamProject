@@ -53,7 +53,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/vnPay" element={<VNPay />} />
-        <Route path="/vnpay_return" element={<PaymentResult />} />
+        <Route path="/vnpay_return/" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
         <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
         <Route path="/payment-process" element={<UserPaymentProcess />} />

@@ -1,35 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 
 const PaymentResult = () => {
-  const [result, setResult] = useState(null);
+  const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchResult = async () => {
-      const params = new URLSearchParams(window.location.search);
-      try {
-        const response = await axios.get(`https://beenglishcenter.gicunhco.com/api/payments/vnpay_return?${params.toString()}`);
-        setResult(response.data);
-      } catch (error) {
-        setResult({ success: false, message: 'Có lỗi xảy ra khi xử lý kết quả thanh toán.' });
-      }
-    };
+    const responseCode = searchParams.get("vnp_ResponseCode");
+    const transactionStatus = searchParams.get("vnp_TransactionStatus");
+    const amount = searchParams.get("vnp_Amount");
+    const bankCode = searchParams.get("vnp_BankCode");
+    const txnRef = searchParams.get("vnp_TxnRef");
+    const payDate = searchParams.get("vnp_PayDate");
+    const orderInfo = searchParams.get("vnp_OrderInfo");
 
-    fetchResult();
-  }, []);
+    const isSuccess = responseCode === "00" && transactionStatus === "00";
 
-  if (!result) return <p>Đang kiểm tra kết quả thanh toán...</p>;
+    return (
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#F1F6FA] p-4">
+            <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+                <h1 className={`text-2xl font-bold mb-4 ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+                    {isSuccess ? "Thanh toán thành công!" : "Thanh toán thất bại"}
+                </h1>
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Kết quả thanh toán</h2>
-      {result.success ? (
-        <p style={{ color: 'green' }}>✅ Thanh toán thành công! Mã đơn: {result.data?.vnp_TxnRef}</p>
-      ) : (
-        <p style={{ color: 'red' }}>❌ Thanh toán thất bại. Mã lỗi: {result.code}</p>
-      )}
-    </div>
-  );
+                <div className="text-left text-sm text-gray-700 space-y-2">
+                    <p><strong>Mã giao dịch:</strong> {txnRef}</p>
+                    <p><strong>Thông tin:</strong> {decodeURIComponent(orderInfo)}</p>
+                    <p><strong>Ngân hàng:</strong> {bankCode}</p>
+                    <p><strong>Số tiền:</strong> {(amount / 100).toLocaleString()} VND</p>
+                    <p><strong>Thời gian:</strong> {`${payDate?.slice(6, 8)}/${payDate?.slice(4, 6)}/${payDate?.slice(0, 4)} ${payDate?.slice(8, 10)}:${payDate?.slice(10, 12)}`}</p>
+                </div>
+
+                <button
+                    className="mt-6 bg-[#120E7D] text-white px-6 py-2 rounded hover:bg-[#0f0c66]"
+                    onClick={() => navigate('/payment-process')}
+                >
+                    Quay lại trang thanh toán
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default PaymentResult;
