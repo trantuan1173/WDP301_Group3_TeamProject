@@ -44,10 +44,10 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
-// Teacher endpoints
+  // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
-  
+
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
 
@@ -60,5 +60,10 @@ export const API_ENDPOINTS = {
 
 
   PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
+  //student endpoints
+  GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
+  GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
+  // Attendance
+  GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
 
 };
