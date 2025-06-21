@@ -33,7 +33,7 @@ const getCourse = async (req, res) => {
     }
 
     // Get course details
-    const courseDetails = await CourseDetail.find({ courseId: req.params.id })
+    const courseDetails = await CourseDetail.findOne({ courseId: req.params.id })
 
     res.status(200).json({
       success: true,
