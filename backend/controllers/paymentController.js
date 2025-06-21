@@ -284,6 +284,8 @@ const getPaymentStats = async (req, res) => {
 const createVNPayUrl = async (req, res) => {
 
   const { courseId, language } = req.body;
+  const course = await Course.findOne({ _id: courseId })
+
   const courseDetails = await CourseDetail.findOne({ courseId:courseId })
 
 
@@ -332,7 +334,7 @@ const createVNPayUrl = async (req, res) => {
   vnp_Params['vnp_TxnRef'] = orderId;
   vnp_Params['vnp_OrderInfo'] = `Thanh toan cho ma GD:${orderId}`;
   vnp_Params['vnp_OrderType'] = 'other';
-  vnp_Params['vnp_Amount'] = courseDetails.details.price * 100;
+  vnp_Params['vnp_Amount'] = courseDetails.price * 100;
   vnp_Params['vnp_ReturnUrl'] = returnUrl;
   // vnp_Params['vnp_IpnUrl'] = ipnUrl;
   vnp_Params['vnp_IpAddr'] = ipAddr;
@@ -361,9 +363,9 @@ const createVNPayUrl = async (req, res) => {
   const data = await Payment.create({
     studentId: user._id,
     courseId: courseId,
-    amount: courseDetails.details.price,
+    amount: courseDetails.price,
     orderId,
-    note: "Payment for course " + courseDetails.nameCourses + " by " + user.profileId.name,
+    note: "Payment for course " + course.nameCourses + " by " + user.profileId.name,
   });
   // res.redirect(vnpUrl)
   res.json({ success: true, redirectUrl: vnpUrl });
