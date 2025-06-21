@@ -339,9 +339,9 @@ const createVNPayUrl = async (req, res) => {
   // vnp_Params['vnp_IpnUrl'] = ipnUrl;
   vnp_Params['vnp_IpAddr'] = ipAddr;
   vnp_Params['vnp_CreateDate'] = createDate;
-  if (bankCode !== null && bankCode !== '') {
-    vnp_Params['vnp_BankCode'] = bankCode;
-  }
+  // if (bankCode !== null && bankCode !== '') {
+  //   vnp_Params['vnp_BankCode'] = bankCode;
+  // }
 
   vnp_Params = sortObject(vnp_Params);
 
