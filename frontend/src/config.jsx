@@ -1,5 +1,5 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.gicunhco.com';
+const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
 
@@ -65,5 +65,9 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
+
+  // Test
+  DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
+  UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
 
 };

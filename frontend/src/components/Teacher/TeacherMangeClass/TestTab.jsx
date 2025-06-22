@@ -4,7 +4,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { Col, Row, Button, Card, Container, Table, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEdit, faTrash, faPlus, faFileExport, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faEdit, faTrash, faPlus, faFileExport, faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import "../../../assets/CSS/MinhKhanhCSS.css"
 import ChooseTestModal from "../teacherModal/ChooseTestModal";
 import AssignTestModal from "../teacherModal/AssignTestModal";
@@ -30,6 +30,60 @@ const TestTab = ({ classId, courseId }) => {
     const [showChooseModal, setShowChooseModal] = useState(false);
 
     const [testData, setTestData] = useState([]);
+    const [userId, setUserId] = useState(null);
+
+
+    useEffect(() => {
+        const fetchUser = async () => {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setLoading(false);
+            return;
+          }
+    
+          try {
+            const res = await axios.get(API_ENDPOINTS.AUTH_PROFILE, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setUserId(res.data.data._id);
+            console.log(res.data.data._id);
+          } catch (error) {
+            localStorage.removeItem("token");
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchUser();
+      }, []);
+    const handleUploadTest = () => {
+        axios.post(API_ENDPOINTS.UPLOAD_TEST_FROM_XLSX, {
+            classId,
+            courseId
+        })
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Error uploading test:', error);
+            });
+    }
+    const handleDownloadTemplate = () => {
+        axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
+            responseType: 'blob',
+        })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'test-template.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch((error) => {
+                console.error('Error downloading template:', error);
+            });
+    };
 
 
     return (
@@ -109,6 +163,22 @@ const TestTab = ({ classId, courseId }) => {
                                         >
                                             <FontAwesomeIcon icon={faPlus} className="me-2" />
                                             Tạo mới
+                                        </Button>
+                                        <Button
+                                            className="fw-bold ms-4"
+                                            style={{
+                                                background: "#DFE9FF",
+                                                color: "#111827",
+                                                border: "none",
+                                                borderRadius: "12px",
+                                                boxShadow: "0 2px 6px #e0e7ef",
+                                                minWidth: 150,
+                                                fontWeight: 600
+                                            }}
+                                            onClick={handleDownloadTemplate}
+                                        >
+                                            <FontAwesomeIcon icon={faDownload} className="me-2" />
+                                            Template
                                         </Button>
                                     </div>
                                     <div className="d-flex align-items-center mb-3 mt-3">
@@ -201,6 +271,7 @@ const TestTab = ({ classId, courseId }) => {
                     }}
                     courseId={courseId}   // <-- add this line
                     classId={classId}     // <-- add this line
+                    userId={userId}
                 />
 
 
