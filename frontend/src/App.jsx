@@ -1,11 +1,9 @@
-import React from 'react'
-
-
-import AdminDashboard from './pages/Dashboard/AdminDashboard'
-import Register from './pages/Auth/Register'
-import Login from './pages/Auth/Login'
-import VerifyPage from './pages/Auth/VerifyPage'
-import { Routes, Route } from 'react-router-dom'
+import React from "react";
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import Register from "./pages/Auth/Register";
+import Login from "./pages/Auth/Login";
+import VerifyPage from "./pages/Auth/VerifyPage";
+import { Routes, Route } from "react-router-dom";
 
 import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCourse'
 import GuestView from './pages/GuestView'
@@ -23,8 +21,14 @@ import TeacherClassDetail from './components/Teacher/TeacherMangeClass/TeacherCl
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import StudentProfileDashboard from './pages/Dashboard/StudentProfileDashboard'
+import AttendanceDetails from "./components/Student/AttendanceDetail";
 import VNPay from './pages/vnPay';
 import PaymentResult from './pages/PaymentResult';
+import UserEnrollCourse from './components/Student/UserEnrollCourse';
+import UserPaymentProcess from './components/Student/UserPaymentProcess';
+import CourseDetailPage from "./components/Student/CourseDetailPage";
+import AttendanceDetail from "./components/Student/AttendanceDetail";
 
 const App = () => {
   return (
@@ -41,7 +45,11 @@ const App = () => {
         </Route>
         <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
-          <Route path="/user" element={<UserDashboard />} />
+           <Route path="/user" element={<UserDashboard />} />
+          <Route path="/user/profile" element={<StudentProfileDashboard />} />
+          {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
+          <Route path="/attendance/:id" element={<AttendanceDetail />} />
+
         </Route>
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
         <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
@@ -52,14 +60,18 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/vnPay" element={<VNPay />} />
-        <Route path="/vnpay_return" element={<PaymentResult />} />
+        <Route path="/vnpay_return/" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
+        <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
+        <Route path="/payment-process" element={<UserPaymentProcess />} />
        
+      
+        <Route path="/courses/:id" element={<CourseDetailPage />} />
           
         
       </Routes>
     </AuthProvider>
-  )
-}
+  );
+};
 
 export default App;
