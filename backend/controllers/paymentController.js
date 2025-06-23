@@ -4,6 +4,7 @@ const User = require("../models/userModel.js")
 const Enrollment = require("../models/enrollmentModel.js")
 const CourseDetail = require("../models/courseDetailModel.js")
 const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken");
 
 const { Types } = mongoose
 const axios = require("axios");
@@ -282,12 +283,22 @@ const getPaymentStats = async (req, res) => {
 // Create VNPay URL
 const createVNPayUrl = async (req, res) => {
 
-  const { studentId, courseId, amount, bankCode, language } = req.body;
+  const { courseId, language } = req.body;
+  const course = await Course.findOne({ _id: courseId })
 
-  const studentObjectId = new mongoose.Types.ObjectId(studentId);
-  const courseObjectId = new mongoose.Types.ObjectId(courseId);
-  console.log(">>> req.body:", req.body);
-  console.log(">>> studentId:", studentId);
+  const courseDetails = await CourseDetail.findOne({ courseId:courseId })
+
+
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findById(decodedToken.id)
+  .populate("profileId", "name dob phone address gender isUpdated imageURL")  
+
+
+  // const studentObjectId = new mongoose.Types.ObjectId(studentId);
+  // const courseObjectId = new mongoose.Types.ObjectId(courseId);
+  // console.log(">>> req.body:", req.body);
+  // console.log(">>> studentId:", studentId);
   console.log(">>> courseId:", courseId);
   process.env.TZ = 'Asia/Ho_Chi_Minh';
 
@@ -323,14 +334,14 @@ const createVNPayUrl = async (req, res) => {
   vnp_Params['vnp_TxnRef'] = orderId;
   vnp_Params['vnp_OrderInfo'] = `Thanh toan cho ma GD:${orderId}`;
   vnp_Params['vnp_OrderType'] = 'other';
-  vnp_Params['vnp_Amount'] = amount * 100;
+  vnp_Params['vnp_Amount'] = courseDetails.price * 100;
   vnp_Params['vnp_ReturnUrl'] = returnUrl;
   // vnp_Params['vnp_IpnUrl'] = ipnUrl;
   vnp_Params['vnp_IpAddr'] = ipAddr;
   vnp_Params['vnp_CreateDate'] = createDate;
-  if (bankCode !== null && bankCode !== '') {
-    vnp_Params['vnp_BankCode'] = bankCode;
-  }
+  // if (bankCode !== null && bankCode !== '') {
+  //   vnp_Params['vnp_BankCode'] = bankCode;
+  // }
 
   vnp_Params = sortObject(vnp_Params);
 
@@ -350,11 +361,11 @@ const createVNPayUrl = async (req, res) => {
   const vnpUrl = config.get("vnp_Url") + "?" + qs.stringify(vnp_Params, { encode: false });
   console.log("vnpUrl:", vnpUrl);
   const data = await Payment.create({
-    studentId: studentObjectId,
-    courseId: courseObjectId,
-    amount,
+    studentId: user._id,
+    courseId: courseId,
+    amount: courseDetails.price,
     orderId,
-    note: "Payment for course " + courseId,
+    note: "Payment for course " + course.nameCourses + " by " + user.profileId.name,
   });
   // res.redirect(vnpUrl)
   res.json({ success: true, redirectUrl: vnpUrl });
@@ -406,6 +417,7 @@ const vnpayIpn = async (req, res) => {
   delete vnp_Params['vnp_SecureHash'];
   delete vnp_Params['vnp_SecureHashType'];
 
+
   const payment = await Payment.findOne({ orderId: orderId });
   vnp_Params = sortObject(vnp_Params);
   const signData = qs.stringify(vnp_Params, { encode: false });
@@ -441,6 +453,13 @@ const vnpayIpn = async (req, res) => {
             payment.paidAt = new Date();
 
             await payment.save(); 
+            const enrollmentData ={
+              courseId: payment.courseId,
+              studentId: payment.studentId,
+            }
+
+            await Enrollment.create(enrollmentData);
+
             res.status(200).json({ RspCode: '00', Message: 'Success' })
           }
           else {

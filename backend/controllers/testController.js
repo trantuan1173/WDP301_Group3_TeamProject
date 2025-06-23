@@ -1,5 +1,8 @@
 const Test = require("../models/testModel.js");
 const TestSubmission = require("../models/testSubmissionModel.js");
+const path = require("path")
+const XLSX = require("xlsx")
+const fs = require("fs")
 
 // Get all tests
 const getTests = async function(req, res) {
@@ -61,6 +64,27 @@ const getTest = async function(req, res) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch test",
+      error: error.message,
+    })
+  }
+}
+
+// Get tests by course
+const getTestsByCourse = async function(req, res) {
+  try {
+    const { courseId } = req.params
+
+    const tests = await Test.find({ courseId }).populate("teacherId")
+
+    res.status(200).json({
+      success: true,
+      count: tests.length,
+      data: tests,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch tests",
       error: error.message,
     })
   }
@@ -245,14 +269,114 @@ const getStudentSubmissions = async (req, res) => {
   }
 }
 
+// Download XLSX template
+const downloadXLSXTemplate = (req, res) => {
+  const filePath = path.join(__dirname, "../service/templates/test-template.xlsx")
+  res.download(filePath, "test-template.xlsx")
+}
+
+// Upload test from XLSX
+// const uploadTestFromXLSX = async (req, res) => {
+//   try {
+//     const filePath = req.file.path
+//     const workbook = XLSX.readFile(filePath)
+//     const sheetName = workbook.SheetNames[0]
+//     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+
+//     const questions = data.map((row) => ({
+//       question: row.question,
+//       options: [row.option1, row.option2, row.option3, row.option4],
+//       correctAnswer: row.correctAnswer,
+//     }))
+
+//     const { courseId, classId, teacherId, title, description } = req.body
+
+//     const test = await Test.create({
+//       courseId,
+//       classId,
+//       teacherId,
+//       title,
+//       description,
+//       questions,
+//     })
+
+//     fs.unlinkSync(filePath)
+
+//     res.status(201).json({ success: true, data: test })
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: "Upload failed", error: error.message })
+//   }
+// }
+
+const uploadTestFromXLSX = async (req, res) => {
+  try {
+    const filePath = req.file.path;
+
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+
+    const questions = data.map((row) => ({
+      question: row.question,
+      options: [row.option1, row.option2, row.option3, row.option4],
+      correctAnswer: row.correctAnswer,
+    }));
+
+    const { courseId, teacherId, title, description } = req.body;
+
+    const test = await Test.create({
+      courseId,
+      // classId,
+      teacherId,
+      title,
+      description,
+      questions,
+    });
+
+    res.status(201).json({ success: true, data: test });
+  } catch (error) {
+    console.error("Upload failed:", error);
+    res.status(500).json({ success: false, message: "Upload failed", error: error.message });
+  }
+};
+
+const { generateTestWithAI } = require("../service/aiGenerator.js");
+
+const createTestFromAI = async (req, res) => {
+  try {
+    const { title, description, promptText, courseId, teacherId } = req.body;
+
+    const questions = await generateTestWithAI(promptText);
+
+    const test = await Test.create({
+      title,
+      description,
+      courseId,
+      // classId,
+      teacherId,
+      questions,
+    });
+
+    res.status(201).json({ success: true, data: test });
+  } catch (error) {
+    console.error("Lỗi tạo đề bằng AI:", error);
+    res.status(500).json({ success: false, message: "Tạo đề bằng AI thất bại", error: error.message });
+  }
+};
+
 module.exports = {
   getTests,
   getTestsByClass,
   getTest,
+  getTestsByCourse,
   createTest,
   updateTest,
   deleteTest,
   submitTest,
   getTestSubmissions,
   getStudentSubmissions,
+  downloadXLSXTemplate,
+  uploadTestFromXLSX,
+  createTestFromAI,
 }

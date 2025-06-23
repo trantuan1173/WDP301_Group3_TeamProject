@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
@@ -42,10 +43,11 @@ export const API_ENDPOINTS = {
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
+  GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
-  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
 
@@ -56,10 +58,16 @@ export const API_ENDPOINTS = {
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
+
+  PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
   //student endpoints
-GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
-GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
+  GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
+  GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
+
+  // Test
+  DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
+  UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
 
 };

@@ -1,18 +1,33 @@
 import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaPlus } from "react-icons/fa";
-import { Link } from "react-router-dom";
-
 import AdminAddCourse from "./AdminAddCourseForm";
 import AdminEditCourse from "./AdminEditCourse";
 import CourseDetailModal from "./CourseDetailModal";
 import LoadingSpinner from "../../LoadingSpinner";
-
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
-
-
+// Hàm chuẩn hóa dữ liệu course
+function flattenCourseData(course) {
+    // Nếu courseId là object, lấy nameCourses từ đó
+    const nameCourses = course.courseId?.nameCourses || "";
+    const courseId = course.courseId?._id || course.courseId || "";
+    return {
+        _id: course._id,
+        courseId: courseId,
+        nameCourses: nameCourses,
+        type: course.type,
+        level: course.level,
+        price: course.price,
+        description: course.description,
+        durationDays: course.durationDays,
+        imageURL: course.imageURL,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        // Thêm các trường khác nếu cần
+    };
+}
 
 export default function AdminManageCourse() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -23,35 +38,31 @@ export default function AdminManageCourse() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const handleAddCourse = (newCourse) => {
-        setCourses([...courses, { ...newCourse, _id: Date.now().toString() }]);
+    // Fetch courses
+    const fetchCourses = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.status === 200) {
+                setCourses(response.data.data || []);
+            }
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-  
-
-
     useEffect(() => {
-        const fetchCourses = async () => {
-            setLoading(true);
-            try {
-                const token = localStorage.getItem("token");
-                const response = await axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (response.status === 200) {
-                    setCourses(response.data.data || []);
-                    console.log("Courses fetched successfully:", response.data.data);
-                }
-            } catch (error) {
-                console.error("Error fetching courses:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchCourses();
     }, []);
+
+    // Lấy danh sách categories duy nhất
     useEffect(() => {
         const uniqueCategories = new Set();
         courses?.forEach((item) => {
@@ -66,11 +77,23 @@ export default function AdminManageCourse() {
         setCategories([...uniqueCategories]);
     }, [courses]);
 
+    // Thêm course mới
+    const handleAddCourse = (newCourse) => {
+        setCourses([...courses, newCourse]);
+    };
+    // xóa khóa học
+    const handleDeleteCourse = (deletedId) => {
+        setCourses((prev) => prev.filter((c) => c._id !== deletedId));
+        setViewingCourse(null);
+    };
+
+    // Lọc theo tên khóa học
     const filteredCourses = courses.filter((course) => {
-        const name = course.courseId?.nameCourses || "";
+        const name = course.courseId?.nameCourses || course.nameCourses || "";
         return name.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
+    // Group theo category
     const groupedCourses = filteredCourses.reduce((acc, course) => {
         const category = course?.type || "Khác";
         if (!acc[category]) acc[category] = [];
@@ -79,9 +102,9 @@ export default function AdminManageCourse() {
     }, {});
 
     if (loading) return <LoadingSpinner size={120} text="Loading..." />;
-    
+
     return (
-            <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="p-6 bg-gray-100 min-h-screen">
             <h2 className="text-2xl font-bold mb-4">QUẢN LÝ KHOÁ HỌC</h2>
 
             {/* Search + Add */}
@@ -106,38 +129,41 @@ export default function AdminManageCourse() {
 
             {/* Grouped Course Sections */}
             {Object.entries(groupedCourses).map(([category, courseList]) => (
-                <div key={category} className="mb-8">
-                    <h3 className="text-lg font-semibold mb-4">{category}</h3>
+                <div key={category} className="mb-8 ">
+                    <h3 className="text-lg font-semibold mb-4 uppercase">{category}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {courseList.map((course) => (
-                            <div
-                                key={course._id}
-                                className="bg-white rounded-lg shadow p-4 text-center"
-                            >
-                                <img
-                                    src={course.imageURL}
-                                    alt="course"
-                                    className="w-full h-48 object-cover rounded"
-                                />
-                                <h4 className="font-semibold text-base mt-2 mb-1">
-                                    {course.courseId?.nameCourses}
-                                </h4>
-                                <p className="text-sm text-gray-600">Level: {course.level}</p>
-                                <p className="text-sm text-gray-600">
-                                    Thời lượng: {course.durationDays} buổi
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Học phí: {course.price?.toLocaleString()} VNĐ
-                                </p>
-
-                                <button
-                                    className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
-                                    onClick={() => setViewingCourse(course)}
+                        {courseList.map((course) => {
+                            const flatCourse = flattenCourseData(course);
+                            return (
+                                <div
+                                    key={flatCourse._id}
+                                    className="bg-white rounded-lg shadow p-4 text-center"
                                 >
-                                    Chi tiết
-                                </button>
-                            </div>
-                        ))}
+                                    <img
+                                        src={flatCourse.imageURL}
+                                        alt="course"
+                                        className="w-full h-48 object-cover rounded"
+                                    />
+                                    <h4 className="font-semibold text-base mt-2 mb-1">
+                                        {flatCourse.nameCourses}
+                                    </h4>
+                                    <p className="text-sm text-gray-600">Level: {flatCourse.level}</p>
+                                    <p className="text-sm text-gray-600">
+                                        Thời lượng: {flatCourse.durationDays} buổi
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        Học phí: {flatCourse.price?.toLocaleString()} VNĐ
+                                    </p>
+
+                                    <button
+                                        className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
+                                        onClick={() => setViewingCourse(flattenCourseData(course))}
+                                    >
+                                        Chi tiết
+                                    </button>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             ))}
@@ -157,6 +183,7 @@ export default function AdminManageCourse() {
                         setEditingCourse(viewingCourse);
                         setViewingCourse(null);
                     }}
+                    onDelete={handleDeleteCourse}
                 />
             )}
             {editingCourse && (
@@ -174,4 +201,3 @@ export default function AdminManageCourse() {
         </div>
     );
 }
-

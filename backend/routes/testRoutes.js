@@ -9,9 +9,14 @@ const {
   submitTest,
   getTestSubmissions,
   getStudentSubmissions,
+  getTestsByCourse,
+  downloadXLSXTemplate,
+  uploadTestFromXLSX,
+  createTestFromAI
 } = require("../controllers/testController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
-
+const multer = require("multer")
+const upload = multer({ dest: "uploads/" })
 const router = express.Router();
 
 /**
@@ -35,6 +40,88 @@ const router = express.Router();
  *         description: Danh sách bài kiểm tra
  */ 
 router.get("/", protect, getTests)
+
+/**
+ * @swagger
+ * /tests/download-xlsx-template:
+ *   get:
+ *     summary: Tải xuống template Excel (chỉ admin)
+ *     description: Tải xuống template Excel (chỉ admin)
+ *     tags: [Tests]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Template Excel
+ */
+router.get("/download-xlsx-template", downloadXLSXTemplate)
+
+/**
+ * @swagger
+ * /tests/upload-xlsx:
+ *   post:
+ *     summary: Tải lên file Excel (chỉ admin)
+ *     description: Tải lên file Excel (chỉ admin)
+ *     tags: [Tests]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: file
+ *                 format: binary
+ *               courseId:
+ *                 type: string
+ *               classId:
+ *                 type: string
+ *               teacherId:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tạo bài kiểm tra thành công
+ */
+router.post("/upload-xlsx", upload.single("file"), protect, authorize("admin", "teacher"), uploadTestFromXLSX)
+
+/**
+ * @swagger
+ * /tests/create-from-ai:
+ *   post:
+ *     summary: Tạo bài kiểm tra từ AI (chỉ admin, teacher)
+ *     description: Tạo bài kiểm tra từ AI (chỉ admin, teacher)
+ *     tags: [Tests]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               promptText:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *               teacherId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tạo bài kiểm tra thành công
+ */
+router.post("/create-from-ai",protect,authorize("admin","teacher"), createTestFromAI);
 
 /**
  * @swagger
@@ -109,6 +196,27 @@ router.get("/class/:classId", protect, getTestsByClass)
  *         description: Thông tin bài kiểm tra
  */
 router.get("/:id", protect, getTest)
+
+/**
+ * @swagger
+ * /tests/course/{courseId}:
+ *   get:
+ *     summary: Lấy danh sách bài kiểm tra theo khóa học (chỉ admin)
+ *     description: Lấy danh sách bài kiểm tra theo khóa học (chỉ admin)
+ *     tags: [Tests]
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách bài kiểm tra
+ */
+router.get("/course/:courseId", protect, authorize("admin", "teacher"), getTestsByCourse)
 
 /**
  * @swagger
