@@ -25,6 +25,8 @@ import StudentProfileDashboard from './pages/Dashboard/StudentProfileDashboard'
 import AttendanceDetails from "./components/Student/AttendanceDetail";
 import VNPay from './pages/vnPay';
 import PaymentResult from './pages/PaymentResult';
+import UserEnrollCourse from './components/Student/UserEnrollCourse';
+import UserPaymentProcess from './components/Student/UserPaymentProcess';
 import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
 
@@ -58,8 +60,12 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/vnPay" element={<VNPay />} />
-        <Route path="/vnpay_return" element={<PaymentResult />} />
+        <Route path="/vnpay_return/" element={<PaymentResult />} />
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
+        <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
+        <Route path="/payment-process" element={<UserPaymentProcess />} />
+       
+      
         <Route path="/courses/:id" element={<CourseDetailPage />} />
           
         
