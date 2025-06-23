@@ -147,6 +147,66 @@ const createSchedule = async (req, res) => {
   }
 }
 
+// Create bulk schedule
+const createBulkSchedule = async (req, res) => {
+  try {
+    const scheduleList = req.body;
+
+    if (!Array.isArray(scheduleList) || scheduleList.length === 0) {
+      return res.status(400).json({ success: false, message: "Dữ liệu không hợp lệ" });
+    }
+
+    // Lấy classId từ phần tử đầu tiên
+    const classId = scheduleList[0].classId;
+
+    // Kiểm tra lớp có tồn tại không
+    const classExists = await Class.findById(classId);
+    if (!classExists) {
+      return res.status(404).json({ success: false, message: "Class not found" });
+    }
+
+    // Lấy toàn bộ lịch học hiện có của lớp này
+    const existingSchedules = await Schedule.find({ classId });
+
+    // Kiểm tra từng lịch mới có bị trùng không
+    for (const newSchedule of scheduleList) {
+      const newStart = new Date(newSchedule.start_time);
+      const newEnd = new Date(newSchedule.end_time);
+      const newDate = new Date(newSchedule.date).toDateString();
+
+      const conflict = existingSchedules.some(s => {
+        const existingDate = new Date(s.date).toDateString();
+        const existingStart = new Date(s.start_time);
+        const existingEnd = new Date(s.end_time);
+
+        return (
+          existingDate === newDate &&
+          (
+            (existingStart <= newStart && existingEnd > newStart) ||
+            (existingStart < newEnd && existingEnd >= newEnd) ||
+            (existingStart >= newStart && existingEnd <= newEnd)
+          )
+        );
+      });
+
+      if (conflict) {
+        return res.status(400).json({
+          success: false,
+          message: "Có ít nhất một lịch bị trùng với lịch đã tồn tại",
+        });
+      }
+    }
+
+    // Nếu không có xung đột, tiến hành insert
+    const result = await Schedule.insertMany(scheduleList);
+
+    res.status(201).json({ success: true, message: "Create schedules successfully", data: result });
+  } catch (error) {
+    console.error("Lỗi tạo lịch:", error);
+    res.status(500).json({ success: false, message: "Create schedules failed", error: error.message });
+  }
+};
+
 // Update schedule
 const updateSchedule = async (req, res) => {
   try {
@@ -309,5 +369,6 @@ module.exports = {
   deleteSchedule,
   getSchedulesByStudent,
   getSchedulesByTeacher,
-  deleteSchedulesByClass
+  deleteSchedulesByClass,
+  createBulkSchedule,
 }
