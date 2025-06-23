@@ -69,6 +69,27 @@ const getTest = async function(req, res) {
   }
 }
 
+// Get tests by course
+const getTestsByCourse = async function(req, res) {
+  try {
+    const { courseId } = req.params
+
+    const tests = await Test.find({ courseId }).populate("teacherId")
+
+    res.status(200).json({
+      success: true,
+      count: tests.length,
+      data: tests,
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch tests",
+      error: error.message,
+    })
+  }
+}
+
 // Create test
 const createTest = async (req, res) => {
   try {
@@ -315,8 +336,32 @@ const uploadTestFromXLSX = async (req, res) => {
 
     res.status(201).json({ success: true, data: test });
   } catch (error) {
-    console.error("==> ❌ Upload failed:", error);
+    console.error("Upload failed:", error);
     res.status(500).json({ success: false, message: "Upload failed", error: error.message });
+  }
+};
+
+const { generateTestWithAI } = require("../service/aiGenerator.js");
+
+const createTestFromAI = async (req, res) => {
+  try {
+    const { title, description, promptText, courseId, teacherId } = req.body;
+
+    const questions = await generateTestWithAI(promptText);
+
+    const test = await Test.create({
+      title,
+      description,
+      courseId,
+      // classId,
+      teacherId,
+      questions,
+    });
+
+    res.status(201).json({ success: true, data: test });
+  } catch (error) {
+    console.error("Lỗi tạo đề bằng AI:", error);
+    res.status(500).json({ success: false, message: "Tạo đề bằng AI thất bại", error: error.message });
   }
 };
 
@@ -324,6 +369,7 @@ module.exports = {
   getTests,
   getTestsByClass,
   getTest,
+  getTestsByCourse,
   createTest,
   updateTest,
   deleteTest,
@@ -332,4 +378,5 @@ module.exports = {
   getStudentSubmissions,
   downloadXLSXTemplate,
   uploadTestFromXLSX,
+  createTestFromAI,
 }
