@@ -56,18 +56,6 @@ const TestTab = ({ classId, courseId }) => {
     };
     fetchAssigns();
   }, [classId]);
-//    const handleUploadTest = () => {
-//         axios.post(API_ENDPOINTS.UPLOAD_TEST_FROM_XLSX, {
-//             classId,
-//             courseId
-//         })
-//             .then((response) => {
-//                 console.log(response.data);
-//             })
-//             .catch((error) => {
-//                 console.error('Error uploading test:', error);
-//             });
-//     }
 
   const handleDownloadTemplate = () => {
     axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
@@ -84,6 +72,16 @@ const TestTab = ({ classId, courseId }) => {
       .catch((error) => {
         console.error('Error downloading template:', error);
       });
+  };
+
+  // Hàm xác định trạng thái bài kiểm tra
+  const getStatus = (startDate, dueDate) => {
+    const now = new Date();
+    const start = new Date(startDate);
+    const due = new Date(dueDate);
+    if (now < start) return { text: "Chưa bắt đầu", color: "#dc2626" }; // đỏ
+    if (now > due) return { text: "Đã kết thúc", color: "#a16207" }; // nâu
+    return { text: "Đang diễn ra", color: "#16a34a" }; // xanh
   };
 
   return (
@@ -154,36 +152,43 @@ const TestTab = ({ classId, courseId }) => {
                     <th className="py-2 px-4 text-left text-[#111827] font-semibold">Tên</th>
                     <th className="py-2 px-4 text-left text-[#111827] font-semibold">Thời gian</th>
                     <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th>
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">Trạng thái</th>
                     <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {assignData.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center py-6 text-gray-400">Chưa có bài kiểm tra nào</td>
+                      <td colSpan={6} className="text-center py-6 text-gray-400">Chưa có bài kiểm tra nào</td>
                     </tr>
                   ) : (
-                    assignData.map((assign, idx) => (
-                      <tr key={assign._id} className="border-b border-[#e0e7ef]">
-                        <td className="py-2 px-4">{idx + 1}</td>
-                        <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
-                        <td className="py-2 px-4 font-bold">
-                          {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
-                        </td>
-                        <td className="py-2 px-4">{assign.testId?.description || assign.description}</td>
-                        <td className="py-2 px-4">
-                          <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
-                            <FontAwesomeIcon icon={faEdit} />
-                          </button>
-                          <button className="p-1 text-blue-600 hover:text-blue-900">
-                            <FontAwesomeIcon icon={faFileExport} />
-                          </button>
-                          <button className="p-1 text-red-600 hover:text-red-900">
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    assignData.map((assign, idx) => {
+                      const status = getStatus(assign.startDate, assign.dueDate);
+                      return (
+                        <tr key={assign._id} className="border-b border-[#e0e7ef]">
+                          <td className="py-2 px-4">{idx + 1}</td>
+                          <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
+                          <td className="py-2 px-4 font-bold">
+                            {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
+                          </td>
+                          <td className="py-2 px-4">{assign.testId?.description || assign.description}</td>
+                          <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
+                            {status.text}
+                          </td>
+                          <td className="py-2 px-4">
+                            <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
+                              <FontAwesomeIcon icon={faEdit} />
+                            </button>
+                            <button className="p-1 text-blue-600 hover:text-blue-900">
+                              <FontAwesomeIcon icon={faFileExport} />
+                            </button>
+                            <button className="p-1 text-red-600 hover:text-red-900">
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
