@@ -50,7 +50,7 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect
             });
     }, []);
 
-    useEffect(() => {
+    const fetchTests = () => {
         axios.get(API_ENDPOINTS.TEACHER_GET_TESTS, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -67,6 +67,11 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect
                 setTestBank(data);
             })
             .catch(err => console.error("Failed to fetch tests", err));
+    };
+
+    // 2. Call fetchTests on mount
+    useEffect(() => {
+        fetchTests();
     }, []);
 
 
@@ -318,7 +323,9 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect
             <CreateTestQuestionModal
                 show={showCreateModal}
                 onHide={() => setShowCreateModal(false)}
-                onSubmit={() => setShowCreateModal(false)}
+                onSubmit={() => {
+                    setShowCreateModal(false);
+                    fetchTests();                }}
                 courseId={courseId}
                 classId={classId}
             />
