@@ -1,283 +1,220 @@
-// frontend/src/components/Teacher/TeacherMangeClass/TestTab.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
-import { Col, Row, Button, Card, Container, Table, Form } from "react-bootstrap";
+import { jwtDecode } from "jwt-decode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faEdit, faTrash, faPlus, faFileExport, faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
-import "../../../assets/CSS/MinhKhanhCSS.css"
+import { faEdit, faTrash, faPlus, faFileExport, faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import ChooseTestModal from "../teacherModal/ChooseTestModal";
 import AssignTestModal from "../teacherModal/AssignTestModal";
 
-const testData = [
-    {
-        id: 1,
-        name: "Kiểm tra 1",
-        time: "45p (7h45 - 8h30)",
-        description: "Kiểm tra kiến thức đầu vào"
-    },
-    {
-        id: 2,
-        name: "Kiểm tra 2",
-        time: "45p (7h45 - 8h30)",
-        description: "Kiểm tra kiến thức đầu vào"
-    }
-];
-
-
 const TestTab = ({ classId, courseId }) => {
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showChooseModal, setShowChooseModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showChooseModal, setShowChooseModal] = useState(false);
+  const [assignData, setAssignData] = useState([]);
+  const [courseName, setCourseName] = useState("");
+  const [className, setClassName] = useState("");
+  const [userId, setUserId] = useState(null);
 
-    const [testData, setTestData] = useState([]);
-    const [userId, setUserId] = useState(null);
-
-
-    useEffect(() => {
-        const fetchUser = async () => {
-          const token = localStorage.getItem("token");
-          if (!token) {
-            setLoading(false);
-            return;
-          }
-    
-          try {
-            const res = await axios.get(API_ENDPOINTS.AUTH_PROFILE, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            setUserId(res.data.data._id);
-            console.log(res.data.data._id);
-          } catch (error) {
-            localStorage.removeItem("token");
-          } finally {
-            setLoading(false);
-          }
-        };
-    
-        fetchUser();
-      }, []);
-    const handleUploadTest = () => {
-        axios.post(API_ENDPOINTS.UPLOAD_TEST_FROM_XLSX, {
-            classId,
-            courseId
-        })
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.error('Error uploading test:', error);
-            });
+  // Lấy userId từ token
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.id || decoded._id);
+      } catch (e) {
+        setUserId(null);
+      }
     }
-    const handleDownloadTemplate = () => {
-        axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
-            responseType: 'blob',
-        })
-            .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'test-template.xlsx');
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch((error) => {
-                console.error('Error downloading template:', error);
-            });
+  }, []);
+
+  // Lấy danh sách bài kiểm tra đã assign cho lớp
+  useEffect(() => {
+    if (!classId) return;
+    const fetchAssigns = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(API_ENDPOINTS.GET_TEST_ASSIGN_BY_CLASS(classId), {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const assigns = res.data.data || [];
+        setAssignData(assigns);
+
+        // Lấy tên khóa học và tên lớp từ dữ liệu đầu tiên (nếu có)
+        if (assigns.length > 0) {
+          setCourseName(assigns[0].courseId?.nameCourses || "");
+          setClassName(assigns[0].classId?.name || assigns[0].classId || "");
+        } else {
+          setCourseName("");
+          setClassName("");
+        }
+      } catch (err) {
+        setAssignData([]);
+        setCourseName("");
+        setClassName("");
+      }
     };
+    fetchAssigns();
+  }, [classId]);
+//    const handleUploadTest = () => {
+//         axios.post(API_ENDPOINTS.UPLOAD_TEST_FROM_XLSX, {
+//             classId,
+//             courseId
+//         })
+//             .then((response) => {
+//                 console.log(response.data);
+//             })
+//             .catch((error) => {
+//                 console.error('Error uploading test:', error);
+//             });
+//     }
 
+  const handleDownloadTemplate = () => {
+    axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
+      responseType: 'blob',
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'test-template.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        console.error('Error downloading template:', error);
+      });
+  };
 
-    return (
-        <div className="h-screen flex flex-col">
-            <div className="flex-1 p-4">
-                {/* Body */}
-                <Row>
-                    <Col>
-                        <div style={{ background: "#f5f9fc", minHeight: "100vh", padding: "32px" }}>
-                            <Container fluid>
-                                <h2 className="fw-bold mb-4" style={{ color: "#111827", paddingBottom: "30px", marginLeft: "30px" }}>Bài Kiểm Tra</h2>
-                                <Row className="mb-4" style={{ gap: "26px", alignItems: "center", justifyContent: "center" }}>
-                                    <Col md={3}>
-                                        <Form.Select
-                                            className="py-2 fw-semibold"
-                                            style={{
-                                                background: "#0a2540",
-                                                color: "#fff",
-                                                border: "none",
-                                                borderRadius: "12px",
-                                                boxShadow: "0 2px 6px #e0e7ef",
-                                                height: "53px",
-                                                width: "293px"
-                                            }}
-                                        >
-                                            <option>Tiếng Anh Thiếu nhi 1</option>
-                                        </Form.Select>
-                                    </Col>
-                                    <Col md={3}>
-                                        <Form.Select
-                                            className="py-2 fw-semibold"
-                                            style={{
-                                                background: "#0a2540",
-                                                color: "#fff",
-                                                border: "none",
-                                                borderRadius: "12px",
-                                                boxShadow: "0 2px 6px #e0e7ef",
-                                                height: "53px",
-                                                width: "293px"
-                                            }}
-                                        >
-                                            <option>Lớp A01 - 1</option>
-                                        </Form.Select>
-                                    </Col>
-                                </Row>
-                                <Card className="p-4" style={{ background: "#f5f9fc", border: "none", borderRadius: "18px" }}>
-                                    <div className="d-flex align-items-center mb-2">
-                                        <span className="fw-bold fs-5 me-4" style={{ color: "#111827" }}>Danh sách</span>
-                                        <div style={{ borderBottom: "2px solid #e0e7ef", flex: 1, marginBottom: "-12px" }} />
-                                        <Form className="d-flex align-items-center ms-4" style={{ flex: 1, maxWidth: 400 }}>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder=""
-                                                className="rounded-pill me-2"
-                                                style={{
-                                                    background: "#fff",
-                                                    border: "1px solid #e0e7ef",
-                                                    boxShadow: "0 2px 6px #e0e7ef"
-                                                }}
-                                            />
-                                            <Button variant="light" className="rounded-circle border-0" style={{ boxShadow: "none" }}>
-                                                <FontAwesomeIcon icon={faSearch} />
-                                            </Button>
-                                        </Form>
-                                        <Button
-                                            className="fw-bold ms-4"
-                                            style={{
-                                                background: "#DFE9FF",
-                                                color: "#111827",
-                                                border: "none",
-                                                borderRadius: "12px",
-                                                boxShadow: "0 2px 6px #e0e7ef",
-                                                minWidth: 150,
-                                                fontWeight: 600
-                                            }}
-                                            onClick={() => setShowCreateModal(true)}
-                                        >
-                                            <FontAwesomeIcon icon={faPlus} className="me-2" />
-                                            Tạo mới
-                                        </Button>
-                                        <Button
-                                            className="fw-bold ms-4"
-                                            style={{
-                                                background: "#DFE9FF",
-                                                color: "#111827",
-                                                border: "none",
-                                                borderRadius: "12px",
-                                                boxShadow: "0 2px 6px #e0e7ef",
-                                                minWidth: 150,
-                                                fontWeight: 600
-                                            }}
-                                            onClick={handleDownloadTemplate}
-                                        >
-                                            <FontAwesomeIcon icon={faDownload} className="me-2" />
-                                            Template
-                                        </Button>
-                                    </div>
-                                    <div className="d-flex align-items-center mb-3 mt-3">
-                                        <Button
-                                            variant="light"
-                                            className="me-3 fw-semibold d-flex align-items-center"
-                                            style={{
-                                                background: "#DFE9FF",
-                                                border: "none",
-                                                borderRadius: "10px",
-                                                boxShadow: "0 2px 6px #DFE9FF",
-                                                minWidth: 120,
-                                                fontWeight: 600
-                                            }}
-                                        >
-                                            Thời gian
-                                            <span style={{ marginLeft: 8, fontSize: 12 }}>
-                                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                            </span>
-                                        </Button>
-                                        <Button
-                                            variant="light"
-                                            className="fw-semibold d-flex align-items-center"
-                                            style={{
-                                                background: "#DFE9FF",
-                                                border: "none",
-                                                borderRadius: "10px",
-                                                boxShadow: "0 2px 6px #DFE9FF",
-                                                minWidth: 120,
-                                                fontWeight: 600
-                                            }}
-                                        >
-                                            <FontAwesomeIcon icon={faFileExport} className="me-2" />
-                                            Xuất dữ liệu
-                                        </Button>
-                                    </div>
-                                    <Table hover className="align-middle" style={{ background: "#f5f9fc" }}>
-                                        <thead>
-                                            <tr style={{ borderBottom: "2px solid #e0e7ef" }}>
-                                                <th style={{ width: 60, color: "#111827" }}>STT</th>
-                                                <th style={{ color: "#111827" }}>Tên</th>
-                                                <th style={{ color: "#111827" }}>Thời gian</th>
-                                                <th style={{ color: "#111827" }}>Mô tả</th>
-                                                <th style={{ width: 120, color: "#111827" }}>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {testData.map((test, idx) => (
-                                                <tr key={test.id} style={{ borderBottom: "1px solid #e0e7ef" }}>
-                                                    <td>{idx + 1}</td>
-                                                    <td className="fw-semibold">{test.name}</td>
-                                                    <td className="fw-bold">{test.time}</td>
-                                                    <td>{test.description}</td>
-                                                    <td>
-                                                        <Button variant="link" className="p-1 me-2 text-dark">
-                                                            <FontAwesomeIcon icon={faEdit} />
-                                                        </Button>
-                                                        <Button variant="link" className="p-1 text-dark">
-                                                            <FontAwesomeIcon icon={faFileExport} />
-                                                        </Button>
-                                                        <Button variant="link" className="p-1 text-dark">
-                                                            <FontAwesomeIcon icon={faTrash} />
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </Table>
-                                </Card>
-                            </Container>
-                        </div>
-                    </Col>
-                </Row>
-
-                <AssignTestModal
-                    show={showCreateModal}
-                    onHide={() => setShowCreateModal(false)}
-                    onSubmit={() => setShowCreateModal(false)}
-                    switchToChooseModal={() => {
-                        setShowCreateModal(false);
-                        setShowChooseModal(true);
-                    }}
-                />
-                <ChooseTestModal
-                    show={showChooseModal}
-                    onHide={() => setShowChooseModal(false)}
-                    onBack={() => {
-                        setShowChooseModal(false);
-                        setShowCreateModal(true);
-                    }}
-                    courseId={courseId}   // <-- add this line
-                    classId={classId}     // <-- add this line
-                    userId={userId}
-                />
-
-
+  return (
+    <div className="min-h-screen flex flex-col bg-[#f5f9fc]">
+      <div className="flex-1 p-6">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="font-bold text-3xl mb-8 text-[#111827]">Bài Kiểm Tra</h2>
+          <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
+            <div className="flex-1 flex justify-center">
+              <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
+                Course: {courseName || "Chưa có tên khóa học"}
+              </div>
             </div>
+            <div className="flex-1 flex justify-center">
+              <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
+                {className || "Chưa có tên lớp"}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow p-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+              <span className="font-bold text-lg text-[#111827]">Danh sách</span>
+              <div className="flex-1 border-b-2 border-[#e0e7ef] mb-2 md:mb-0" />
+              <form className="flex items-center gap-2 max-w-md w-full">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm bài kiểm tra..."
+                  className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow w-full"
+                />
+                <button type="button" className="rounded-full bg-white border-0 p-2 shadow">
+                  <FontAwesomeIcon icon={faSearch} />
+                </button>
+              </form>
+              <button
+                className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <FontAwesomeIcon icon={faPlus} /> Tạo mới
+              </button>
+              <button
+                className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
+                onClick={handleDownloadTemplate}
+              >
+                <FontAwesomeIcon icon={faDownload} /> Template
+              </button>
+            </div>
+
+            <div className="flex gap-3 mb-4">
+              <button
+                className="bg-[#DFE9FF] text-[#111827] rounded-lg px-6 py-2 font-semibold flex items-center gap-2 shadow"
+              >
+                Thời gian
+                <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              <button
+                className="bg-[#DFE9FF] text-[#111827] rounded-lg px-6 py-2 font-semibold flex items-center gap-2 shadow"
+              >
+                <FontAwesomeIcon icon={faFileExport} /> Xuất dữ liệu
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-[#f5f9fc] rounded-xl">
+                <thead>
+                  <tr className="border-b-2 border-[#e0e7ef]">
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">STT</th>
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">Tên</th>
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">Thời gian</th>
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th>
+                    <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assignData.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center py-6 text-gray-400">Chưa có bài kiểm tra nào</td>
+                    </tr>
+                  ) : (
+                    assignData.map((assign, idx) => (
+                      <tr key={assign._id} className="border-b border-[#e0e7ef]">
+                        <td className="py-2 px-4">{idx + 1}</td>
+                        <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
+                        <td className="py-2 px-4 font-bold">
+                          {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
+                        </td>
+                        <td className="py-2 px-4">{assign.testId?.description || assign.description}</td>
+                        <td className="py-2 px-4">
+                          <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
+                            <FontAwesomeIcon icon={faEdit} />
+                          </button>
+                          <button className="p-1 text-blue-600 hover:text-blue-900">
+                            <FontAwesomeIcon icon={faFileExport} />
+                          </button>
+                          <button className="p-1 text-red-600 hover:text-red-900">
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Modals */}
+          <AssignTestModal
+            show={showCreateModal}
+            onHide={() => setShowCreateModal(false)}
+            onSubmit={() => setShowCreateModal(false)}
+            switchToChooseModal={() => {
+              setShowCreateModal(false);
+              setShowChooseModal(true);
+            }}
+          />
+          <ChooseTestModal
+            show={showChooseModal}
+            onHide={() => setShowChooseModal(false)}
+            onBack={() => {
+              setShowChooseModal(false);
+              setShowCreateModal(true);
+            }}
+            courseId={courseId}
+            classId={classId}
+            userId={userId}
+          />
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
 
 export default TestTab;

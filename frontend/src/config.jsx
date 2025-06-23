@@ -50,6 +50,10 @@ export const API_ENDPOINTS = {
 
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
+  GET_TEST_BY_CLASS:  (classId) => `${baseUrl}/api/tests/class/${classId}`,
+  GET_TEST_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
+  GET_TEST_ASSIGN_BY_CLASS: (classId) => `${baseUrl}/api/test-assigns/class/${classId}`,
+  CREATE_TEST_ASSIGN: `${baseUrl}/api/test-assigns`,
 
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
