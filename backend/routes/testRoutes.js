@@ -9,8 +9,10 @@ const {
   submitTest,
   getTestSubmissions,
   getStudentSubmissions,
+  getTestsByCourse,
   downloadXLSXTemplate,
-  uploadTestFromXLSX
+  uploadTestFromXLSX,
+  createTestFromAI
 } = require("../controllers/testController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 const multer = require("multer")
@@ -91,6 +93,38 @@ router.post("/upload-xlsx", upload.single("file"), protect, authorize("admin", "
 
 /**
  * @swagger
+ * /tests/create-from-ai:
+ *   post:
+ *     summary: Tạo bài kiểm tra từ AI (chỉ admin, teacher)
+ *     description: Tạo bài kiểm tra từ AI (chỉ admin, teacher)
+ *     tags: [Tests]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               promptText:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *               teacherId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Tạo bài kiểm tra thành công
+ */
+router.post("/create-from-ai",protect,authorize("admin","teacher"), createTestFromAI);
+
+/**
+ * @swagger
  * /tests:
  *   post:
  *     summary: Tạo bài kiểm tra (chỉ admin, teacher)
@@ -162,6 +196,27 @@ router.get("/class/:classId", protect, getTestsByClass)
  *         description: Thông tin bài kiểm tra
  */
 router.get("/:id", protect, getTest)
+
+/**
+ * @swagger
+ * /tests/course/{courseId}:
+ *   get:
+ *     summary: Lấy danh sách bài kiểm tra theo khóa học (chỉ admin)
+ *     description: Lấy danh sách bài kiểm tra theo khóa học (chỉ admin)
+ *     tags: [Tests]
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách bài kiểm tra
+ */
+router.get("/course/:courseId", protect, authorize("admin", "teacher"), getTestsByCourse)
 
 /**
  * @swagger
