@@ -36,6 +36,7 @@ import UserEnrollCourse from './components/Student/UserEnrollCourse';
 import UserPaymentProcess from './components/Student/UserPaymentProcess';
 import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
+import { UserDoingTest } from "./components/Student/UserDoingTest";
 
 const App = () => {
   return (
@@ -54,6 +55,7 @@ const App = () => {
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
            <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
+          <Route path="/user/test" element={<UserDoingTest />} />
           {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
           <Route path="/attendance/:id" element={<AttendanceDetail />} />
 

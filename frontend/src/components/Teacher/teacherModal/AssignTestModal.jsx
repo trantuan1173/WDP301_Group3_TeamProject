@@ -3,12 +3,18 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaUpload } from "react-icons/fa";
 import "../../../assets/CSS/MinhKhanhCSS.css"
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../config";
 
 const AssignTestModal = ({
-    show,
+      show,
     onHide,
     onSubmit,
-    switchToChooseModal
+    switchToChooseModal,
+    courseId,      
+    classId,
+    teacherId,
+    testId 
 }) => {
     const [name, setName] = useState('');
     const [startHour, setStartHour] = useState('07');
@@ -26,14 +32,38 @@ const AssignTestModal = ({
         setFile(e.target.files[0]);
     };
 
-    const handleSubmit = () => {
-        onSubmit && onSubmit({
-            name,
-            time: `${startHour}:${startMinute} ${startPeriod} - ${endHour}:${endMinute} ${endPeriod}`,
-            description,
-            file,
-        });
-        onHide();
+ const handleSubmit = async () => {
+        const startDate = new Date();
+        const dueDate = new Date();
+        dueDate.setDate(startDate.getDate() + 2);
+
+        try {
+            console.log('Submitting assignment with courseId:', courseId);
+            console.log('Submitting assignment with testId:', testId);
+            console.log('Submitting assignment with classId:', classId);
+            console.log('Submitting assignment with name:', name);
+            console.log('Submitting assignment with teacherId:', teacherId);
+            console.log('Submitting assignment with startDate:', startDate);
+            console.log('Submitting assignment with dueDate:', dueDate);
+
+            await axios.post(API_ENDPOINTS.TEACHER_ASSIGN_TEST, {
+                courseId,
+                testId,
+                classId,
+                title: name,
+                teacherId,
+                startDate: startDate.toISOString(),
+                dueDate: dueDate.toISOString()
+            }, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+            });
+            onSubmit();
+            onHide();
+        } catch (err) {
+            console.log('the error is:',err);
+            
+            alert("Lỗi khi giao bài kiểm tra!");
+        }
     };
 
     return (
@@ -45,7 +75,7 @@ const AssignTestModal = ({
         >
             <Modal.Body style={{ height: '75vh', width: '100%', overflowY: 'auto', padding: 32 }}>
                 <div className="text-center fw-bold" style={{ fontSize: 28, marginBottom: 24 }}>
-                    Thêm mới bài kiểm tra
+                    Giao bài kiểm tra
                 </div>
                 <Form>
                     <Form.Group className="mb-3">

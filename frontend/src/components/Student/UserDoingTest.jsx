@@ -1,5 +1,8 @@
 // frontend/src/components/Student/UserDoingTest.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import { API_ENDPOINTS } from "../../config";
+import axios from "axios";
 
 const TOTAL_QUESTIONS = 20;
 const CORRECT_QUESTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 20];
@@ -39,6 +42,21 @@ const getColorStyle = (status) => {
 
 export const UserDoingTest = () => {
     const [current, setCurrent] = useState(1);
+    const [userId, setUserId] = useState(null);
+    const [answers, setAnswers] = useState({});
+
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUserId(decoded.id || decoded._id);
+            } catch (e) {
+                setUserId(null);
+            }
+        }
+    }, []);
 
     const handleNav = (direction) => {
         setCurrent((prev) => {
@@ -48,7 +66,35 @@ export const UserDoingTest = () => {
         });
     };
 
+    const handleAnswer = (questionIndex, selectedAnswer) => {
+        setAnswers(prev => ({ ...prev, [questionIndex]: selectedAnswer }));
+    };
+
+    const handleSubmit = async () => {
+        const formattedAnswers = Object.entries(answers).map(([questionIndex, answer]) => ({
+            questionIndex: parseInt(questionIndex),
+            answer
+        }));
+
+        try {
+            await axios.post(API_ENDPOINTS.STUDENT_SUBMIT_TEST, {
+                testId: '68580c0e7653da4040e2da53',
+                studentId: userId,
+                answers: formattedAnswers
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            alert("Nộp bài thành công!");
+        } catch (err) {
+            console.error("Lỗi khi nộp bài:", err);
+            alert("Lỗi khi nộp bài kiểm tra!");
+        }
+    };
+
     const currentQuestion = QUESTION.find(q => q.id === current);
+
+
 
     return (
         <div style={{ display: "flex", height: "100vh", background: "#fff" }}>
@@ -105,8 +151,9 @@ export const UserDoingTest = () => {
                 </div>
 
                 <button
+                    onClick={handleSubmit}
                     style={{
-                        background: "#f00",
+                        background: "#4caf50",
                         color: "#fff",
                         border: "none",
                         borderRadius: 8,
@@ -114,10 +161,11 @@ export const UserDoingTest = () => {
                         fontSize: 20,
                         padding: "8px 32px",
                         marginTop: 12,
-                        boxShadow: "0 4px 8px #d1d5db"
+                        boxShadow: "0 4px 8px #c8e6c9",
+                        cursor: "pointer"
                     }}
                 >
-                    Đóng
+                    Nộp bài
                 </button>
             </div>
 
@@ -157,15 +205,15 @@ export const UserDoingTest = () => {
                                 <button
                                     key={idx}
                                     style={{
-                                        background: "#fff",
-                                        border: "2px solid #ccc",
-                                        borderRadius: 8,
+                                        display: "block",
+                                        width: "100%",
                                         padding: "10px 16px",
-                                        fontSize: 16,
-                                        fontWeight: 500,
-                                        cursor: "pointer",
-                                        textAlign: "left"
+                                        margin: "8px 0",
+                                        background: answers[current] === opt ? "#dbeafe" : "#fff",
+                                        border: "1px solid #ccc",
+                                        borderRadius: 8
                                     }}
+                                    onClick={() => handleAnswer(current, opt)}
                                 >
                                     {opt}
                                 </button>
