@@ -27,6 +27,11 @@ export default function AttendanceForm() {
       input.getDate() === today.getDate()
     );
   })();
+  const isFutureDate = (() => {
+    const today = new Date();
+    const input = new Date(currentDate);
+    return input > today;
+  })();
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -261,9 +266,14 @@ export default function AttendanceForm() {
           </button>
         </div>
       )}
-      {!isToday && (
+      {!isToday && !isFutureDate && (
         <div className="text-right mt-6 text-gray-600 italic">
           Hết thời gian chỉnh sửa điểm danh.
+        </div>
+      )}
+      {isFutureDate && (
+        <div className="text-right mt-6 text-gray-600 italic">
+          Chưa tới thời gian điểm danh.
         </div>
       )}
     </div>

@@ -1,11 +1,3 @@
-import React from 'react'
-
-
-import AdminDashboard from './pages/Dashboard/AdminDashboard'
-import Register from './pages/Auth/Register'
-import Login from './pages/Auth/Login'
-import VerifyPage from './pages/Auth/VerifyPage'
-import { Routes, Route, Navigate } from 'react-router-dom'
 import React from "react";
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import Register from "./pages/Auth/Register";
