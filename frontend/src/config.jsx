@@ -1,5 +1,5 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.gicunhco.com';
+const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
 
@@ -50,6 +50,10 @@ export const API_ENDPOINTS = {
   TEACHER_ASSIGN_TEST: `${baseUrl}/api/test-assigns`,
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
+  GET_TEST_BY_CLASS:  (classId) => `${baseUrl}/api/tests/class/${classId}`,
+  GET_TEST_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
+  GET_TEST_ASSIGN_BY_CLASS: (classId) => `${baseUrl}/api/test-assigns/class/${classId}`,
+  CREATE_TEST_ASSIGN: `${baseUrl}/api/test-assigns`,
 
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
@@ -65,5 +69,9 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
+
+  // Test
+  DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
+  UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
 
 };

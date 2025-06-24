@@ -10,7 +10,7 @@ import CreateTestQuestionModal from "./CreateTestQuestionModal";
 
 
 
-const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect }) => {
+const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId }) => {
 
     const [testBank, setTestBank] = useState([]);
     const [types, setTypes] = useState([]);
@@ -323,11 +323,10 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, onTestSelect
             <CreateTestQuestionModal
                 show={showCreateModal}
                 onHide={() => setShowCreateModal(false)}
-                onSubmit={() => {
-                    setShowCreateModal(false);
-                    fetchTests();                }}
-                courseId={courseId}
-                classId={classId}
+                onSubmit={() => setShowCreateModal(false)}
+                courseId={courseId} 
+                classId={classId}   
+                userId={userId}
             />
 
         </Modal>
