@@ -5,11 +5,12 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import vi from "date-fns/locale/vi";
 import enUS from "date-fns/locale/en-US";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";import { API_ENDPOINTS } from "../../config";
-
+import { jwtDecode } from "jwt-decode";
+import { API_ENDPOINTS } from "../../config";
+import { useNavigate } from "react-router-dom";
 const locales = {
   "en-US": enUS,
-  "vi": vi,
+  vi: vi,
 };
 const localizer = dateFnsLocalizer({
   format,
@@ -21,6 +22,7 @@ const localizer = dateFnsLocalizer({
 
 const TeacherViewShedule = () => {
   const [schedules, setSchedules] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -28,9 +30,12 @@ const TeacherViewShedule = () => {
         const token = localStorage.getItem("token");
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.id;
-        const res = await axios.get(API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId), {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(
+          API_ENDPOINTS.GET_TEACHER_SCHEDULE(userId),
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setSchedules(res.data.data || []);
       } catch (error) {
         setSchedules([]);
@@ -40,16 +45,51 @@ const TeacherViewShedule = () => {
   }, []);
 
   // Chuyển đổi dữ liệu sang format của DevExtreme Scheduler
-   const events = schedules.map(sch => ({
-    id: sch._id,
+  const events = schedules.map((sch) => ({
+    id: sch._id, // ID lịch học
+    classId: sch.classId?._id, // ✅ đảm bảo lấy đúng ID lớp
     title: sch.classId?.course || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
-    allDay: false,
+    date: sch.date,
   }));
 
+  const CustomEvent = ({ event }) => {
+  const now = new Date();
+  const eventDate = new Date(event.date);
+  const isSameDay =
+    now.getFullYear() === eventDate.getFullYear() &&
+    now.getMonth() === eventDate.getMonth() &&
+    now.getDate() === eventDate.getDate();
+
+  return (
+    <div className="flex flex-col items-center justify-between h-full px-1 py-1">
+      <span className="text-white text-sm font-semibold text-center leading-tight">
+        {event.title}
+      </span>
+      <div className="mt-1 mb-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(
+              `/teacher/attendance/${event.classId}?date=${event.date}`
+            );
+          }}
+          className={`px-2 py-[2px] text-[10px] rounded transition ${
+            isSameDay
+              ? "bg-white text-blue-600 hover:bg-gray-200"
+              : "bg-white text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          {isSameDay ? "Điểm danh" : "Xem điểm danh"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
   // Tối ưu hiển thị ca tối
- 
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -66,6 +106,15 @@ const TeacherViewShedule = () => {
           style={{ height: 600 }}
           popup
           culture="vi"
+          onSelectEvent={() => {}}
+          components={{
+            event: CustomEvent,
+          }}
+          slotPropGetter={() => ({
+            style: {
+              minHeight: "30px", // 👈 tăng chiều cao mỗi dòng giờ
+            },
+          })}
         />
       </div>
     </div>

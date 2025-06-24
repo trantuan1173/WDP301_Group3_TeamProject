@@ -98,6 +98,7 @@ const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
             </li>
           </ul>
         )}
+
       </ul>
       <div className=" pb-4">
         <hr className="my-3" />

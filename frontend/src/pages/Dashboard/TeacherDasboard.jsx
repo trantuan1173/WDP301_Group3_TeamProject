@@ -1,3 +1,4 @@
+// frontend/src/pages/Dashboard/TeacherDasboard.jsx
 import React, { useState } from "react";
 import TeacherSideMenu from "../../components/Layouts/TeacherSideMenu";
 import NavBar from "../../components/Layouts/NavBar";
@@ -10,7 +11,10 @@ import TeacherViewScore from "../../components/Teacher/TeacherMangeClass/Teacher
 import UserProfileForm from "../../components/Student/UserProfileForm";
 
 const TeacherDashboard = () => {
-  const [selectedKey, setSelectedKey] = useState("overview");
+
+  const location = useLocation();
+  const isDashboardRoute = location.pathname === "/teacher" || location.pathname === "/teacher/overview";
+
   const [selectedClassId, setSelectedClassId] = useState(null);
 
   return (
@@ -43,4 +47,4 @@ const TeacherDashboard = () => {
   );
 };
 
-export default TeacherDashboard;
+export default TeacherDashboard; 
