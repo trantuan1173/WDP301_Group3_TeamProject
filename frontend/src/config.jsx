@@ -44,10 +44,12 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
+  STUDENT_SUBMIT_TEST: `${baseUrl}/api/test-submits`,
+
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
-
+  TEACHER_ASSIGN_TEST: `${baseUrl}/api/test-assigns`,
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
   GET_TEST_BY_CLASS:  (classId) => `${baseUrl}/api/tests/class/${classId}`,
