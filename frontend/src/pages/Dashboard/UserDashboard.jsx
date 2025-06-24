@@ -6,6 +6,7 @@ import UserPasswordForm from "../../components/Student/UserPasswordForm";
 import UserSchedule from "../../components/Student/UserSchedule";
 import UserAttendance from "../../components/Student/UserAttendance";
 import StudentTest from "../../components/Student/StudentTest";
+import UserTest from "../../components/Student/UserTest";
 import UserOverView from "../../components/Student/UserOverView";
 import StudentOfCourses from "../../components/Student/StudentOfCourses";
 function UserDashboard({ selectedPage }) {
@@ -29,7 +30,7 @@ function UserDashboard({ selectedPage }) {
           {currentPage === "password" && <UserPasswordForm />}
           {currentPage === "schedule" && <UserSchedule />}
           {currentPage === "attendance" && <UserAttendance />}
-          {currentPage === "test" && <StudentTest />}
+          {/* {currentPage === "test" && <StudentTest />} */}
 
           {currentPage === 'test' && <UserTest />}
           {currentPage === "courses" && <StudentOfCourses />}

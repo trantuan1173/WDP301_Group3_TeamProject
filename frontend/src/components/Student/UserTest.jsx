@@ -1,31 +1,40 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiSearch } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
+import { API_ENDPOINTS } from "../../config";
 
 export default function UserTestPage() {
+  const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchTests = async () => {
+      if (!user || !user._id) return;
+
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/test-assigns", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          API_ENDPOINTS.GET_TESTS_BY_STUDENT_ID(user._id),
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setTests(res.data.data || []);
       } catch (error) {
         console.error("Failed to fetch tests:", error);
       }
     };
+
     fetchTests();
-  }, []);
+  }, [user]);
 
   const filteredTests = tests.filter((test) =>
-  test.classId?.course?.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    test.classId?.course?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
