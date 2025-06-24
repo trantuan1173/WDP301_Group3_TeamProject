@@ -1,66 +1,103 @@
-import { FaHome, FaUser, FaCalendarAlt, FaCheckSquare, FaLock, FaBook, FaAddressBook } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import {
+  FaHome,
+  FaCalendarAlt,
+  FaCheckSquare,
+  FaBook,
+  FaAddressBook,
+  FaAlignJustify,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { FactoryIcon } from "lucide-react";
+
 const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
   const navigate = useNavigate();
+  const [isClassOpen, setIsClassOpen] = useState(false);
+  const baseClass = "p-3 text-gray-700 flex items-center gap-2 cursor-pointer";
+  const hoverClass = "hover:bg-blue-100 hover:text-blue-900";
+
+  const toggleClassDropdown = () => {
+    setIsClassOpen(!isClassOpen);
+  };
+
   return (
-    <div className="flex-1 rounded shadow p-6 m-4 w-64 bg-white h-screen" style={{ border: "1px solid #D6BDBD", borderRadius: "10px", backgroundColor: "#FFFFFF" }}>
-      <ul className="space-y-4 pl-0 text-left" style={{ paddingLeft: 0, marginLeft: 0 }}>
+    <div className="flex-1 shadow p-6  bg-white  w-64 min-h-full">
+      <ul
+        className="space-y-3 pl-0 text-left"
+        style={{ paddingLeft: 0, marginLeft: 0 }}
+      >
         <li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition
-    ${selectedKey === 'overview' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
+          className={`text-gray-700 p-3 flex items-center gap-2 cursor-pointer transition rounded-lg
+   ${selectedKey === "overview" ? "bg-blue-100 text-blue-900 font-bold" : ""}
     hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('overview')}
->
-  <FaHome /> Overview
-</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => navigate('/')}
->
-  <FaBook /> Home Page
-</li>
-<li className="text-gray-400">Account Management</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
-    ${selectedKey === 'profile' ? 'bg-blue-100   text-blue-900 font-bold' : ''}
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('profile')}
->
-  <FaUser /> Account
-</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
-    ${selectedKey === 'password' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('password')}
->
-  <FaLock /> Password
-</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
-    ${selectedKey === 'schedule' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('schedule')}
->
-  <FaCalendarAlt /> Schedule
-</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
-    ${selectedKey === 'attendance' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('attendance')}
->
-  <FaCheckSquare /> Attendance
-</li>
-<li
-  className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
-    ${selectedKey === 'class' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
-    hover:bg-blue-100 hover:text-blue-900`}
-  onClick={() => onMenuSelect && onMenuSelect('class')}
->
-  <FaAddressBook /> Class
-</li>
+          onClick={() => onMenuSelect && onMenuSelect("overview")}
+        >
+          <FaHome /> Overview
+        </li>
+        <li
+          className="text-gray-700 p-3 flex items-center justify-between cursor-pointer transition rounded-lg hover:bg-blue-100 hover:text-blue-900"
+          onClick={toggleClassDropdown}
+        >
+          <span className="flex items-center gap-2">
+            <FaAddressBook /> My Class
+          </span>
+          {isClassOpen ? <FaChevronUp /> : <FaChevronDown />}
+        </li>
+
+        {isClassOpen && (
+          <ul className=" space-y-2">
+            <li
+              className={`text-gray-600 p-2 flex items-center gap-2 cursor-pointer rounded-md
+              ${
+                selectedKey === "schedule"
+                  ? "bg-blue-50 font-semibold text-blue-800"
+                  : ""
+              }
+              hover:bg-blue-50 hover:text-blue-800`}
+              onClick={() => onMenuSelect && onMenuSelect("schedule")}
+            >
+              <FaCalendarAlt /> Schedule
+            </li>
+            <li
+              className={`text-gray-600 p-2 flex items-center gap-2 cursor-pointer rounded-md
+              ${
+                selectedKey === "test"
+                  ? "bg-blue-50 font-semibold text-blue-800"
+                  : ""
+              }
+              hover:bg-blue-50 hover:text-blue-800`}
+              onClick={() => onMenuSelect && onMenuSelect("test")}
+            >
+              <FactoryIcon /> Test
+            </li>
+            <li
+              className={`text-gray-600 p-2 flex items-center gap-2 cursor-pointer rounded-md
+              ${
+                selectedKey === "attendance"
+                  ? "bg-blue-50 font-semibold text-blue-800"
+                  : ""
+              }
+              hover:bg-blue-50 hover:text-blue-800`}
+              onClick={() => onMenuSelect && onMenuSelect("attendance")}
+            >
+              <FaCheckSquare /> Attendance
+            </li>
+            <li
+              className={`text-gray-600 p-2 flex items-center gap-2 cursor-pointer rounded-md
+              ${
+                selectedKey === "courses"
+                  ? "bg-blue-50 font-semibold text-blue-800"
+                  : ""
+              }
+              hover:bg-blue-50 hover:text-blue-800`}
+              onClick={() => onMenuSelect && onMenuSelect("courses")}
+            >
+              <FaAlignJustify /> My Courses
+            </li>
+          </ul>
+        )}
 <li
   className={`text-gray-700 flex items-center gap-2 cursor-pointer transition rounded-lg
     ${selectedKey === 'test' ? 'bg-blue-100 text-blue-900 font-bold' : ''}
@@ -71,6 +108,15 @@ const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
 </li>
 
       </ul>
+      <div className=" pb-4">
+        <hr className="my-3" />
+        <div
+          className={`${baseClass} ${hoverClass} border border-gray-200 rounded-lg`}
+          onClick={() => navigate("/")}
+        >
+          <FaBook /> Home Page
+        </div>
+      </div>
     </div>
   );
 };

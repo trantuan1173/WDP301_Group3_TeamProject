@@ -22,10 +22,11 @@ export const API_ENDPOINTS = {
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
-  
+
 
   GET_ALL_CLASSES: `${baseUrl}/api/classes`,
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
@@ -39,14 +40,21 @@ export const API_ENDPOINTS = {
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
-// Student endpoints
+  // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
-// Teacher endpoints
+  GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
+  // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
-  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
+  TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
+  TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
+  GET_TEST_BY_CLASS:  (classId) => `${baseUrl}/api/tests/class/${classId}`,
+  GET_TEST_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
+  GET_TEST_ASSIGN_BY_CLASS: (classId) => `${baseUrl}/api/test-assigns/class/${classId}`,
+  CREATE_TEST_ASSIGN: `${baseUrl}/api/test-assigns`,
 
   GET_ATTENDANCES_BY_CLASS: (classId) => `${baseUrl}/api/attendance/class/${classId}`,
   CREATE_ATTENDANCE: `${baseUrl}/api/attendance`,
@@ -59,5 +67,17 @@ export const API_ENDPOINTS = {
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
+
+
+  PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
+  //student endpoints
+  GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
+  GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
+  // Attendance
+  GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
+
+  // Test
+  DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
+  UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
 
 };

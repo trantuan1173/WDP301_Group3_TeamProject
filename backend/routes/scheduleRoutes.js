@@ -8,7 +8,8 @@ const {
   deleteSchedule,
   getSchedulesByStudent,
   getSchedulesByTeacher,
-  deleteSchedulesByClass
+  deleteSchedulesByClass,
+  createBulkSchedule,
 } = require("../controllers/scheduleController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -65,6 +66,38 @@ router.get("/", protect, getSchedules)
  *         description: Tạo lịch học thành công
  */
 router.post("/", protect, authorize("admin", "teacher"), createSchedule)
+
+/**
+ * @swagger
+ * /schedule/bulk:
+ *   post:
+ *     summary: Tạo lịch học hàng loạt (chỉ admin)
+ *     description: Tạo lịch học hàng loạt (chỉ admin)
+ *     tags: [Schedules]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               properties:
+ *                 classId:
+ *                   type: string
+ *                 date:
+ *                   type: string
+ *                 start_time:
+ *                   type: string
+ *                 end_time:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Tạo lịch học hàng loạt thành công
+ */
+router.post("/bulk", protect, authorize("admin"), createBulkSchedule)
 
 /**
  * @swagger
