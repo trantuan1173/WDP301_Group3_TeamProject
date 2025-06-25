@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
+import { FaEdit } from "react-icons/fa";
 
 const WEEKDAYS = [
-  { label: "Chủ nhật", value: 0 },
-  { label: "Thứ 2", value: 1 },
-  { label: "Thứ 3", value: 2 },
-  { label: "Thứ 4", value: 3 },
-  { label: "Thứ 5", value: 4 },
-  { label: "Thứ 6", value: 5 },
-  { label: "Thứ 7", value: 6 },
+  { label: "Sunday", value: 0 },
+  { label: "Monday", value: 1 },
+  { label: "Tuesday", value: 2 },
+  { label: "Wednesday", value: 3 },
+  { label: "Thursday", value: 4 },
+  { label: "Friday", value: 5 },
+  { label: "Saturday", value: 6 },
 ];
 
 export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
@@ -38,26 +39,26 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
 
   // Hàm lưu edit
   const handleSaveEdit = () => {
-  // Kiểm tra trùng ngày
-  const isDuplicate = preview.some((sch, idx) =>
-    idx !== editIdx && sch.date === editData.date
-  );
-  if (isDuplicate) {
-    alert("Ngày này đã có lịch học khác!");
-    return;
-  }
-  setPreview(prev => prev.map((sch, idx) =>
-    idx === editIdx
-      ? {
+    // Kiểm tra trùng ngày
+    const isDuplicate = preview.some((sch, idx) =>
+      idx !== editIdx && sch.date === editData.date
+    );
+    if (isDuplicate) {
+      alert("Ngày này đã có lịch học khác!");
+      return;
+    }
+    setPreview(prev => prev.map((sch, idx) =>
+      idx === editIdx
+        ? {
           ...sch,
           date: editData.date,
           start_time: new Date(`${editData.date}T${editData.start}`).toISOString(),
           end_time: new Date(`${editData.date}T${editData.end}`).toISOString(),
         }
-      : sch
-  ));
-  setEditIdx(null);
-};
+        : sch
+    ));
+    setEditIdx(null);
+  };
 
   // Lấy số buổi học từ course
   useEffect(() => {
@@ -245,7 +246,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onCancel}>
       <div className="bg-white rounded-xl p-6 w-full max-w-5xl shadow-lg relative" onClick={e => e.stopPropagation()}>
-        <h2 className="text-xl font-bold mb-4 text-center">Tạo lịch học tự động</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Auto Schedule Creation</h2>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-3 text-center">
             {error}
@@ -253,7 +254,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block mb-1 font-medium">Chọn ngày bắt đầu:</label>
+            <label className="block mb-1 font-medium">Select start date:</label>
             <input
               type="date"
               value={startDate}
@@ -264,7 +265,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">Chọn các thứ trong tuần và giờ học:</label>
+            <label className="block mb-1 font-medium">Select weekdays and lesson time:</label>
             <div className="flex gap-2 flex-wrap">
               {WEEKDAYS.map(day => (
                 <div key={day.value} className="flex items-center gap-2 mb-2">
@@ -304,88 +305,95 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
             </div>
           </div>
           <div>
-      <label className="block mb-1 font-medium">Preview lịch học ({preview.length} buổi):</label>
-      <div className="overflow-auto border rounded bg-gray-50" style={{ maxHeight: 300 }}>
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="bg-blue-100">
-              <th className="px-2 py-1 text-left">Slot</th>
-              <th className="px-2 py-1 text-left">Ngày</th>
-              <th className="px-2 py-1 text-left">Bắt đầu</th>
-              <th className="px-2 py-1 text-left">Kết thúc</th>
-              <th className="px-2 py-1 text-left">Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-  {[...preview]
-    .map((sch, idx) => ({ ...sch, originalIdx: idx })) // Gắn index gốc
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .map((sch, idx) => (
-      <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-        <td className="px-2 py-1">{idx + 1}</td>
-        <td className="px-2 py-1">{new Date(sch.date).toLocaleDateString()}</td>
-        <td className="px-2 py-1">
-          {new Date(sch.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-        </td>
-        <td className="px-2 py-1">
-          {new Date(sch.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-        </td>
-        <td className="px-2 py-1">
-          <button
-            type="button"
-            className="text-blue-600 underline"
-            onClick={() => handleEdit(sch.originalIdx)}
-          >
-            Edit
-          </button>
-        </td>
-      </tr>
-  ))}
-</tbody>
-        </table>
-      </div>
-      {/* Modal edit */}
-      {editIdx !== null && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setEditIdx(null)}>
-          <div className="bg-white p-4 rounded shadow min-w-[300px]" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold mb-2">Chỉnh sửa buổi học</h3>
-            <div className="mb-2">
-              <label className="block mb-1">Ngày:</label>
-              <input
-                type="date"
-                value={editData.date}
-                onChange={e => setEditData({ ...editData, date: e.target.value })}
-                className="border rounded px-2 py-1 w-full"
-              />
+            <label className="block mb-1 font-medium">Schedule preview ({preview.length} sessions):</label>
+            <div className="overflow-auto border rounded bg-gray-50" style={{ maxHeight: 300 }}>
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="bg-blue-100">
+                    <th className="px-2 py-1 text-left">Slot</th>
+                    <th className="px-2 py-1 text-left">Date</th>
+                    <th className="px-2 py-1 text-left">Start</th>
+                    <th className="px-2 py-1 text-left">End</th>
+                    <th className="px-2 py-1 text-left">Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...preview]
+                    .map((sch, idx) => ({ ...sch, originalIdx: idx })) // Gắn index gốc
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .map((sch, idx) => (
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-100"}>
+                        <td className="px-2 py-1">{idx + 1}</td>
+                        <td className="px-2 py-1">{new Date(sch.date).toLocaleDateString()}</td>
+                        <td className="px-2 py-1">
+                          {new Date(sch.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        </td>
+                        <td className="px-2 py-1">
+                          {new Date(sch.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        </td>
+                        <td className="px-2 py-1">
+                          <button
+                            type="button"
+                            className="text-blue-600 underline"
+                            onClick={() => handleEdit(sch.originalIdx)}
+                          >
+                            <FaEdit className="inline mr-1" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
-            <div className="mb-2 flex gap-2">
-              <div className="flex-1">
-                <label className="block mb-1">Bắt đầu:</label>
-                <input
-                  type="time"
-                  value={editData.start}
-                  onChange={e => setEditData({ ...editData, start: e.target.value })}
-                  className="border rounded px-2 py-1 w-full"
-                />
+            {/* Modal edit */}
+            {editIdx !== null && (
+              <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setEditIdx(null)}>
+                <div className="bg-white p-4 rounded shadow min-w-[300px]" onClick={e => e.stopPropagation()}>
+                  <h3 className="font-bold mb-2">Edit session</h3>
+                  <div className="mb-2">
+                    <label className="block mb-1">Date:</label>
+                    <input
+                      type="date"
+                      value={editData.date}
+                      onChange={e => setEditData({ ...editData, date: e.target.value })}
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  </div>
+                  <div className="mb-2 flex gap-2">
+                    <div className="flex-1">
+                      <label className="block mb-1">Start:</label>
+                      <input
+                        type="time"
+                        value={editData.start}
+                        onChange={e => {
+                          const start = e.target.value;
+                          // Auto set end time +2h
+                          let [h, m] = start.split(":").map(Number);
+                          let endH = (h + 2) % 24;
+                          let endStr = `${endH.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+                          setEditData({ ...editData, start, end: endStr });
+                        }}
+                        className="border rounded px-2 py-1 w-full"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block mb-1">End:</label>
+                      <input
+                        type="time"
+                        value={editData.end}
+                        onChange={e => setEditData({ ...editData, end: e.target.value })}
+                        className="border rounded px-2 py-1 w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button className="bg-gray-300 px-4 py-1 rounded" onClick={() => setEditIdx(null)}>Cancel</button>
+                    <button className="bg-indigo-700 text-white px-4 py-1 rounded" onClick={handleSaveEdit}>Save</button>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1">
-                <label className="block mb-1">Kết thúc:</label>
-                <input
-                  type="time"
-                  value={editData.end}
-                  onChange={e => setEditData({ ...editData, end: e.target.value })}
-                  className="border rounded px-2 py-1 w-full"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-2">
-              <button className="bg-gray-300 px-4 py-1 rounded" onClick={() => setEditIdx(null)}>Hủy</button>
-              <button className="bg-indigo-700 text-white px-4 py-1 rounded" onClick={handleSaveEdit}>Lưu</button>
-            </div>
-          </div>
-        </div>
-      )}
-    
+            )}
+
           </div>
           <div className="flex justify-end gap-4 pt-2">
             <button
@@ -394,14 +402,14 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
               className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-500"
               disabled={loading}
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
               className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
               disabled={loading}
             >
-              {loading ? "Đang tạo..." : "Tạo lịch học"}
+              {loading ? "Creating..." : "Create schedule"}
             </button>
           </div>
         </form>

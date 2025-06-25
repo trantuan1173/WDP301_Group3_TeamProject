@@ -113,42 +113,32 @@ const fetchClassName = async () => {
   };
 
   return (
-  <div className="p-8 bg-white min-h-screen">
-    <h2 className="text-2xl font-bold mb-6">Lịch học của lớp {className}</h2>
-    <div className="flex justify-end gap-4 mb-4">
-      {events.length === 0 ? (
+    <div className="p-8 bg-white min-h-screen">
+      <h2 className="text-2xl font-bold mb-6">Class Schedule: {className}</h2>
+      <div className="flex justify-end gap-4 mb-4">
+        {events.length === 0 ? (
+          <button
+            className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
+            onClick={() => setShowCreate(true)}
+          >
+            + Create schedule
+          </button>
+        ) : (
+          <button
+            className="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600"
+            onClick={handleDeleteAllSchedules}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Edit schedule"}
+          </button>
+        )}
         <button
-          className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
-          onClick={() => setShowCreate(true)}
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow"
         >
-          + Tạo lịch học
+          ← Back
         </button>
-      ) : (
-        <button
-          className="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600"
-          onClick={handleDeleteAllSchedules}
-          disabled={isDeleting}
-        >
-          {isDeleting ? "Đang xóa..." : "Chỉnh sửa lịch học"}
-        </button>
-      )}
-      <button
-        onClick={() => navigate(-1)}
-        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow"
-      >
-        ← Quay lại
-      </button>
-    </div>
-    {showCreate && (
-      <AdminCreateSchedule
-        classId={classId}
-        onSuccess={() => {
-          setShowCreate(false);
-          fetchSchedules();
-        }}
-        onCancel={() => setShowCreate(false)}
-      />
-    )}
+      </div>
       {showCreate && (
         <AdminCreateSchedule
           classId={classId}
@@ -163,32 +153,32 @@ const fetchClassName = async () => {
       <div className="mt-6" style={{ height: 600 }}>
         {events.length === 0 ? (
           <div className="flex items-center justify-center h-full text-lg text-gray-500 font-semibold">
-            Lớp này chưa có lịch học
+            This class has no schedule yet
           </div>
         ) : (
-          <div className="container mx-auto"> 
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            titleAccessor="title"
-            defaultView="week"
-            views={["week", "month"]}
-            style={{ height: 600 }}
-            popup
-            culture="vi"
-            messages={{
-              week: "Tuần",
-              month: "Tháng",
-              today: "Hôm nay",
-              previous: "Trước",
-              next: "Sau",
-            }}
-            min={new Date(1970, 1, 1, 7, 0, 0)}   // 1:00 AM
-            max={new Date(1970, 1, 1, 23, 59, 59)}   // 11:59:59 PM
-            onSelectEvent={handleSelectEvent}
-          />
+          <div className="container mx-auto">
+            <Calendar
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              titleAccessor="title"
+              defaultView="week"
+              views={["week", "month"]}
+              style={{ height: 600 }}
+              popup
+              culture="en-US"
+              messages={{
+                week: "Week",
+                month: "Month",
+                today: "Today",
+                previous: "Previous",
+                next: "Next",
+              }}
+              min={new Date(1970, 1, 1, 7, 0, 0)}
+              max={new Date(1970, 1, 1, 23, 59, 59)}
+              onSelectEvent={handleSelectEvent}
+            />
           </div>
         )}
         <AdminUpdateSheduleForm
@@ -198,7 +188,6 @@ const fetchClassName = async () => {
           onSave={handleSaveEdit}
         />
       </div>
-      
     </div>
   );
 }
