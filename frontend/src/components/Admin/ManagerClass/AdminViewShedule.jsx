@@ -66,7 +66,8 @@ const fetchClassName = async () => {
   } else {
     name = "Buổi học";
   }
-  setClassName(name);
+  const className = res.data.data?.className || res.data.data?.course?.name || "Buổi học";
+  setClassName(className);
 };
 
   // Lấy lịch học
@@ -112,24 +113,42 @@ const fetchClassName = async () => {
   };
 
   return (
-    <div className="p-8 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Lịch học của lớp {className}</h2>
+  <div className="p-8 bg-white min-h-screen">
+    <h2 className="text-2xl font-bold mb-6">Lịch học của lớp {className}</h2>
+    <div className="flex justify-end gap-4 mb-4">
       {events.length === 0 ? (
         <button
-          className="mb-4 bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
+          className="bg-indigo-900 text-white px-6 py-2 rounded hover:bg-indigo-800"
           onClick={() => setShowCreate(true)}
         >
           + Tạo lịch học
         </button>
       ) : (
         <button
-          className="mb-4 bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600"
+          className="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600"
           onClick={handleDeleteAllSchedules}
           disabled={isDeleting}
         >
           {isDeleting ? "Đang xóa..." : "Chỉnh sửa lịch học"}
         </button>
       )}
+      <button
+        onClick={() => navigate(-1)}
+        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow"
+      >
+        ← Quay lại
+      </button>
+    </div>
+    {showCreate && (
+      <AdminCreateSchedule
+        classId={classId}
+        onSuccess={() => {
+          setShowCreate(false);
+          fetchSchedules();
+        }}
+        onCancel={() => setShowCreate(false)}
+      />
+    )}
       {showCreate && (
         <AdminCreateSchedule
           classId={classId}
@@ -179,14 +198,7 @@ const fetchClassName = async () => {
           onSave={handleSaveEdit}
         />
       </div>
-      <div className="mt-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow"
-        >
-          ← Quay lại
-        </button>
-      </div>
+      
     </div>
   );
 }
