@@ -2,7 +2,7 @@ const Attendance = require("../models/attendanceModel.js");
 const Class = require("../models/classModel.js");
 
 // Get all attendances
-const getAttendances = async function(req, res) {
+const getAttendances = async function (req, res) {
   try {
     const attendances = await Attendance.find().populate("classId").populate("studentId")
 
@@ -72,10 +72,10 @@ const getAttendancesByClass = async function (req, res) {
         ...student.toObject(),
         attendance: attendanceRecord
           ? {
-              date: attendanceRecord.date,
-              status: attendanceRecord.status,
-              note: attendanceRecord.note,
-            }
+            date: attendanceRecord.date,
+            status: attendanceRecord.status,
+            note: attendanceRecord.note,
+          }
           : null,
       };
     });
@@ -97,16 +97,49 @@ const getAttendancesByClass = async function (req, res) {
 
 
 // Get attendances by student
-const getAttendancesByStudent = async function(req, res) {
+const getAttendancesByStudent = async function (req, res) {
   try {
     const { studentId } = req.params
 
-    const attendances = await Attendance.find({ studentId }).populate("classId")
-
+    const attendances = await Attendance.find({ studentId })
+      .populate({
+        path: "classId",
+        select: "courseId className teacherId",
+        populate: [
+          {
+            path: "teacherId",
+            select: "profileId",
+            populate: {
+              path: "profileId",
+              select: "name"
+            }
+          },
+          {
+            path: "courseId",
+            select: "nameCourses"
+          }
+        ]
+      })
+    // Clean data
+    const cleaned = attendances.map((att) => {
+      return {
+        _id: att._id,
+        studentId: att.studentId,
+        date: att.date,
+        status: att.status,
+        note: att.note,
+        createdAt: att.createdAt,
+        updatedAt: att.updatedAt,
+        classId: att.classId._id,
+        className: att.classId?.className,
+        courseName: att.classId?.courseId?.nameCourses,
+        teacherName: att.classId?.teacherId?.profileId?.name,
+      };
+    });
     res.status(200).json({
       success: true,
-      count: attendances.length,
-      data: attendances,
+      count: cleaned.length,
+      data: cleaned,
     })
   } catch (error) {
     res.status(500).json({

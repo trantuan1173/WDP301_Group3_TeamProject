@@ -18,7 +18,7 @@ const classSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
-    course: {
+    className: {
       type: String,
       required: true,
       trim: true,
