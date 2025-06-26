@@ -65,7 +65,7 @@ export default function UserTestPage() {
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-100 text-sm text-gray-700">
             <tr>
-              <th className="p-3 border">Thứ</th>
+              <th className="p-3 border"></th>
               <th className="p-3 border">Tên lớp</th>
               <th className="p-3 border">Khoá học</th>
               <th className="p-3 border">Giáo viên</th>
@@ -75,18 +75,33 @@ export default function UserTestPage() {
           </thead>
           <tbody>
             {filteredTests.map((test, idx) => {
-              const day = new Date(test.dueDate).getDay(); // 0 = Sunday
+              const weekdays = [
+                "Chủ Nhật",
+                "Thứ Hai",
+                "Thứ Ba",
+                "Thứ Tư",
+                "Thứ Năm",
+                "Thứ Sáu",
+                "Thứ Bảy",
+              ];
+              const dayIndex = new Date(test.dueDate).getDay();
+              const dayLabel = weekdays[dayIndex];
               const startHour = new Date(test.dueDate).getHours();
               const startMin = new Date(test.dueDate).getMinutes();
               const endHour = startHour + 1;
-              const timeStr = `45p (${startHour}h${startMin} - ${endHour}h${startMin})`;
+              const pad = (num) => num.toString().padStart(2, "0");
+              const timeStr = `45p (${startHour}h${pad(
+                startMin
+              )} - ${endHour}h${pad(startMin)})`;
 
               return (
                 <tr key={test._id} className="text-sm">
-                  <td className="p-3 border text-center">{day}</td>
+                  <td className="p-3 border text-center">{dayLabel}</td>
                   <td className="p-3 border">{test.classId?.name}</td>
                   <td className="p-3 border">{test.courseId?.nameCourses}</td>
-                  <td className="p-3 border">{test.teacherId?.name}</td>
+                  <td className="p-3 border">
+                    {test.teacherId?.profileId?.name}
+                  </td>
                   <td className="p-3 border">{timeStr}</td>
                   <td className="p-3 border text-center">
                     <button className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300">

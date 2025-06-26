@@ -43,8 +43,8 @@ const getAttendances = async function(req, res) {
 const getAttendancesByClass = async function (req, res) {
   try {
     const { classId } = req.params;
+    const { date } = req.query;
 
-    // Lấy thông tin lớp và populate danh sách học sinh (bao gồm profile)
     const classData = await Class.findById(classId).populate({
       path: "students",
       populate: {
@@ -53,16 +53,17 @@ const getAttendancesByClass = async function (req, res) {
     });
 
     if (!classData) {
-      return res.status(404).json({
-        success: false,
-        message: "Class not found",
-      });
+      return res.status(404).json({ success: false, message: "Class not found" });
     }
 
-    // Lấy tất cả điểm danh theo classId
-    const attendances = await Attendance.find({ classId });
+    // Nếu có query ngày -> chỉ lấy điểm danh của ngày đó
+    const dateFilter = date ? {
+      classId,
+      date: new Date(date),
+    } : { classId };
 
-    // Map student list + attendance info
+    const attendances = await Attendance.find(dateFilter);
+
     const studentsWithAttendance = classData.students.map((student) => {
       const attendanceRecord = attendances.find(
         (att) => att.studentId.toString() === student._id.toString()
@@ -94,7 +95,6 @@ const getAttendancesByClass = async function (req, res) {
     });
   }
 };
-
 
 // Get attendances by student
 const getAttendancesByStudent = async function(req, res) {

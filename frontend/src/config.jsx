@@ -1,9 +1,8 @@
 // API Configuration
 //const baseUrl = 'https://beenglishcenter.davidmusic.site/';
-const baseUrl = 'http://localhost:9999';
+const baseUrl = "http://localhost:9999";
 
 export const API_ENDPOINTS = {
-
   AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
   //Protected endpoints
   GET_PROFILE_BY_USERID: (userId) => `${baseUrl}/api/users/${userId}`,
@@ -26,17 +25,17 @@ export const API_ENDPOINTS = {
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
-
-
   GET_ALL_CLASSES: `${baseUrl}/api/classes`,
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
-  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+  GET_SHEDULE_BY_CLASSID: (classId) =>
+    `${baseUrl}/api/schedule/class/${classId}`,
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
-  DELETE_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+  DELETE_SHEDULE_BY_CLASSID: (classId) =>
+    `${baseUrl}/api/schedule/class/${classId}`,
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
@@ -45,40 +44,46 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
-  GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
+  GET_TESTS_BY_STUDENT_ID: (studentId) =>
+    `${baseUrl}/api/test-assigns/student/${studentId}`,
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
-  GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
+  GET_CLASS_BY_TEACHERID: (teacherId) =>
+    `${baseUrl}/api/classes/teacher/${teacherId}`,
 
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
-  GET_TEST_BY_CLASS:  (classId) => `${baseUrl}/api/tests/class/${classId}`,
+  GET_TEST_BY_CLASS: (classId) => `${baseUrl}/api/tests/class/${classId}`,
   GET_TEST_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
-  GET_TEST_ASSIGN_BY_CLASS: (classId) => `${baseUrl}/api/test-assigns/class/${classId}`,
+  GET_TEST_ASSIGN_BY_CLASS: (classId) =>
+    `${baseUrl}/api/test-assigns/class/${classId}`,
   CREATE_TEST_ASSIGN: `${baseUrl}/api/test-assigns`,
 
-  GET_ATTENDANCES_BY_CLASS: (classId) => `${baseUrl}/api/attendance/class/${classId}`,
+  GET_ATTENDANCES_BY_CLASS: (classId, date) =>
+    `${baseUrl}/api/attendance/class/${classId}?date=${date}`,
+
   CREATE_ATTENDANCE: `${baseUrl}/api/attendance`,
 
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
-  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
+  GET_COURSE_BY_ID: (courseId) =>
+    `${baseUrl}/api/courseDetail/course/${courseId}`,
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
-
   PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
   //student endpoints
-  GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
+  GET_CLASSES_BY_STUDENT_ID: (studentId) =>
+    `${baseUrl}/api/classes/student/${studentId}`,
   GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
-  GET_ATTENDANCE_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/attendance/student/${studentId}`,
+  GET_ATTENDANCE_BY_STUDENT_ID: (studentId) =>
+    `${baseUrl}/api/attendance/student/${studentId}`,
 
   // Test
   DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
   UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
-
 };
