@@ -28,7 +28,7 @@ import PaymentResult from './pages/PaymentResult';
 import { UserDoingTest } from './components/Student/UserDoingTest';
 import TeacherManageTest from './components/Teacher/TeacherMangeClass/TeacherManageTest'
 import TeacherCreateTestQuestion from './components/Teacher/TeacherMangeClass/TeacherCreateTestQuestion';
-import TeacherOverview from './components/Teacher/TeacherMangeClass/TeacherOverview'
+import TeacherOverview from './components/Teacher/TeacherOverView/TeacherOverView'
 import TeacherDashboardLayout from './components/Layouts/TeacherDashboardLayout'
 import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
 import TeacherViewShedule from './components/Teacher/TeacherViewShedule'
@@ -36,6 +36,8 @@ import UserEnrollCourse from './components/Student/UserEnrollCourse';
 import UserPaymentProcess from './components/Student/UserPaymentProcess';
 import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
+import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
+import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
 
 
 const App = () => {
@@ -69,7 +71,9 @@ const App = () => {
             <Route path="overview" element={<TeacherOverview />} />
             <Route path="exams" element={<TeacherManageTest />} />
             <Route path="exams-create" element={<TeacherCreateTestQuestion />} />
+            <Route path="classes" element={<TeacherViewClass />} />
             <Route path="schedule" element={<TeacherViewShedule />} />
+            <Route path="scores" element={<TeacherViewScore />} />
           </Route>
         </Route>
 

@@ -270,7 +270,7 @@ const getClassByStudentId = async (req, res) => {
         _id: cls._id,
         teacher: cls.teacherId, 
         students: cls.students, 
-        className: cls.course,
+        className: cls.className,
         course: {
           _id: courseIdStr,
           name: cls.courseId?.nameCourses,
@@ -310,7 +310,7 @@ const getClassByTeacherId = async (req, res) => {
         _id: cls._id,
         teacherId: cls.teacherId?._id?.toString() ?? cls.teacherId?.toString(),
         courseId: cls.courseId?._id?.toString() ?? cls.courseId?.toString(),
-        course: cls.course,
+        className: cls.className,
         progress: cls.progress,
         note: cls.note,
         start_time: cls.start_time,

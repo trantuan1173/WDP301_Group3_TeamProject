@@ -79,7 +79,7 @@ const TeacherViewClass = ({ onViewClass }) => {
                 </div>
                 <div className="p-4 w-full flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="font-bold text-lg mb-1">{cls.course}</div>
+                    <div className="font-bold text-lg mb-1">{cls.className}</div>
                     <div className="text-gray-700 mb-2">
                       Thời lượng: {cls.progress}/{courseDetail?.durationDays || "?"} buổi
                     </div>
