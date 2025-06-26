@@ -20,7 +20,16 @@ export default function AdminManageAccount() {
   const [roles, setRoles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showIds, setShowIds] = useState({});
+
   const usersPerPage = 15;
+
+  // State cho các cột hiển thị
+  const [showColumns, setShowColumns] = useState({
+    id: false,
+    gender: false,
+    dob: false,
+    phone: false,
+  });
 
   const handleAddUser = async (newUser) => {
     const token = localStorage.getItem("token");
@@ -186,7 +195,6 @@ export default function AdminManageAccount() {
 
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">QUẢN LÝ TÀI KHOẢN</h2>
@@ -204,7 +212,7 @@ export default function AdminManageAccount() {
         </div>
       </div>
 
-      {/* Tìm kiếm + Lọc + Thêm */}
+      {/* Tìm kiếm + Lọc + Thêm + Hiển thị cột */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
           <span className="font-semibold">Danh sách</span>
@@ -217,6 +225,49 @@ export default function AdminManageAccount() {
               className="outline-none py-1 px-2 bg-transparent"
             />
             <FiSearch className="text-gray-600" />
+          </div>
+          {/* Checkbox chọn cột */}
+          <div className="flex gap-2 ml-4">
+            <label className="flex items-center gap-1 text-sm">
+              <input
+                type="checkbox"
+                checked={showColumns.id}
+                onChange={() =>
+                  setShowColumns((prev) => ({ ...prev, id: !prev.id }))
+                }
+              />{" "}
+              ID thật
+            </label>
+            <label className="flex items-center gap-1 text-sm">
+              <input
+                type="checkbox"
+                checked={showColumns.gender}
+                onChange={() =>
+                  setShowColumns((prev) => ({ ...prev, gender: !prev.gender }))
+                }
+              />{" "}
+              Giới tính
+            </label>
+            <label className="flex items-center gap-1 text-sm">
+              <input
+                type="checkbox"
+                checked={showColumns.dob}
+                onChange={() =>
+                  setShowColumns((prev) => ({ ...prev, dob: !prev.dob }))
+                }
+              />{" "}
+              Ngày sinh
+            </label>
+            <label className="flex items-center gap-1 text-sm">
+              <input
+                type="checkbox"
+                checked={showColumns.phone}
+                onChange={() =>
+                  setShowColumns((prev) => ({ ...prev, phone: !prev.phone }))
+                }
+              />{" "}
+              SĐT
+            </label>
           </div>
         </div>
 
@@ -267,33 +318,30 @@ export default function AdminManageAccount() {
         <table className="min-w-full table-auto text-sm text-left">
           <thead className="bg-gray-200 font-semibold">
             <tr>
-              <th className="px-4 py-2">Id</th>
+              <th className="px-4 py-2">ID</th>
               <th className="px-4 py-2">Tên</th>
               <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Giới tính</th>
-              <th className="px-4 py-2">Ngày sinh</th>
-              <th className="px-4 py-2">SĐT</th>
+              {showColumns.gender && <th className="px-4 py-2">Giới tính</th>}
+              {showColumns.dob && <th className="px-4 py-2">Ngày sinh</th>}
+              {showColumns.phone && <th className="px-4 py-2">SĐT</th>}
               <th className="px-4 py-2">Role</th>
               <th className="px-4 py-2">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y">
-            {currentUsers.map((user) => (
+            {currentUsers.map((user, idx) => (
               <tr key={user.id}>
                 <td className="px-4 py-2">
-                  {showIds[user.id] ? user.id : "****"}
-                  <FaEye
-                    className="inline-block ml-2 text-blue-600 cursor-pointer"
-                    onClick={() => toggleShowId(user.id)}
-                  />
+                  {showColumns.id ? user.id : idx + 1}
                 </td>
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
-                <td className="px-4 py-2">{user.gender}</td>
-                <td className="px-4 py-2">{user.dob}</td>
-                <td className="px-4 py-2">{user.phone}</td>
+                {showColumns.gender && <td className="px-4 py-2">{user.gender}</td>}
+                {showColumns.dob && <td className="px-4 py-2">{user.dob}</td>}
+                {showColumns.phone && <td className="px-4 py-2">{user.phone}</td>}
                 <td className="px-4 py-2">{user.role.nameRole}</td>
                 <td className="px-4 py-2 flex gap-2">
+
                   <FaEye
                     className="text-green-600 cursor-pointer"
                     onClick={() => setShowViewForm(user)}
@@ -328,7 +376,8 @@ export default function AdminManageAccount() {
             onClick={() => setCurrentPage(page)}
             className={`px-3 py-1 rounded ${currentPage === page
               ? "bg-indigo-600 text-white"
-              : "bg-gray-200 text-gray-800 hover:bg-gray-300"}`}
+              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+              }`}
           >
             {page}
           </button>

@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
   DELETE_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+  CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 

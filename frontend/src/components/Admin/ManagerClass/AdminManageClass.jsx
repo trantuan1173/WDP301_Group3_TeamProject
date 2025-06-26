@@ -71,7 +71,7 @@ const AdminManageClass = () => {
   }, [search]);
 
   const filteredClasses = classes.filter((row) =>
-    (row.course || "").toLowerCase().includes(search.toLowerCase()) ||
+    (row.className || "").toLowerCase().includes(search.toLowerCase()) ||
     (row.courseId?.nameCourses || "").toLowerCase().includes(search.toLowerCase()) ||
     (row.note || "").toLowerCase().includes(search.toLowerCase())
   );
@@ -142,7 +142,7 @@ const AdminManageClass = () => {
               paginatedClasses.map((row, idx) => (
                 <tr key={row._id} className="border-b border-gray-100">
                   <td className="py-2 px-2">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                  <td className="py-2 px-2">{row.course || ""}</td>
+                  <td className="py-2 px-2">{row.className || ""}</td>
                   <td className="py-2 px-2">{row.courseId?.nameCourses || "Chưa có khóa học"}</td>
                   <td className="py-2 px-2">{getMonthYear(row.start_time)}</td>
                   <td className={`py-2 px-2 ${row.teacherId ? "text-green-500 font-bold" : "text-red-500 font-bold"}`}>

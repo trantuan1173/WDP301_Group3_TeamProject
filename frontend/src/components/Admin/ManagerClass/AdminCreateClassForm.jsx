@@ -161,6 +161,7 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                                 onChange={handleChange}
                                 className="w-full bg-blue-100 p-2 rounded"
                                 placeholder="Ngày bắt đầu"
+                                min={new Date().toISOString().slice(0, 16)}
                             />
                         </div>
                         

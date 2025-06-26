@@ -6,8 +6,6 @@ import NavBar from "../../Layouts/NavBar";
 import AdminAddTeacherClassForm from "./AdminAddTeacherClassForm";
 import LoadingSpinner from "../../LoadingSpinner";
 
-
-
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
   return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -76,7 +74,6 @@ export default function AdminViewClassDetails() {
   };
 
   return (
-
     <div className="bg-white min-h-screen p-8">
       <NavBar />
       <h2 className="text-2xl font-bold mb-4 p-8 ">
@@ -85,7 +82,6 @@ export default function AdminViewClassDetails() {
             ? (classData.course.name || classData.course._id || "Không rõ")
             : (classData.course || "Không rõ")
         }
-
       </h2>
       <div className="flex items-center mb-4 w-full">
         <div className="flex gap-4 flex-1">
@@ -112,7 +108,6 @@ export default function AdminViewClassDetails() {
         >
           ← Quay lại
         </button>
-
       </div>
       {showAddTeacherForm && (
         <AdminAddTeacherClassForm
@@ -135,14 +130,10 @@ export default function AdminViewClassDetails() {
           </div>
           <div className="font-medium">Tên lớp:</div>
           <div>
-            {
-              typeof classData.course === "object"
-                ? (classData.course.name || classData.course._id || "Chưa đặt tên")
-                : (classData.course || "Chưa đặt tên")
-            }
+            {classData.className || "Chưa đặt tên"}
           </div>
           <div className="font-medium">Thời gian học:</div>
-          <div>{classData.course?.detail?.durationDays } Buổi</div>
+          <div>{classData.course?.detail?.durationDays} Buổi</div>
           <div className="font-medium">Khóa học:</div>
           <div>{classData.course?.name || ""}</div>
           <div className="font-medium">Tháng mở:</div>
@@ -167,7 +158,6 @@ export default function AdminViewClassDetails() {
                   ? (student.email || student.name || JSON.stringify(student) || "Không rõ")
                   : (student || "Không rõ")
               }
-
             </li>
           ))}
         </ul>
