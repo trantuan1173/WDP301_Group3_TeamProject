@@ -13,6 +13,7 @@ const menuItems = [
   { key: "schedule", label: "Lịch dạy", icon: FaCalendarAlt },
   {
     key: "class-management", label: "Quản lý lớp", icon: FaChalkboardTeacher, children: [
+      { key: "classes", label: "Quản lý lớp", icon: FaUsers },
       { key: "exams", label: "Bài kiểm tra", icon: FaClipboardList },
       { key: "scores", label: "Xem điểm", icon: FaChartBar }
     ]

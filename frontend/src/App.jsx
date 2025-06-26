@@ -36,6 +36,8 @@ import UserEnrollCourse from './components/Student/UserEnrollCourse';
 import UserPaymentProcess from './components/Student/UserPaymentProcess';
 import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
+import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
+import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
 
 
 const App = () => {
@@ -69,7 +71,9 @@ const App = () => {
             <Route path="overview" element={<TeacherOverview />} />
             <Route path="exams" element={<TeacherManageTest />} />
             <Route path="exams-create" element={<TeacherCreateTestQuestion />} />
+            <Route path="classes" element={<TeacherViewClass />} />
             <Route path="schedule" element={<TeacherViewShedule />} />
+            <Route path="scores" element={<TeacherViewScore />} />
           </Route>
         </Route>
 
