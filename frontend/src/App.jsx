@@ -28,7 +28,7 @@ import PaymentResult from './pages/PaymentResult';
 import { UserDoingTest } from './components/Student/UserDoingTest';
 import TeacherManageTest from './components/Teacher/TeacherMangeClass/TeacherManageTest'
 import TeacherCreateTestQuestion from './components/Teacher/TeacherMangeClass/TeacherCreateTestQuestion';
-import TeacherOverview from './components/Teacher/TeacherMangeClass/TeacherOverview'
+import TeacherOverview from './components/Teacher/TeacherOverView/TeacherOverView'
 import TeacherDashboardLayout from './components/Layouts/TeacherDashboardLayout'
 import TeacherDashboard from './pages/Dashboard/TeacherDasboard'
 import TeacherViewShedule from './components/Teacher/TeacherViewShedule'
