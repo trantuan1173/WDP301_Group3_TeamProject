@@ -36,7 +36,7 @@ import UserEnrollCourse from './components/Student/UserEnrollCourse';
 import UserPaymentProcess from './components/Student/UserPaymentProcess';
 import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
-import { UserDoingTest } from "./components/Student/UserDoingTest";
+
 
 const App = () => {
   return (
