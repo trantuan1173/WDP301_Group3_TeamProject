@@ -27,11 +27,11 @@ const PaymentResult = () => {
                 </h1>
 
                 <div className="text-left text-sm text-gray-700 space-y-2">
-                    {txnRef && <p><strong>Mã giao dịch:</strong> {txnRef}</p>}
-                    {orderInfo && <p><strong>Thông tin:</strong> {decodeURIComponent(orderInfo)}</p>}
-                    {bankCode && <p><strong>Ngân hàng:</strong> {bankCode}</p>}
-                    {amount && <p><strong>Số tiền:</strong> {(amount / 100).toLocaleString()} VND</p>}
-                    {payDate && <p><strong>Thời gian:</strong> {`${payDate?.slice(6, 8)}/${payDate?.slice(4, 6)}/${payDate?.slice(0, 4)} ${payDate?.slice(8, 10)}:${payDate?.slice(10, 12)}`}</p>}
+                    {txnRef && <p><strong>Transaction Ref:</strong> {txnRef}</p>}
+                    {orderInfo && <p><strong>Order Info:</strong> {decodeURIComponent(orderInfo)}</p>}
+                    {bankCode && <p><strong>Bank:</strong> {bankCode}</p>}
+                    {amount && <p><strong>Amount:</strong> {(amount / 100).toLocaleString()} VND</p>}
+                    {payDate && <p><strong>Pay Date:</strong> {`${payDate?.slice(6, 8)}/${payDate?.slice(4, 6)}/${payDate?.slice(0, 4)} ${payDate?.slice(8, 10)}:${payDate?.slice(10, 12)}`}</p>}
                 </div>
 
                 <button

@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
   DELETE_SHEDULE_BY_CLASSID: (classId) =>
     `${baseUrl}/api/schedule/class/${classId}`,
+  CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
@@ -44,12 +45,10 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
-  GET_TESTS_BY_STUDENT_ID: (studentId) =>
-    `${baseUrl}/api/test-assigns/student/${studentId}`,
+  GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
-  GET_CLASS_BY_TEACHERID: (teacherId) =>
-    `${baseUrl}/api/classes/teacher/${teacherId}`,
+  GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
 
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,

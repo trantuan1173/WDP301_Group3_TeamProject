@@ -9,6 +9,7 @@ import StudentTest from "../../components/Student/StudentTest";
 import UserTest from "../../components/Student/UserTest";
 import UserOverView from "../../components/Student/UserOverView";
 import StudentOfCourses from "../../components/Student/StudentOfCourses";
+import UserDashboardOverview from "../../components/Student/UserOverView";
 function UserDashboard({ selectedPage }) {
   const [currentPage, setCurrentPage] = useState(selectedPage || "overview");
 
@@ -25,7 +26,6 @@ function UserDashboard({ selectedPage }) {
           />
         </div>
         <div className="flex-1">
-          {currentPage === "overview" && <UserOverView />}
           {currentPage === "profile" && <UserProfileForm />}
           {currentPage === "password" && <UserPasswordForm />}
           {currentPage === "schedule" && <UserSchedule />}
@@ -34,6 +34,10 @@ function UserDashboard({ selectedPage }) {
 
           {currentPage === 'test' && <UserTest />}
           {currentPage === "courses" && <StudentOfCourses />}
+          {currentPage === "overview" && (
+  <UserDashboardOverview onQuickAction={(key) => setCurrentPage(key)} />
+)}
+
         </div>
       </div>
     </div>
