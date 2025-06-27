@@ -1,5 +1,80 @@
 const Class = require("../models/classModel.js");
 const CourseDetail = require("../models/courseDetailModel.js");
+const Schedule = require("../models/scheduleModel.js");
+
+function formatScheduleData(schedule) {
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const toTimeStr = (date) => {
+    const d = new Date(date);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const toDateStr = (date) => {
+    return new Date(date).toISOString().split("T")[0]; // yyyy-mm-dd
+  };
+
+  return {
+    date: toDateStr(schedule.date),
+    start_time: toTimeStr(schedule.start_time),
+    end_time: toTimeStr(schedule.end_time),
+  };
+}
+
+const checkTeacherScheduleConflict = async (teacherId, scheduleList, excludedClassId = null) => {
+  const now = new Date();
+
+  const otherClasses = await Class.find({
+    teacherId,
+    ...(excludedClassId && { _id: { $ne: excludedClassId } }),
+  });
+
+  const classIds = otherClasses.map(cls => cls._id);
+
+  const teacherSchedules = await Schedule.find({
+    classId: { $in: classIds },
+    date: { $gte: now },
+  }).populate("classId", "className");
+
+  const conflictSchedules = [];
+
+  for (const newSchedule of scheduleList) {
+    const newDate = new Date(newSchedule.date).toDateString();
+    const newStart = new Date(newSchedule.start_time);
+    const newEnd = new Date(newSchedule.end_time);
+
+    teacherSchedules.forEach(s => {
+      const sDate = new Date(s.date).toDateString();
+      const sStart = new Date(s.start_time);
+      const sEnd = new Date(s.end_time);
+
+      const isConflict =
+        sDate === newDate &&
+        (
+          (sStart <= newStart && sEnd > newStart) ||
+          (sStart < newEnd && sEnd >= newEnd) ||
+          (sStart >= newStart && sEnd <= newEnd)
+        );
+
+      if (isConflict) {
+        conflictSchedules.push({
+          yourSchedule: formatScheduleData(newSchedule),
+          conflictWith: {
+            className: s.classId.className,
+            ...formatScheduleData(s),
+          }
+        });
+      }
+    });
+  }
+
+  return {
+    hasConflict: conflictSchedules.length > 0,
+    conflictSchedules,
+  };
+};
+
+
 
 // Get all classes
 const getClasses = async function(req, res) {
@@ -65,6 +140,7 @@ const getClass = async function(req, res) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch class",
+
       error: error.message,
     })
   }
@@ -88,37 +164,87 @@ const createClass = async function(req, res) {
   }
 }
 
-// Update class
+// // Update class
+// const updateClass = async (req, res) => {
+//   try {
+//     const classItem = await Class.findByIdAndUpdate(
+//       req.params.id,
+//       { ...req.body, updatedAt: Date.now() },
+//       {
+//         new: true,
+//         runValidators: true,
+//       },
+//     )
+
+//     if (!classItem) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Class not found",
+//       })
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: classItem,
+//     })
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to update class",
+//       error: error.message,
+//     })
+//   }
+// }
+
 const updateClass = async (req, res) => {
   try {
-    const classItem = await Class.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, updatedAt: Date.now() },
-      {
-        new: true,
-        runValidators: true,
-      },
-    )
+    const classId = req.params.id;
+    const { teacherId } = req.body;
 
-    if (!classItem) {
-      return res.status(404).json({
-        success: false,
-        message: "Class not found",
-      })
+    const existingClass = await Class.findById(classId);
+    if (!existingClass) {
+      return res.status(404).json({ success: false, message: "Class not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      data: classItem,
-    })
+    const newTeacherId = teacherId || existingClass.teacherId;
+
+    if (newTeacherId) {
+      // Query lịch học của lớp hiện tại
+      const currentSchedules = await Schedule.find({ classId });
+
+      // So sánh lịch lớp hiện tại với các lịch khác của giáo viên
+      const { hasConflict, conflictSchedules } = await checkTeacherScheduleConflict(newTeacherId, currentSchedules, classId);
+
+      if (hasConflict) {
+        return res.status(409).json({
+          success: false,
+          message: "Teacher has a schedule conflict",
+          conflictSchedules,
+        });
+      }
+    }
+
+    const updatedClass = await Class.findByIdAndUpdate(
+      classId,
+      { ...req.body, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ 
+      success: true, 
+      data: updatedClass, 
+      message: "Class updated successfully" 
+    });
+
+
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to update class",
       error: error.message,
-    })
+    });
   }
-}
+};
 
 // Delete class
 const deleteClass = async (req, res) => {
