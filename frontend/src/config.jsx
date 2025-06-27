@@ -41,6 +41,11 @@ export const API_ENDPOINTS = {
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
+  ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
+  GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
+  UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
+
+
   // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
