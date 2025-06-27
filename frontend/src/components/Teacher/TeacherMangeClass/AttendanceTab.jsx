@@ -6,7 +6,9 @@ export default function AttendanceTab({ classId, students }) {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSchedule, setCurrentSchedule] = useState(null);
-  const [attendance, setAttendance] = useState({}); // {studentId: {present: bool, absent: bool}}
+  const [nextSchedule, setNextSchedule] = useState(null);
+  const [attendance, setAttendance] = useState({});
+  const [showAttendance, setShowAttendance] = useState(false);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -26,30 +28,32 @@ export default function AttendanceTab({ classId, students }) {
   }, [classId]);
 
   useEffect(() => {
-  if (!schedules.length) {
-    setCurrentSchedule(null);
-    return;
-  }
-  const now = new Date();
-  let found = null;
-  for (let sch of schedules) {
-    const start = new Date(sch.start_time);
-    const end = new Date(sch.end_time);
-    console.log("now:", now, "start:", start, "end:", end);
-    if (end <= start) continue;
-    if (now >= start && now <= end) {
-      found = sch;
-      break;
+    if (!schedules.length) {
+      setCurrentSchedule(null);
+      setNextSchedule(null);
+      return;
     }
-  }
-  setCurrentSchedule(found);
-}, [schedules]);
+    const now = new Date();
+    let found = null;
+    let next = null;
+    for (let sch of schedules) {
+      const start = new Date(sch.start_time);
+      const end = new Date(sch.end_time);
+      if (end <= start) continue;
+      if (!found && now >= start && now <= end) {
+        found = sch;
+      }
+      if (!next && start > now) {
+        next = sch;
+      }
+    }
+    setCurrentSchedule(found);
+    setNextSchedule(next);
+  }, [schedules]);
 
-  // Xử lý khi click checkbox
   const handleCheck = (studentId, type) => {
     setAttendance(prev => {
       const prevState = prev[studentId] || { present: false, absent: false };
-      // Chỉ cho phép chọn 1 trong 2
       return {
         ...prev,
         [studentId]: {
@@ -59,88 +63,111 @@ export default function AttendanceTab({ classId, students }) {
       };
     });
   };
-  // Xử lý lưu điểm danh (sẽ bổ sung sau) 
+
   if (loading) {
     return <div>Đang tải lịch học...</div>;
   }
 
-  if (!currentSchedule) {
-    // Không có buổi học hiện tại, hiển thị buổi gần nhất trong tương lai
-
-    if (schedules.length === 0) {
-      return <div>Không có lịch học nào cho lớp này.</div>;
-    }
-    const next = schedules
-      .filter(sch => new Date(sch.start_time) > new Date())
-      .sort((a, b) => new Date(a.start_time) - new Date(b.start_time))[0];
-    return (
-      <div>
-        <div className="font-semibold mb-2">Chưa đến giờ điểm danh.</div>
-        {next && (
-          <div>
-            <div>Buổi học gần nhất:</div>
-            <div>
-              Ngày: {new Date(next.date).toLocaleDateString()}<br />
-              Thời gian: {new Date(next.start_time).toLocaleTimeString()} - {new Date(next.end_time).toLocaleTimeString()}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Nếu đang trong thời gian điểm danh, hiển thị bảng học viên
   return (
-    <div>
-      <div className="font-semibold mb-2">
-        Điểm danh buổi học ngày {new Date(currentSchedule.date).toLocaleDateString()}<br />
-        Thời gian: {new Date(currentSchedule.start_time).toLocaleTimeString()} - {new Date(currentSchedule.end_time).toLocaleTimeString()}
+    <div className="w-full flex flex-col items-center">
+      <h2 className="text-2xl font-bold mb-6 text-blue-900 text-center">Danh sách học viên</h2>
+      <div className="flex flex-row gap-8 w-full justify-center items-start flex-wrap">
+        {/* Bảng danh sách học viên */}
+        <div className="flex-1 min-w-[340px] max-w-3xl">
+          <table className="min-w-full border rounded-lg shadow bg-white px-8">
+            <thead>
+              <tr className="bg-blue-100 text-blue-900">
+                <th className="border px-4 py-2 text-center">STT</th>
+                <th className="border px-4 py-2 text-center">Email</th>
+                {showAttendance && currentSchedule && (
+                  <>
+                    <th className="border px-4 py-2 text-center">Có mặt</th>
+                    <th className="border px-4 py-2 text-center">Vắng</th>
+                  </>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {students && students.length > 0 ? students.map((student, idx) => (
+                <tr key={student._id} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                  <td className="border px-4 py-2 text-center">{idx + 1}</td>
+                  <td className="border px-4 py-2">{student.email}</td>
+                  {showAttendance && currentSchedule && (
+                    <>
+                      <td className="border px-4 py-2 text-center">
+                        <input
+                          type="checkbox"
+                          checked={attendance[student._id]?.present || false}
+                          onChange={() => handleCheck(student._id, "present")}
+                          disabled={attendance[student._id]?.absent}
+                          className="w-5 h-5 accent-green-600"
+                        />
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        <input
+                          type="checkbox"
+                          checked={attendance[student._id]?.absent || false}
+                          onChange={() => handleCheck(student._id, "absent")}
+                          disabled={attendance[student._id]?.present}
+                          className="w-5 h-5 accent-red-600"
+                        />
+                      </td>
+                    </>
+                  )}
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan={showAttendance && currentSchedule ? 4 : 2} className="text-center py-4">Không có học viên nào.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {/* Thông báo và nút điểm danh */}
+        <div className="flex flex-col justify-between min-w-[320px] max-w-sm w-full h-full" style={{minHeight: 220}}>
+          {!showAttendance ? (
+            <button
+              className="px-6 py-2 bg-blue-700 text-white rounded-lg shadow hover:bg-blue-800 transition text-base font-semibold w-32 self-end mt-2"
+              onClick={() => setShowAttendance(true)}
+            >
+              Điểm danh
+            </button>
+          ) : (
+            <div className="flex flex-col h-full justify-between" style={{height: "100%"}}>
+              <div>
+                {!currentSchedule && (
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded text-yellow-800 font-semibold shadow mb-4 w-full text-center">
+  <div>Chưa đến giờ điểm danh.</div>
+  {nextSchedule ? (
+    <div className="mt-2 text-sm font-normal">
+      <div className="font-medium">Buổi học gần nhất:</div>
+      <div>
+        Ngày: {new Date(nextSchedule.date).toLocaleDateString()}<br />
+        Thời gian: {new Date(nextSchedule.start_time).toLocaleTimeString()} - {new Date(nextSchedule.end_time).toLocaleTimeString()}
       </div>
-      <table className="min-w-full border mt-4">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border px-2 py-1">STT</th>
-            <th className="border px-2 py-1">Email</th>
-            <th className="border px-2 py-1">Có mặt</th>
-            <th className="border px-2 py-1">Vắng</th>
-          </tr>
-        </thead>
-        <tbody>
-          {students && students.length > 0 ? students.map((student, idx) => (
-            <tr key={student._id}>
-              <td className="border px-2 py-1 text-center">{idx + 1}</td>
-              <td className="border px-2 py-1">{student.email}</td>
-              <td className="border px-2 py-1 text-center">
-                <input
-                  type="checkbox"
-                  checked={attendance[student._id]?.present || false}
-                  onChange={() => handleCheck(student._id, "present")}
-                  disabled={attendance[student._id]?.absent}
-                />
-              </td>
-              <td className="border px-2 py-1 text-center">
-                <input
-                  type="checkbox"
-                  checked={attendance[student._id]?.absent || false}
-                  onChange={() => handleCheck(student._id, "absent")}
-                  disabled={attendance[student._id]?.present}
-                />
-              </td>
-            </tr>
-          )) : (
-            <tr>
-              <td colSpan={4} className="text-center py-4">Không có học viên nào.</td>
-            </tr>
+    </div>
+  ) : (
+    <div className="mt-2 text-sm font-normal text-gray-600">
+      Không có buổi học sắp tới.
+    </div>
+  )}
+</div>
+                )}
+              </div>
+              <button
+                className={`px-6 py-2 rounded-lg shadow font-semibold text-base w-32 mt-2 self-end ${
+                  currentSchedule
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-gray-400 text-white cursor-not-allowed"
+                }`}
+                disabled={!currentSchedule}
+              >
+                Xác nhận điểm danh
+              </button>
+            </div>
           )}
-        </tbody>
-      </table>
-      <button
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        // onClick={handleSaveAttendance} // sẽ bổ sung sau
-        disabled
-      >
-        Lưu điểm danh (chức năng sẽ bổ sung)
-      </button>
+        </div>
+      </div>
     </div>
   );
 }
