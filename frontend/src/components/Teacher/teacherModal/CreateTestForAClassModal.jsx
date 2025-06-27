@@ -1,7 +1,10 @@
 // frontend/src/components/Teacher/teacherModal/CreateTestForAClassModal.jsx
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { FaUpload } from "react-icons/fa";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
 import "../../../assets/CSS/MinhKhanhCSS.css";
 
 const CreateTestForAClassModal = ({
@@ -21,6 +24,23 @@ const CreateTestForAClassModal = ({
   const [file, setFile] = useState(null);
 
   const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+  const handleDownloadTemplate = () => {
+    axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
+      responseType: 'blob',
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'test-template.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        console.error('Error downloading template:', error);
+      });
+  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -156,10 +176,11 @@ const CreateTestForAClassModal = ({
             />
           </Form.Group>
           <div className="mb-3" style={{ position: "relative" }}>
+            <div style={{ position: "relative" }}>
             <Form.Control
               type="text"
               value={file ? file.name : ""}
-              placeholder="Tải đề lên từ thiết bị"
+              placeholder="Tải đề lên từ thiết ị"
               style={{
                 borderRadius: 12,
                 background: "#e0e0e0",
@@ -179,7 +200,7 @@ const CreateTestForAClassModal = ({
               }}
               onChange={handleFileChange}
             />
-            <FaUpload style={{
+            <FontAwesomeIcon icon={faUpload} style={{
               position: "absolute",
               right: 16,
               top: "50%",
@@ -187,6 +208,17 @@ const CreateTestForAClassModal = ({
               fontSize: 28,
               color: "#222"
             }} />
+            </div>
+            <div style={{ position: "absolute", right: 64 }}>
+            <FontAwesomeIcon icon={faDownload} style={{
+              position: "absolute",
+              right: 64,
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: 28,
+              color: "#222"
+            }} onClick={handleDownloadTemplate} />
+            </div>
           </div>
           <div className="d-flex justify-content-center mb-3">
             <Button

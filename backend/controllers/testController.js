@@ -99,12 +99,14 @@ const createTest = async (req, res) => {
       success: true,
       data: test,
     })
+    message.success("Create test success");
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to create test",
       error: error.message,
     })
+    message.error("Create test failed");
   }
 }
 
@@ -127,12 +129,14 @@ const updateTest = async (req, res) => {
       success: true,
       data: test,
     })
+    message.success("Update test success");
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to update test",
       error: error.message,
     })
+    message.error("Update test failed");
   }
 }
 
@@ -333,8 +337,11 @@ const uploadTestFromXLSX = async (req, res) => {
       description,
       questions,
     });
-
+    
+    fs.unlinkSync(filePath);
     res.status(201).json({ success: true, data: test });
+    
+    message.success("Upload success");
   } catch (error) {
     console.error("Upload failed:", error);
     res.status(500).json({ success: false, message: "Upload failed", error: error.message });
