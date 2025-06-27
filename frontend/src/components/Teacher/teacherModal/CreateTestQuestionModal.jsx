@@ -3,6 +3,8 @@ import { Modal, Button, Form, Card } from "react-bootstrap";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { jwtDecode } from "jwt-decode";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 const CreateTestQuestionModal = ({ show, onHide, onSubmit, courseId, classId, userId }) => {
   const [title, setTitle] = useState("");
@@ -11,6 +13,23 @@ const CreateTestQuestionModal = ({ show, onHide, onSubmit, courseId, classId, us
     { question: "", options: ["", "", "", ""], correctAnswerIndex: 0 }
   ]);
   const [excelFile, setExcelFile] = useState(null);
+
+  const handleDownloadTemplate = () => {
+    axios.get(API_ENDPOINTS.DOWNLOAD_XLSX_TEMPLATE, {
+      responseType: 'blob',
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'test-template.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        console.error('Error downloading template:', error);
+      });
+  };
 
   const handleQuestionChange = (index, value) => {
     const updated = [...questions];
@@ -135,6 +154,12 @@ const CreateTestQuestionModal = ({ show, onHide, onSubmit, courseId, classId, us
               accept=".xlsx"
               onChange={(e) => setExcelFile(e.target.files[0])}
             />
+            <button
+              className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
+              onClick={handleDownloadTemplate}
+            >
+              <FontAwesomeIcon icon={faDownload} /> Template
+            </button>
           </Form.Group>
 
           {/* Chỉ hiện khối tạo thủ công nếu chưa chọn file Excel */}
