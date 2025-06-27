@@ -26,7 +26,16 @@ const enrollmentSchema = new mongoose.Schema(
 )
 
 // Ensure a student can only enroll once per course
-enrollmentSchema.index({ courseId: 1, studentId: 1 }, { unique: true })
+// enrollmentSchema.index({ courseId: 1, studentId: 1 }, { unique: true })
+enrollmentSchema.index(
+  { courseId: 1, studentId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: { $in: ["pending", "active"] },
+    },
+  }
+)
 
 const Enrollment = mongoose.model("Enrollment", enrollmentSchema)
 
