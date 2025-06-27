@@ -54,13 +54,31 @@ const TeacherViewShedule = () => {
     date: sch.date,
   }));
 
-  const CustomEvent = ({ event }) => {
+const CustomEvent = ({ event }) => {
   const now = new Date();
   const eventDate = new Date(event.date);
+
   const isSameDay =
     now.getFullYear() === eventDate.getFullYear() &&
     now.getMonth() === eventDate.getMonth() &&
     now.getDate() === eventDate.getDate();
+
+  const isPastDay = eventDate < new Date(now.setHours(0, 0, 0, 0));
+  const isFutureDay = eventDate > new Date(now.setHours(23, 59, 59, 999));
+
+  let buttonStyle = "bg-gray-400 text-white cursor-not-allowed";
+  let buttonLabel = "Điểm danh";
+  let isDisabled = false;
+
+  if (isPastDay) {
+    buttonStyle = "bg-yellow-500 text-white hover:bg-yellow-600";
+    buttonLabel = "Xem điểm danh";
+    isDisabled = false;
+  } else if (isSameDay) {
+    buttonStyle = "bg-green-500 text-white hover:bg-green-600";
+    buttonLabel = "Điểm danh";
+    isDisabled = false;
+  }
 
   return (
     <div className="flex flex-col items-center justify-between h-full px-1 py-1">
@@ -71,17 +89,14 @@ const TeacherViewShedule = () => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            navigate(
-              `/teacher/attendance/${event.classId}?date=${event.date}`
-            );
+            if (!isDisabled) {
+              navigate(`/teacher/attendance/${event.classId}?date=${event.date}`);
+            }
           }}
-          className={`px-2 py-[2px] text-[10px] rounded transition ${
-            isSameDay
-              ? "bg-white text-blue-600 hover:bg-gray-200"
-              : "bg-white text-gray-600 hover:bg-gray-200"
-          }`}
+          disabled={isDisabled}
+          className={`px-2 py-[2px] text-[10px] rounded transition ${buttonStyle}`}
         >
-          {isSameDay ? "Điểm danh" : "Xem điểm danh"}
+          {buttonLabel}
         </button>
       </div>
     </div>

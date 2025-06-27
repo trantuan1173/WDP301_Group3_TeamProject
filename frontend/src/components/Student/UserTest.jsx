@@ -4,10 +4,11 @@ import { FiSearch } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { API_ENDPOINTS } from "../../config";
 
-export default function UserTestPage() {
+export default function UserTest() {
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const fetchTests = async () => {
@@ -32,16 +33,80 @@ export default function UserTestPage() {
     fetchTests();
   }, [user]);
 
-  const filteredTests = tests.filter((test) =>
-    test.classId?.course?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTests = tests.filter((test) => {
+    const courseMatch = test.courseId?.nameCourses
+      ?.toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    const dueDate = new Date(test.dueDate);
+    const now = new Date();
+
+    const isSameDay =
+      now.getFullYear() === dueDate.getFullYear() &&
+      now.getMonth() === dueDate.getMonth() &&
+      now.getDate() === dueDate.getDate();
+
+    const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
+    const isFuture = dueDate > new Date(now.setHours(23, 59, 59, 999));
+
+    let statusMatch = true;
+    if (filterStatus === "upcoming") statusMatch = isFuture;
+    else if (filterStatus === "today") statusMatch = isSameDay;
+    else if (filterStatus === "past") statusMatch = isPast;
+
+    return courseMatch && statusMatch;
+  });
+
+  const weekdays = [
+    { label: "Thứ Hai", value: 1 },
+    { label: "Thứ Ba", value: 2 },
+    { label: "Thứ Tư", value: 3 },
+    { label: "Thứ Năm", value: 4 },
+    { label: "Thứ Sáu", value: 5 },
+    { label: "Thứ Bảy", value: 6 },
+    { label: "Chủ Nhật", value: 0 },
+  ];
+
+  const getMonday = (date) => {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day === 0 ? -6 : 1) - day;
+    d.setDate(d.getDate() + diff);
+    return d;
+  };
+
+  const monday = getMonday(new Date());
+
+  const testsByWeekday = weekdays.map(({ label, value }) => {
+    const thisDay = new Date(monday);
+    thisDay.setDate(monday.getDate() + ((value + 7 - 1) % 7));
+
+    const filtered = filteredTests.filter((test) => {
+      const testDate = new Date(test.dueDate);
+      return (
+        testDate.getFullYear() === thisDay.getFullYear() &&
+        testDate.getMonth() === thisDay.getMonth() &&
+        testDate.getDate() === thisDay.getDate()
+      );
+    });
+
+    return {
+      label,
+      dateStr: thisDay.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+      }),
+      tests: filtered,
+    };
+  });
+
+  const pad = (num) => num.toString().padStart(2, "0");
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
       <h2 className="text-xl font-bold mb-4">Bài Kiểm Tra Của Tôi</h2>
 
-      <div className="flex items-center justify-between mb-4">
-        {/* Search box */}
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center border rounded px-2 bg-gray-100 w-full max-w-md">
           <input
             type="text"
@@ -53,19 +118,29 @@ export default function UserTestPage() {
           <FiSearch className="text-gray-600" />
         </div>
 
-        {/* Tuần dropdown (placeholder) */}
-        <select className="ml-4 border px-3 py-1 rounded text-sm">
-          <option>Tuần này</option>
-          <option>Tuần trước</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="border px-3 py-1 rounded text-sm"
+          >
+            <option value="all">Tất cả</option>
+            <option value="upcoming">Chưa tới hạn</option>
+            <option value="today">Đến hạn hôm nay</option>
+            <option value="past">Đã quá hạn</option>
+          </select>
+          <select className="border px-3 py-1 rounded text-sm">
+            <option>Tuần này</option>
+            <option>Tuần trước</option>
+          </select>
+        </div>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-100 text-sm text-gray-700">
             <tr>
-              <th className="p-3 border"></th>
+              <th className="p-3 border">Thứ</th>
               <th className="p-3 border">Tên lớp</th>
               <th className="p-3 border">Khoá học</th>
               <th className="p-3 border">Giáo viên</th>
@@ -74,43 +149,60 @@ export default function UserTestPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredTests.map((test, idx) => {
-              const weekdays = [
-                "Chủ Nhật",
-                "Thứ Hai",
-                "Thứ Ba",
-                "Thứ Tư",
-                "Thứ Năm",
-                "Thứ Sáu",
-                "Thứ Bảy",
-              ];
-              const dayIndex = new Date(test.dueDate).getDay();
-              const dayLabel = weekdays[dayIndex];
-              const startHour = new Date(test.dueDate).getHours();
-              const startMin = new Date(test.dueDate).getMinutes();
-              const endHour = startHour + 1;
-              const pad = (num) => num.toString().padStart(2, "0");
-              const timeStr = `45p (${startHour}h${pad(
-                startMin
-              )} - ${endHour}h${pad(startMin)})`;
+            {testsByWeekday.flatMap(({ label, dateStr, tests }) =>
+              tests.map((test) => {
+                const dueDate = new Date(test.dueDate);
+                const startHour = dueDate.getHours();
+                const startMin = dueDate.getMinutes();
+                const endHour = startHour + 1;
+                const timeStr = `45p (${startHour}h${pad(
+                  startMin
+                )} - ${endHour}h${pad(startMin)})`;
 
-              return (
-                <tr key={test._id} className="text-sm">
-                  <td className="p-3 border text-center">{dayLabel}</td>
-                  <td className="p-3 border">{test.classId?.name}</td>
-                  <td className="p-3 border">{test.courseId?.nameCourses}</td>
-                  <td className="p-3 border">
-                    {test.teacherId?.profileId?.name}
-                  </td>
-                  <td className="p-3 border">{timeStr}</td>
-                  <td className="p-3 border text-center">
-                    <button className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300">
-                      Làm bài
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+                const now = new Date();
+                const isSameDay =
+                  now.getFullYear() === dueDate.getFullYear() &&
+                  now.getMonth() === dueDate.getMonth() &&
+                  now.getDate() === dueDate.getDate();
+
+                const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
+                const isFuture =
+                  dueDate > new Date(now.setHours(23, 59, 59, 999));
+
+                const actionButton = isPast ? (
+                  <button className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded text-sm hover:bg-yellow-300">
+                    Xem kết quả
+                  </button>
+                ) : isSameDay ? (
+                  <button className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300">
+                    Làm bài
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="bg-gray-200 text-gray-600 px-3 py-1 rounded text-sm cursor-not-allowed"
+                  >
+                    Chưa mở
+                  </button>
+                );
+
+                return (
+                  <tr key={test._id} className="text-sm">
+                    <td className="p-3 border text-center">
+                      {`${label} (${dateStr})`}
+                    </td>
+                    <td className="p-3 border">{test.classId?.name}</td>
+                    <td className="p-3 border">{test.courseId?.nameCourses}</td>
+                    <td className="p-3 border">
+                      {test.teacherId?.profileId?.name}
+                    </td>
+                    <td className="p-3 border">{timeStr}</td>
+                    <td className="p-3 border text-center">{actionButton}</td>
+                  </tr>
+                );
+              })
+            )}
+
             {filteredTests.length === 0 && (
               <tr>
                 <td colSpan="6" className="text-center py-6 text-gray-500">
@@ -124,3 +216,4 @@ export default function UserTestPage() {
     </div>
   );
 }
+
