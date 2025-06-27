@@ -94,11 +94,11 @@ export default function AdminViewClassDetails() {
               {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
             </button>
             <button
-  className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-  onClick={() => setShowAddStudentForm(true)}
->
-  + Add student
-</button>
+              className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+              onClick={() => setShowAddStudentForm(true)}
+            >
+              + Add student
+            </button>
             <button
               className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
               onClick={() => navigate(`/admin/class/${classId}/schedule`)}
@@ -122,16 +122,17 @@ export default function AdminViewClassDetails() {
         />
       )}
       {showAddStudentForm && (
-  <AdminAddStudentClass
-    classId={classId}
-    courseId={classData.course?._id || classData.course}
-    onSuccess={() => {
-      setShowAddStudentForm(false);
-      fetchClass();
-    }}
-    onCancel={() => setShowAddStudentForm(false)}
-  />
-)}
+        <AdminAddStudentClass
+          classId={classId}
+          courseId={classData.course?._id || classData.course}
+          courseName={classData.course?.name || ""}
+          onSuccess={() => {
+            setShowAddStudentForm(false);
+            fetchClass();
+          }}
+          onCancel={() => setShowAddStudentForm(false)}
+        />
+      )}
       <hr className="mb-6" />
 
       <div className="mb-8">

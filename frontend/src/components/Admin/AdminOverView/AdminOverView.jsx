@@ -21,11 +21,11 @@ export default function AdminOverView({ onQuickAction }) {
             const [accRes, courseRes, feedbackRes] = await Promise.all([
                 axios.get(API_ENDPOINTS.GET_ALL_ACCOUNT, { headers: { Authorization: `Bearer ${token}` } }),
                 axios.get(API_ENDPOINTS.GET_ALL_COURSE_DETAIL, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(API_ENDPOINTS.GET_ALL_STUDENT_FEEDBACK, { headers: { Authorization: `Bearer ${token}` } }),
+                // axios.get(API_ENDPOINTS.GET_ALL_STUDENT_FEEDBACK, { headers: { Authorization: `Bearer ${token}` } }),
             ]);
             setAccounts(accRes.data.data || []);
             setCourses(courseRes.data.data || []);
-            setFeedbacks(feedbackRes.data.data || []);
+            // setFeedbacks(feedbackRes.data.data || []);
             setLoading(false);
         };
         fetchData();
