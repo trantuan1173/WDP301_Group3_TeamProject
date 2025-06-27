@@ -107,7 +107,7 @@ export default function TeacherClassDetail({ classId, onBack }) {
           <div>
             <TestTab
               classId={classInfo?._id}
-              courseId={classInfo?.course?.detail?.courseId}
+              courseId={classInfo?.course?._id}
             />
           </div>}
       </div>

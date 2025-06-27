@@ -14,9 +14,8 @@ const TestTab = ({ classId, courseId }) => {
     const [assignData, setAssignData] = useState([]);
     const [courseName, setCourseName] = useState("");
     const [className, setClassName] = useState("");
-    const [userId, setUserId] = useState(null);
+    const [teacherId, setTeacherId] = useState(null);
     const [selectedTestId, setSelectedTestId] = useState(null);
-    const teacherId = userId;
 
     // Lấy userId từ token
     useEffect(() => {
@@ -24,9 +23,9 @@ const TestTab = ({ classId, courseId }) => {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setUserId(decoded.id || decoded._id);
+                setTeacherId(decoded.id || decoded._id);
             } catch (e) {
-                setUserId(null);
+                setTeacherId(null);
             }
         }
     }, []);
@@ -144,12 +143,6 @@ const TestTab = ({ classId, courseId }) => {
                                 onClick={() => setShowCreateModal(true)}
                             >
                                 <FontAwesomeIcon icon={faPlus} /> Tạo mới
-                            </button>
-                            <button
-                                className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
-                                onClick={handleDownloadTemplate}
-                            >
-                                <FontAwesomeIcon icon={faDownload} /> Template
                             </button>
                         </div>
 
