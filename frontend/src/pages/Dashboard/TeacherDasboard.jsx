@@ -14,7 +14,7 @@ const TeacherDashboard = () => {
   const [selectedClassId, setSelectedClassId] = useState(null);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex flex-col">
       <header className="w-full">
         <NavBar />
       </header>
