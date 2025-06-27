@@ -1,77 +1,61 @@
-// frontend/src/components/Layouts/TeacherSideMenu.jsx
 import React, { useState } from "react";
-import {
-  FaTachometerAlt, FaUser, FaCalendarAlt, FaChalkboardTeacher,
-  FaUsers, FaClipboardList, FaChartBar, FaChevronDown, FaChevronRight
-} from "react-icons/fa";
-import { useNavigate, useLocation } from "react-router-dom";
+import { FaTachometerAlt, FaUser, FaCalendarAlt, FaChalkboardTeacher, FaUsers, FaClipboardList, FaChartBar, FaChevronDown, FaChevronRight } from "react-icons/fa";
 
-// Menu configuration
 const menuItems = [
-  { key: "overview", label: "OverView", icon: FaTachometerAlt },
-  { key: "profile", label: "Thông tin cá nhân", icon: FaUser },
-  { key: "schedule", label: "Lịch dạy", icon: FaCalendarAlt },
+  { key: "overview", label: "Overview", icon: FaTachometerAlt },
+  { key: "profile", label: "Profile", icon: FaUser },
+  { key: "schedule", label: "Schedule", icon: FaCalendarAlt },
   {
-    key: "class-management", label: "Quản lý lớp", icon: FaChalkboardTeacher, children: [
-      { key: "classes", label: "Quản lý lớp", icon: FaUsers },
-      { key: "exams", label: "Bài kiểm tra", icon: FaClipboardList },
-      { key: "scores", label: "Xem điểm", icon: FaChartBar }
+    key: "class-management",
+    label: "Class Management",
+    icon: FaChalkboardTeacher,
+    children: [
+      { key: "classes", label: "My Class", icon: FaUsers },
+      { key: "exams", label: "Exams", icon: FaClipboardList },
+      { key: "scores", label: "Scores", icon: FaChartBar }
     ]
   }
 ];
 
-export default function TeacherSideMenu() {
-  const [openDropdowns, setOpenDropdowns] = useState({});
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const currentPath = location.pathname;
-
-  const toggleDropdown = (key) => {
-    setOpenDropdowns((prev) => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const isActive = (routeKey) => currentPath.includes(`/teacher/${routeKey}`);
+export default function TeacherSideMenu({ onMenuSelect, selectedKey }) {
+  const [openDropdown, setOpenDropdown] = useState(false);
 
   return (
-    <div className="w-64 bg-gray-100 h-screen shadow-lg p-4 rounded-xl overflow-y-auto">
+    <div className="w-64 bg-gray-100 min-h-screen h-screen shadow-lg p-4 rounded-xl">
       <ul className="space-y-2">
         {menuItems.map(({ icon: Icon, label, key, children }) => (
           <React.Fragment key={key}>
             <li
               onClick={() => {
                 if (children) {
-                  toggleDropdown(key);
+                  setOpenDropdown((prev) => !prev);
                 } else {
-                  navigate(`/teacher/${key}`);
+                  onMenuSelect && onMenuSelect(key);
                 }
               }}
               className={`flex items-center gap-3 p-2 rounded-md cursor-pointer transition
-                ${isActive(key) ? "bg-indigo-700 text-white font-semibold" : "hover:bg-indigo-100"}`}
+                ${selectedKey === key ? "bg-indigo-700 text-white font-semibold" : "hover:bg-indigo-100"}`}
             >
-              <Icon className={`w-5 h-5 ${isActive(key) ? "text-white" : "text-indigo-700"}`} />
+              <Icon className={`w-5 h-5 ${selectedKey === key ? "text-white" : "text-indigo-700"}`} />
               <span>{label}</span>
               {children && (
-                openDropdowns[key]
-                  ? <FaChevronDown className="ml-auto w-4 h-4" />
-                  : <FaChevronRight className="ml-auto w-4 h-4" />
+                openDropdown ? (
+                  <FaChevronDown className="ml-auto w-4 h-4" />
+                ) : (
+                  <FaChevronRight className="ml-auto w-4 h-4" />
+                )
               )}
             </li>
-
-            {/* Sub-menu items */}
-            {children && openDropdowns[key] && (
+            {children && openDropdown && (
               <ul className="ml-6 mt-1 space-y-2">
                 {children.map(({ icon: SubIcon, label: subLabel, key: subKey }) => (
                   <li
                     key={subKey}
-                    onClick={() => navigate(`/teacher/${subKey}`)}
+                    onClick={() => onMenuSelect && onMenuSelect(subKey)}
                     className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition
-                      ${isActive(subKey) ? "bg-indigo-700 text-white font-semibold" : "hover:bg-indigo-100"}`}
+                      ${selectedKey === subKey ? "bg-indigo-700 text-white font-semibold" : "hover:bg-indigo-100"}`}
                   >
-                    <SubIcon className={`w-4 h-4 ${isActive(subKey) ? "text-white" : "text-indigo-700"}`} />
+                    <SubIcon className={`w-4 h-4 ${selectedKey === subKey ? "text-white" : "text-indigo-700"}`} />
                     <span>{subLabel}</span>
                   </li>
                 ))}
