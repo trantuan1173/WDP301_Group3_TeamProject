@@ -1,12 +1,12 @@
 // frontend/src/components/Teacher/teacherModal/ChooseTestModal.jsx
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaEye } from "react-icons/fa";
 import "../../../assets/CSS/MinhKhanhCSS.css";
 import { API_ENDPOINTS } from '../../../config'
 import axios from 'axios';
 import CreateTestQuestionModal from "./CreateTestQuestionModal";
-
+import PreviewQuestionModal from "./PreviewQuestionModal";
 
 
 
@@ -16,7 +16,8 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
     const [types, setTypes] = useState([]);
     const [levels, setLevels] = useState([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
-
+    const [showPreview, setShowPreview] = useState(false);
+    const [previewTest, setPreviewTest] = useState(null);
     const [search, setSearch] = useState("");
     const [selectedLevel, setSelectedLevel] = useState("");
     const [selectedSkill, setSelectedSkill] = useState("");
@@ -112,7 +113,7 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                 </div>
                 <div className="d-flex justify-content-between mb-2" style={{ gap: 16 }}>
                     {/* Level Dropdown */}
-                    <div style={{ position: "relative", minWidth: 140 }}>
+                    {/* <div style={{ position: "relative", minWidth: 140 }}>
                         <Button
                             style={{
                                 background: "#dbeafe",
@@ -148,9 +149,9 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </div> */}
                     {/* Skill Dropdown */}
-                    <div style={{ position: "relative", minWidth: 140 }}>
+                    {/* <div style={{ position: "relative", minWidth: 140 }}>
                         <Button
                             style={{
                                 background: "#dbeafe",
@@ -186,9 +187,9 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </div> */}
                     {/* Create Test Button */}
-                    <div style={{ position: "relative", minWidth: 140 }}>
+                    {/* <div style={{ position: "relative", minWidth: 140 }}>
                         <Button
                             style={{
                                 background: "#3b82f6",
@@ -209,58 +210,18 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                             Tạo đề <span style={{ marginLeft: 8 }}>＋</span>
                         </Button>
 
-
-
-
-                    </div>
-                    {/* Topic Dropdown */}
-                    {/* <div style={{ position: "relative", minWidth: 140 }}>
-                        <Button
-                            style={{
-                                background: "#dbeafe",
-                                color: "#222",
-                                border: "none",
-                                borderRadius: 12,
-                                fontWeight: 600,
-                                fontSize: 18,
-                                width: "100%",
-                                boxShadow: "0 2px 6px #e0e7ef"
-                            }}
-                            onClick={() => setDropdown(dropdown === "topic" ? "" : "topic")}
-                        >
-                            Chủ đề <span style={{ marginLeft: 8 }}>▼</span>
-                        </Button>
-                        {dropdown === "topic" && (
-                            <div style={{
-                                position: "absolute", top: 48, left: 0, right: 0, background: "#fff",
-                                borderRadius: 8, boxShadow: "0 2px 8px #e0e7ef", zIndex: 10
-                            }}>
-                                {topics.map(t => (
-                                    <div
-                                        key={t}
-                                        onClick={() => { setSelectedTopic(t); setDropdown(""); }}
-                                        style={{
-                                            padding: "8px 16px",
-                                            cursor: "pointer",
-                                            background: selectedTopic === t ? "#dbeafe" : "#fff"
-                                        }}
-                                    >
-                                        {t}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div> */}
+
                 </div>
                 {/* Table */}
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 16, maxHeight: 260, overflowY: "auto" }}>
                     <table style={{ width: "100%", fontSize: 18 }}>
                         <thead>
                             <tr style={{ borderBottom: "2px solid #e0e7ef" }}>
                                 <th style={{ width: 60, fontWeight: 600 }}>Chọn</th>
                                 <th style={{ fontWeight: 600 }}>Tên</th>
                                 <th style={{ fontWeight: 600 }}>Số câu hỏi</th>
-                                <th style={{ fontWeight: 600 }}>Mức độ</th>
+                                {/* <th style={{ fontWeight: 600 }}>Mức độ</th> */}
                                 <th style={{ fontWeight: 600 }}>Ngày tạo</th>
                                 <th style={{ fontWeight: 600 }}>Xem trước</th>
                             </tr>
@@ -277,12 +238,19 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                                     </td>
                                     <td className="fw-semibold">{t.name}</td>
                                     <td>{t.questions}</td>
-                                    <td>{t.level}</td>
+                                    {/* <td>{t.level}</td> */}
                                     <td>{t.date}</td>
-                                    <td></td>
+                                    <td>
+                                        <FaEye
+                                            style={{ cursor: "pointer", marginLeft: "30px" }}
+                                            onClick={() => {
+                                                setPreviewTest(t);
+                                                setShowPreview(true);
+                                            }}
+                                        />
+                                    </td>
                                 </tr>
                             ))}
-
                         </tbody>
                     </table>
                 </div>
@@ -310,7 +278,8 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                         }}
                         onClick={() => {
                             if (selectedId) {
-                                onTestSelect(selectedId); // 👈 call parent with selected test ID
+                                const selectedTest = filtered.find(t => t.id === selectedId);
+                                onTestSelect(selectedTest); // Pass the whole test object
                             }
                         }}
                         disabled={!selectedId}
@@ -330,6 +299,11 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                 courseId={courseId}
                 classId={classId}
                 userId={userId}
+            />
+            <PreviewQuestionModal
+                show={showPreview}
+                onHide={() => setShowPreview(false)}
+                test={previewTest}
             />
 
         </Modal>

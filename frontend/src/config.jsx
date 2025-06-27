@@ -46,9 +46,12 @@ export const API_ENDPOINTS = {
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
-  STUDENT_SUBMIT_TEST: `${baseUrl}/api/test-submits`,
+  STUDENT_SUBMIT_TEST: `${baseUrl}/api/testSubmission/submit`,
 
   GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
+  GET_ASSIGNED_TESTS_FOR_STUDENT: (studentId,testId) => `${baseUrl}/api/test-assigns/student/${studentId}/test/${testId}`,  
+
+
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) => `${baseUrl}/api/classes/teacher/${teacherId}`,
@@ -65,6 +68,9 @@ export const API_ENDPOINTS = {
 
   TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
   TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
+
+  GET_TEST_QUESTION_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
+
   //Guest endpoints
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,

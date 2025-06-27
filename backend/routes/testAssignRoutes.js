@@ -8,6 +8,7 @@ const {
   updateTestAssign,
   deleteTestAssign,
   getTestAssignsByStudent,
+  getTestAssignsForStudent,
 } = require("../controllers/testAssignController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -33,6 +34,8 @@ const router = express.Router()
  *         description: Danh sách phân công bài kiểm tra
  */
 router.get("/", protect, getTestAssigns)
+
+
 
 /**
  * @swagger
@@ -200,5 +203,37 @@ router.put("/:id", protect, authorize("admin", "teacher"), updateTestAssign)
  *         description: Xóa phân công bài kiểm tra thành công
  */
 router.delete("/:id", protect, authorize("admin", "teacher"), deleteTestAssign)
+
+
+/**
+ * @swagger
+ * /test-assigns/student/{studentId}/test/{testId}:
+ *   get:
+ *     summary: Lấy phân công bài kiểm tra cho sinh viên theo testId
+ *     description: Lấy phân công bài kiểm tra cho sinh viên theo testId
+ *     tags: [Test Assigns]
+ *     parameters:
+ *       - in: path
+ *         name: studentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: testId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Thông tin phân công bài kiểm tra
+ */
+router.get(
+  "/student/:studentId/test/:testId",
+  protect,
+  getTestAssignsForStudent
+);
+
 
 module.exports = router
