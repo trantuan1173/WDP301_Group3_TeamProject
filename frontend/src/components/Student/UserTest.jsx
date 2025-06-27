@@ -3,6 +3,7 @@ import axios from "axios";
 import { FiSearch } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { API_ENDPOINTS } from "../../config";
+import { useMemo } from "react";
 
 export default function UserTest() {
   const { user } = useAuth();
@@ -33,29 +34,33 @@ export default function UserTest() {
     fetchTests();
   }, [user]);
 
-  const filteredTests = tests.filter((test) => {
-    const courseMatch = test.courseId?.nameCourses
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  const filteredTests = useMemo(() => {
+    return tests.filter((test) => {
+      const keyword = searchQuery.toLowerCase();
+      const courseMatch =
+        test.courseId?.nameCourses?.toLowerCase().includes(keyword) ||
+        test.classId?.className?.toLowerCase().includes(keyword) ||
+        test.teacherId?.profileId?.name?.toLowerCase().includes(keyword);
 
-    const dueDate = new Date(test.dueDate);
-    const now = new Date();
+      const dueDate = new Date(test.dueDate);
+      const now = new Date();
 
-    const isSameDay =
-      now.getFullYear() === dueDate.getFullYear() &&
-      now.getMonth() === dueDate.getMonth() &&
-      now.getDate() === dueDate.getDate();
+      const isSameDay =
+        now.getFullYear() === dueDate.getFullYear() &&
+        now.getMonth() === dueDate.getMonth() &&
+        now.getDate() === dueDate.getDate();
 
-    const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
-    const isFuture = dueDate > new Date(now.setHours(23, 59, 59, 999));
+      const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
+      const isFuture = dueDate > new Date(now.setHours(23, 59, 59, 999));
 
-    let statusMatch = true;
-    if (filterStatus === "upcoming") statusMatch = isFuture;
-    else if (filterStatus === "today") statusMatch = isSameDay;
-    else if (filterStatus === "past") statusMatch = isPast;
+      let statusMatch = true;
+      if (filterStatus === "upcoming") statusMatch = isFuture;
+      else if (filterStatus === "today") statusMatch = isSameDay;
+      else if (filterStatus === "past") statusMatch = isPast;
 
-    return courseMatch && statusMatch;
-  });
+      return courseMatch && statusMatch;
+    });
+  }, [tests, searchQuery, filterStatus]);
 
   const weekdays = [
     { label: "Thứ Hai", value: 1 },
@@ -110,7 +115,7 @@ export default function UserTest() {
         <div className="flex items-center border rounded px-2 bg-gray-100 w-full max-w-md">
           <input
             type="text"
-            placeholder="Tìm kiếm lớp học..."
+            placeholder="Tên lớp học, khóa học, giáo viên..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="outline-none py-1 px-2 bg-transparent w-full"
@@ -136,21 +141,21 @@ export default function UserTest() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-100 text-sm text-gray-700">
-            <tr>
+      <div className="overflow-x-auto rounded shadow-md">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="bg-blue-400 text-white text-left">
               <th className="p-3 border">Thứ</th>
               <th className="p-3 border">Tên lớp</th>
               <th className="p-3 border">Khoá học</th>
               <th className="p-3 border">Giáo viên</th>
               <th className="p-3 border">Thời gian</th>
-              <th className="p-3 border">Hành động</th>
+              <th className="p-3 border text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
-            {testsByWeekday.flatMap(({ label, dateStr, tests }) =>
-              tests.map((test) => {
+            {testsByWeekday.flatMap(({ label, dateStr, tests }, weekdayIndex) =>
+              tests.map((test, i) => {
                 const dueDate = new Date(test.dueDate);
                 const startHour = dueDate.getHours();
                 const startMin = dueDate.getMinutes();
@@ -169,29 +174,33 @@ export default function UserTest() {
                 const isFuture =
                   dueDate > new Date(now.setHours(23, 59, 59, 999));
 
+                const rowBg =
+                  (i + weekdayIndex) % 2 === 0 ? "bg-white" : "bg-gray-50";
+
                 const actionButton = isPast ? (
-                  <button className="bg-yellow-200 text-yellow-800 px-3 py-1 rounded text-sm hover:bg-yellow-300">
+                  <button className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200">
                     Xem kết quả
                   </button>
                 ) : isSameDay ? (
-                  <button className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300">
+                  <button className="bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200">
                     Làm bài
                   </button>
                 ) : (
                   <button
                     disabled
-                    className="bg-gray-200 text-gray-600 px-3 py-1 rounded text-sm cursor-not-allowed"
+                    className="bg-gray-200 text-gray-600 px-3 py-1 rounded cursor-not-allowed"
                   >
                     Chưa mở
                   </button>
                 );
 
                 return (
-                  <tr key={test._id} className="text-sm">
-                    <td className="p-3 border text-center">
-                      {`${label} (${dateStr})`}
-                    </td>
-                    <td className="p-3 border">{test.classId?.name}</td>
+                  <tr
+                    key={test._id}
+                    className={`${rowBg} hover:bg-blue-50 transition`}
+                  >
+                    <td className="p-3 border">{`${label} (${dateStr})`}</td>
+                    <td className="p-3 border">{test.classId?.className}</td>
                     <td className="p-3 border">{test.courseId?.nameCourses}</td>
                     <td className="p-3 border">
                       {test.teacherId?.profileId?.name}
@@ -216,4 +225,3 @@ export default function UserTest() {
     </div>
   );
 }
-
