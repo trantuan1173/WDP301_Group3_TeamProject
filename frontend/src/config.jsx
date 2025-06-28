@@ -70,6 +70,7 @@ export const API_ENDPOINTS = {
   //Guest endpoints
   GET_HIGHLIGHT_FEEDBACKS: `${baseUrl}/api/feedbacksCourse/highlight`,
   GET_HIGHLIGHT_TEACHER_FEEDBACKS: `${baseUrl}/api/feedbacksTeacher/highlight`,
+  GET_FEEDBACKS_COURSE: (courseId) => `${baseUrl}/api/feedbacksCourse/highlight/${courseId}`,
 
   GET_COURSES: `${baseUrl}/api/courseDetail`,
   GET_COURSE_BY_ID: (courseId) =>
