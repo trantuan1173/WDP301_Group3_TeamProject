@@ -4,6 +4,7 @@ const {
   getAllFeedbacksATeacher,
   getFeedbacksTeacherByUser,
   getFeedbacksTeacherHighlight,
+  getFeedbacksTeacherHighlightForHome,
   createFeedbackTeacher,
   updateFeedbackTeacher,
   deleteFeedbackTeacher,
@@ -34,6 +35,21 @@ const router = express.Router()
  *         description: Danh sách phản hồi
  */
 router.get("/", protect, authorize("admin"), getAllFeedbacksAllTeacher)
+
+/**
+ * @swagger
+ * /feedbacksTeacher/highlight:
+ *   get:
+ *     summary: Lấy danh sách phản hồi highlight trong trang chủ
+ *     description: Lấy danh sách phản hồi highlight trong trang chủ
+ *     tags: [Feedbacks Teacher]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách phản hồi highlight
+ */
+router.get("/highlight", getFeedbacksTeacherHighlightForHome)
 
 /**
  * @swagger
