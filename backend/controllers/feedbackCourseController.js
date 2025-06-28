@@ -8,6 +8,17 @@ const Course = require("../models/courseModel.js");
 const getAllFeedbacksAllCourse = async (req, res) => {
   try {
     const feedbacks = await FeedbackCourse.find()
+    .populate({
+      path: "userId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "courseId"
+    })
     res.status(200).send({
       success: true,
       count: feedbacks.length,
@@ -25,6 +36,17 @@ const getAllFeedbacksACourse = async (req, res) => {
   try {
     const { courseId } = req.params
     const feedbacks = await FeedbackCourse.find({ courseId })
+    .populate({
+      path: "userId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "courseId"
+    })
     res.status(200).send({
       success: true,
       count: feedbacks.length,
@@ -42,6 +64,17 @@ const getAllFeedbacksCourseByUser = async (req, res) => {
   try {
     const { userId } = req.params
     const feedbacks = await FeedbackCourse.find({ userId })
+    .populate({
+      path: "userId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "courseId"
+    })
     res.status(200).send({
       success: true,
       count: feedbacks.length,
@@ -54,16 +87,58 @@ const getAllFeedbacksCourseByUser = async (req, res) => {
   }
 }
 
-// Get single feedback
+// Get highlight feedbacksCourse
 const getFeedbackCourseHighlight = async (req, res) => {
   try {
     const { courseId } = req.params
     const feedback = await FeedbackCourse.find({courseId, highlight: true})
+    .populate({
+      path: "userId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "courseId"
+    })
     if (!feedback) {
       return res.status(404).send("Feedback not found");
     }
     res.status(200).send({
       success: true,
+      data: feedback,
+    })
+    message: "Feedback fetched successfully";
+  } catch (error) {
+    res.status(500).send(error)
+    message: "Failed to fetch feedback";
+  }
+}
+
+// Get highlight feedbacksCourse for home
+const getFeedbackCourseHighlightForHome = async (req, res) => {
+  try {
+    const feedback = await FeedbackCourse.find({highlight: true})
+    .populate({
+      path: "userId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "courseId"
+    })
+
+    if (!feedback) {
+      return res.status(404).send("Feedback not found");
+    }
+    res.status(200).send({
+      success: true,
+      count: feedback.length,
       data: feedback,
     })
     message: "Feedback fetched successfully";
@@ -172,6 +247,7 @@ module.exports = {
   getAllFeedbacksACourse,
   getAllFeedbacksCourseByUser,
   getFeedbackCourseHighlight,
+  getFeedbackCourseHighlightForHome,
   createFeedbackCourse,
   updateFeedbackCourse,
   deleteFeedbackCourse,

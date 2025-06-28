@@ -4,9 +4,18 @@ const User = require("../models/userModel.js")
 // Get all feedbacks
 const getAllFeedbacksAllTeacher = async (req, res) => {
   try {
-    const feedbacks = await FeedbackTeacher.find().populate({
+    const feedbacks = await FeedbackTeacher.find()
+    .populate({
       path: "teacherId",
       select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "studentId",
+      select: "profileId",
       populate: {
         path: "profileId",
         select: "name"
@@ -33,9 +42,18 @@ const getAllFeedbacksAllTeacher = async (req, res) => {
 const getAllFeedbacksATeacher = async (req, res) => {
   try {
     const { teacherId } = req.params
-    const feedbacks = await FeedbackTeacher.find({ teacherId: teacherId }).populate({
+    const feedbacks = await FeedbackTeacher.find({ teacherId: teacherId })
+    .populate({
       path: "teacherId",
       select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "studentId",
+      select: "profileId",
       populate: {
         path: "profileId",
         select: "name"
@@ -63,9 +81,17 @@ const getFeedbacksTeacherByUser = async (req, res) => {
   try {
     const { studentId } = req.params
     const feedbacks = await FeedbackTeacher.find({ studentId: studentId })
+    .populate({
+      path: "teacherId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+          select: "name"
+        }
+      })
       .populate({
-        path: "teacherId",
-        select: "email profileId",
+        path: "studentId",
+        select: "profileId",
         populate: {
           path: "profileId",
           select: "name"
@@ -101,6 +127,14 @@ const getFeedbacksTeacherHighlight = async (req, res) => {
           select: "name"
         }
       })
+      .populate({
+        path: "studentId",
+        select: "profileId",
+        populate: {
+          path: "profileId",
+          select: "name"
+        }
+      })
 
     if (!feedbackTeacher) {
       return res.status(404).json({
@@ -111,6 +145,51 @@ const getFeedbacksTeacherHighlight = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      data: feedbackTeacher,
+    })
+    message: "Feedback fetched successfully";
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch feedback",
+      error: error.message,
+    })
+    message: "Failed to fetch feedback";
+  }
+}
+
+
+// Get highlight feedbacksTeacher for home
+const getFeedbacksTeacherHighlightForHome = async (req, res) => {
+  try {
+    const feedbackTeacher = await FeedbackTeacher.find({ highlight: true })
+      .populate({
+        path: "teacherId",
+        select: "email profileId",
+        populate: {
+          path: "profileId",
+          select: "name"
+        }
+      })
+      .populate({
+        path: "studentId",
+        select: "profileId",
+        populate: {
+          path: "profileId",
+          select: "name"
+        }
+      })
+
+    if (!feedbackTeacher) {
+      return res.status(404).json({
+        success: false,
+        message: "Feedback not found",
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      count: feedbackTeacher.length,
       data: feedbackTeacher,
     })
     message: "Feedback fetched successfully";
@@ -256,6 +335,7 @@ module.exports={
     getAllFeedbacksAllTeacher,
     getAllFeedbacksATeacher,
     getFeedbacksTeacherByUser,
+    getFeedbacksTeacherHighlightForHome,
     getFeedbacksTeacherHighlight,
     createFeedbackTeacher,
     updateFeedbackTeacher,
