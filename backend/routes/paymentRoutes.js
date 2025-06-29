@@ -3,6 +3,7 @@ const {
   getPayments,
   getPaymentsByStudent,
   getPaymentsByCourse,
+  getPaymentsByTransactionId,
   getPayment,
   createPayment,
   updatePayment,
@@ -34,6 +35,8 @@ router.get("/", getPayments)
 router.post("/", createPayment)
 
 router.get("/stats", getPaymentStats)
+
+router.get("/transaction/:transactionId", protect, getPaymentsByTransactionId)
 
 router.get("/student/:studentId", getPaymentsByStudent)
 

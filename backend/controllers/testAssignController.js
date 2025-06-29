@@ -2,6 +2,7 @@ const TestAssign = require("../models/testAssignModel.js")
 const Test = require("../models/testModel.js")
 const Class = require("../models/classModel.js")
 const Course = require("../models/courseModel.js")
+const TestSubmission = require("../models/testSubmissionModel.js")
 
 // Get all test assignments
 const getTestAssigns = async (req, res) => {
@@ -96,12 +97,41 @@ const getTestAssignsByStudent = async (req, res) => {
     const testAssigns = await TestAssign.find({ classId: { $in: classIds } })
       .populate("courseId")
       .populate("testId")
-      .populate("teacherId", "email");
+      .populate([
+        {
+          path: "teacherId", 
+          select: "profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        }
+      ]);
 
+    // Tìm tất cả bài đã nộp của học sinh này
+    const submissions = await TestSubmission.find({
+      studentId,
+      testAssignId: { $in: testAssigns.map(t => t._id) }
+    });
+
+    // Gắn điểm vào mỗi bài kiểm tra
+    const resultWithScore = testAssigns.map(assign => {
+      const submission = submissions.find(sub => sub.testAssignId.toString() === assign._id.toString());
+
+      const isExpired = new Date(assign.dueDate) < new Date();
+      return {
+        ...assign.toObject(),
+        submitted: !!submission,
+        score: submission?.score || null,
+        submittedAt: submission?.submittedAt || null,
+        isExpired,
+      };
+    });
+    
     res.status(200).json({
       success: true,
       count: testAssigns.length,
-      data: testAssigns,
+      data: resultWithScore,
     })
   } catch (error) {
     res.status(500).json({
