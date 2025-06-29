@@ -16,6 +16,7 @@ const TestTab = ({ classId, courseId }) => {
     const [className, setClassName] = useState("");
     const [teacherId, setTeacherId] = useState(null);
     const [selectedTestId, setSelectedTestId] = useState(null);
+    const [selectedTest, setSelectedTest] = useState(null);
 
     // Lấy userId từ token
     useEffect(() => {
@@ -167,7 +168,8 @@ const TestTab = ({ classId, courseId }) => {
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">STT</th>
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">Tên</th>
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">Thời gian</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Kết thúc</th>
+                                        {/* <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th> */}
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">Trạng thái</th>
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
                                     </tr>
@@ -187,7 +189,10 @@ const TestTab = ({ classId, courseId }) => {
                                                     <td className="py-2 px-4 font-bold">
                                                         {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
                                                     </td>
-                                                    <td className="py-2 px-4">{assign.testId?.description || assign.description}</td>
+                                                    <td className="py-2 px-4 font-bold">
+                                                        {assign.dueDate ? new Date(assign.dueDate).toLocaleString("vi-VN") : ""}
+                                                    </td>
+                                                    {/* <td className="py-2 px-4">{assign.testId?.description || assign.description}</td> */}
                                                     <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
                                                         {status.text}
                                                     </td>
@@ -212,22 +217,6 @@ const TestTab = ({ classId, courseId }) => {
                     </div>
 
                     {/* Modals */}
-                    <AssignTestModal
-                        show={showCreateModal}
-                        onHide={() => setShowCreateModal(false)}
-                        onSubmit={() => {
-                            setShowCreateModal(false);
-                            fetchAssigns(); // <-- fetch new data after assigning
-                        }}
-                        switchToChooseModal={() => {
-                            setShowCreateModal(false);
-                            setShowChooseModal(true);
-                        }}
-                        courseId={courseId}
-                        classId={classId}
-                        testId={selectedTestId}
-                        teacherId={teacherId}
-                    />
                     <ChooseTestModal
                         show={showChooseModal}
                         onHide={() => setShowChooseModal(false)}
@@ -237,11 +226,29 @@ const TestTab = ({ classId, courseId }) => {
                         }}
                         courseId={courseId}
                         classId={classId}
-                        onTestSelect={(id) => {
-                            setSelectedTestId(id);     // 👈 set it here
-                            setShowChooseModal(false); // 👈 hide modal after selecting
-                            setShowCreateModal(true);  // 👈 show assign modal after selecting
+                        onTestSelect={(test) => { // test is the full object
+                            setSelectedTest(test);
+                            setShowChooseModal(false);
+                            setShowCreateModal(true);
                         }}
+                    />
+
+                    <AssignTestModal
+                        show={showCreateModal}
+                        onHide={() => setShowCreateModal(false)}
+                        onSubmit={() => {
+                            setShowCreateModal(false);
+                            fetchAssigns();
+                        }}
+                        switchToChooseModal={() => {
+                            setShowCreateModal(false);
+                            setShowChooseModal(true);
+                        }}
+                        courseId={courseId}
+                        classId={classId}
+                        testId={selectedTest?.id}
+                        teacherId={teacherId}
+                        selectedTest={selectedTest} // pass the whole object
                     />
                 </div>
             </div>

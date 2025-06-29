@@ -5,7 +5,7 @@ import TeacherViewShedule from "../../components/Teacher/TeacherViewShedule";
 import TeacherOverView from "../../components/Teacher/TeacherOverView/TeacherOverView";
 import TeacherViewClass from "../../components/Teacher/TeacherMangeClass/TeacherViewClass";
 import TeacherClassDetail from "../../components/Teacher/TeacherMangeClass/TeacherClassDetail";
-import TeacherManageTest from "../../components/Teacher/TeacherMangeClass/TeacherManageTest";
+//import TeacherManageTest from "../../components/Teacher/TeacherMangeClass/TeacherManageTest";
 import TeacherViewScore from "../../components/Teacher/TeacherMangeClass/TeacherViewScore";
 import UserProfileForm from "../../components/Student/UserProfileForm";
 
@@ -35,7 +35,7 @@ const TeacherDashboard = () => {
               ? <TeacherClassDetail classId={selectedClassId} onBack={() => setSelectedClassId(null)} />
               : <TeacherViewClass onViewClass={setSelectedClassId} />
           )}
-          {selectedKey === "exams" && <TeacherManageTest />}
+          {/* {selectedKey === "exams" && <TeacherManageTest />} */}
           {selectedKey === "scores" && <TeacherViewScore />}
         </div>
       </div>

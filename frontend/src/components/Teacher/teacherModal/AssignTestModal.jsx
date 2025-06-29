@@ -18,22 +18,19 @@ const AssignTestModal = ({
     classId,
     teacherId,
     testId,
+    selectedTest,
 }) => {
     const [title, setTitle] = useState('');
-    const [startDate, setStartDate] = useState(new Date());
-    const [dueDate, setDueDate] = useState(new Date());
-    const [startHour, setStartHour] = useState('07');
-    const [startMinute, setStartMinute] = useState('45');
-    const [startPeriod, setStartPeriod] = useState('AM');
-    const [endHour, setEndHour] = useState('09');
-    const [endMinute, setEndMinute] = useState('00');
-    const [endPeriod, setEndPeriod] = useState('AM');
+    const [startTime, setStartTime] = useState(new Date()); // default: now
+    const [testDuration, setTestDuration] = useState(60); // default: 60 minutes
+
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
     const [excelFile, setExcelFile] = useState(null);
     const [questions, setQuestions] = useState([
         { question: "", options: ["", "", "", ""], correctAnswerIndex: 0 }
     ]);
+
 
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
 
@@ -54,6 +51,12 @@ const AssignTestModal = ({
             });
     };
 
+    // When selectedTest changes, update description
+    React.useEffect(() => {
+        if (selectedTest && selectedTest.description) {
+            setDescription(selectedTest.description);
+        }
+    }, [selectedTest]);
 
     const handleExcelFileChange = (e) => {
         setExcelFile(e.target.files[0]);
@@ -61,24 +64,40 @@ const AssignTestModal = ({
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem("token");
+            let assignTestId = null;
+            const dueDate = new Date(startTime.getTime() + testDuration * 60000);
 
-            let createdTestId = null;
+            if (startTime < new Date()) {
+                alert("⚠️ Thời gian bắt đầu không được ở quá khứ.");
+                return;
+            }
+
+            if (testDuration <= 5) {
+                alert("⚠️ Thời gian bài kiểm tra phải lớn hơn 5 phút.");
+                return;
+            }
 
             if (excelFile) {
+                // Upload file and get new testId
                 const formData = new FormData();
                 formData.append("file", excelFile);
                 formData.append("title", title);
                 formData.append("description", description);
                 formData.append("courseId", courseId);
                 formData.append("teacherId", teacherId);
+                formData.append("startDate", startTime.toISOString());
+                formData.append("dueDate", dueDate.toISOString());
+
 
                 const res = await axios.post(API_ENDPOINTS.UPLOAD_TEST_FROM_XLSX, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                createdTestId = res.data.data._id;
-                console.log("Assigning testId:", createdTestId, "to classId:", classId);
-                console.log("Effective courseId for assignment:", courseId);
+                assignTestId = res.data.data._id;
+            } else if (testId) {
+                // Use selected testId from bank
+                assignTestId = testId;
             } else {
+                // Validate manual questions (if you support this)
                 const isValid = questions.every(q =>
                     q.question.trim() !== "" &&
                     q.options.every(opt => opt.trim() !== "")
@@ -87,31 +106,27 @@ const AssignTestModal = ({
                     alert("⚠️ Vui lòng điền đầy đủ nội dung câu hỏi và các lựa chọn.");
                     return;
                 }
+                // You may want to handle manual test creation here
+                alert("Vui lòng chọn đề hoặc tải đề lên.");
+                return;
             }
-            
-            // Giao bài
-            if (createdTestId) {
-                console.log("Calling assign API with:", {
-                    courseId,
-                    testId: createdTestId,
-                    classId,
-                    title,
-                    teacherId,
-                    startDate: startDate.toISOString(),
-                    dueDate: dueDate.toISOString()
-                });
+
+
+
+            // Assign the test if we have a testId
+            if (assignTestId) {
                 await axios.post(API_ENDPOINTS.TEACHER_ASSIGN_TEST, {
                     courseId,
-                    testId: createdTestId,
+                    testId: assignTestId,
                     classId,
                     title,
                     teacherId,
-                    startDate: startDate.toISOString(),
-                    dueDate: dueDate.toISOString()
+                    startDate: startTime.toISOString(),
+                    dueDate: new Date(startTime.getTime() + testDuration * 60000).toISOString(),
+
                 }, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log("✅ Assigned test successfully");
             }
 
             // Reset
@@ -127,6 +142,13 @@ const AssignTestModal = ({
             alert("Đã xảy ra lỗi khi giao bài kiểm tra.");
         }
     };
+
+    function formatDateTimeLocal(date) {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+
     return (
         <Modal
             show={show}
@@ -152,106 +174,116 @@ const AssignTestModal = ({
                             }}
                             value={title}
                             onChange={e => setTitle(e.target.value)}
+                            required={true}
                         />
                     </Form.Group>
+                    <div className="d-flex" style={{ gap: 24, marginBottom: 16 }}>
+                        <Form.Group className="mb-0" style={{ flex: 1 }}>
+                            <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>
+                                Thời gian bắt đầu
+                            </Form.Label>
+                            <Form.Control
+                                type="datetime-local"
+                                value={formatDateTimeLocal(startTime)}
+                                onChange={(e) => setStartTime(new Date(e.target.value))}
+                                style={{
+                                    borderRadius: 12,
+                                    background: "#eaf3ff",
+                                    fontSize: 18,
+                                    minHeight: 48,
+                                    marginTop: 4,
+                                    width: "100%"
+                                }}
+                                required={true}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-0" style={{ flex: 1 }}>
+                            <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>
+                                Thời lượng bài kiểm tra (phút)
+                            </Form.Label>
+                            <Form.Control
+                                type="number"
+                                min="1"
+                                value={testDuration}
+                                onChange={(e) => setTestDuration(e.target.value)}
+                                style={{
+                                    borderRadius: 12,
+                                    background: "#eaf3ff",
+                                    fontSize: 18,
+                                    minHeight: 48,
+                                    marginTop: 4,
+                                    width: "100%"
+                                }}
+                            />
+                        </Form.Group>
+
+                    </div>
+                    <div style={{ marginBottom: 16, fontSize: 18, fontWeight: 500 }}>
+                        Thời gian kết thúc:{" "}
+                        {new Date(startTime.getTime() + testDuration * 60000).toLocaleString("vi-VN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric"
+                        })}
+                    </div>
+
+
+
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Thời gian</Form.Label>
-                        <div className="d-flex align-items-center justify-content-between" style={{ gap: 12 }}>
-                            <span style={{ color: "#7c7c7c", fontSize: 14, marginRight: 8 }}>{today}</span>
-                            {/* Start Time */}
-                            <input
-                                type="text"
-                                maxLength={2}
-                                value={startHour}
-                                onChange={e => setStartHour(e.target.value.replace(/\D/, '').slice(0, 2))}
+                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Đề được chọn</Form.Label>
+                        {selectedTest ? (
+                            <div
                                 style={{
-                                    width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
+                                    borderRadius: 16,
+                                    background: "#eaf3ff",
+                                    boxShadow: "0 3px 6px #e0e7ef",
+                                    fontSize: 18,
+                                    minHeight: 48,
+                                    marginTop: 4,
+                                    height: 73,
+                                    width: 646,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    padding: "0 20px",
+                                    gap: 32,
+                                    fontWeight: 500
                                 }}
-                            />
-                            <span style={{ fontSize: 36, fontWeight: 600, marginRight: 4 }}>:</span>
-                            <input
-                                type="text"
-                                maxLength={2}
-                                value={startMinute}
-                                onChange={e => setStartMinute(e.target.value.replace(/\D/, '').slice(0, 2))}
-                                style={{
-                                    width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
-                                }}
-                            />
-                            <div className="d-flex flex-column align-items-center" style={{ marginRight: 12 }}>
-                                <Button
-                                    size="sm"
-                                    variant={startPeriod === "AM" ? "secondary" : "outline-secondary"}
-                                    style={{ borderRadius: 8, marginBottom: 2, fontSize: 12, padding: "2px 8px" }}
-                                    onClick={() => setStartPeriod("AM")}
-                                >AM</Button>
-                                <Button
-                                    size="sm"
-                                    variant={startPeriod === "PM" ? "secondary" : "outline-secondary"}
-                                    style={{ borderRadius: 8, fontSize: 12, padding: "2px 8px" }}
-                                    onClick={() => setStartPeriod("PM")}
-                                >PM</Button>
+                            >
+                                <span><b>Tên:</b> {selectedTest.name}</span>
+                                <span><b>Số câu hỏi:</b> {selectedTest.questions}</span>
+                                {/* <span><b>Mức độ:</b> {selectedTest.level}</span> */}
+                                <span><b>Ngày tạo:</b> {selectedTest.date}</span>
                             </div>
-                            {/* End Time */}
-                            <input
-                                type="text"
-                                maxLength={2}
-                                value={endHour}
-                                onChange={e => setEndHour(e.target.value.replace(/\D/, '').slice(0, 2))}
+                        ) : (
+                            <div
                                 style={{
-                                    width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
+                                    borderRadius: 16,
+                                    background: "#eaf3ff",
+                                    boxShadow: "0 3px 6px #e0e7ef",
+                                    fontSize: 18,
+                                    minHeight: 48,
+                                    marginTop: 4,
+                                    height: 73,
+                                    width: 646,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    padding: "0 20px",
+                                    color: "#888"
                                 }}
-                            />
-                            <span style={{ fontSize: 36, fontWeight: 600, marginRight: 4 }}>:</span>
-                            <input
-                                type="text"
-                                maxLength={2}
-                                value={endMinute}
-                                onChange={e => setEndMinute(e.target.value.replace(/\D/, '').slice(0, 2))}
-                                style={{
-                                    width: 56, fontSize: 36, textAlign: "center", background: "#edeaff", border: "none", borderRadius: 8, marginRight: 4
-                                }}
-                            />
-                            <div className="d-flex flex-column align-items-center">
-                                <Button
-                                    size="sm"
-                                    variant={endPeriod === "AM" ? "secondary" : "outline-secondary"}
-                                    style={{ borderRadius: 8, marginBottom: 2, fontSize: 12, padding: "2px 8px" }}
-                                    onClick={() => setEndPeriod("AM")}
-                                >AM</Button>
-                                <Button
-                                    size="sm"
-                                    variant={endPeriod === "PM" ? "secondary" : "outline-secondary"}
-                                    style={{ borderRadius: 8, fontSize: 12, padding: "2px 8px" }}
-                                    onClick={() => setEndPeriod("PM")}
-                                >PM</Button>
+                            >
+                                Chưa chọn đề nào
                             </div>
-                        </div>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Mô tả</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            style={{
-                                borderRadius: 16,
-                                background: "#eaf3ff",
-                                boxShadow: "0 3px 6px #e0e7ef",
-                                fontSize: 20,
-                                minHeight: 48,
-                                marginTop: 4,
-                                height: 73,
-                                width: 646
-                            }}
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                        />
+                        )}
                     </Form.Group>
                     <div className="mb-3 d-flex" style={{ gap: 12 }}>
                         {/* Upload Section */}
                         <div className="w-50 position-relative">
                             <Form.Control
                                 type="text"
-                                value={file ? file.name : ""}
+                                value={excelFile ? excelFile.name : ""}
                                 placeholder="Tải đề lên từ thiết bị"
                                 style={{
                                     borderRadius: 12,
@@ -271,7 +303,7 @@ const AssignTestModal = ({
                                     position: "absolute",
                                     top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer"
                                 }}
-                                onChange={handleExcelFileChange}
+                                onChange={e => setExcelFile(e.target.files[0])}
                             />
                             <FaUpload style={{
                                 position: "absolute",
@@ -340,9 +372,9 @@ const AssignTestModal = ({
                             minWidth: 100
                         }}
                         onClick={handleSubmit}
-                        disabled={!title || !description}
+                    // disabled={!title}
                     >
-                        Lưu
+                        Giao
                     </Button>
                 </div>
             </Modal.Body>
