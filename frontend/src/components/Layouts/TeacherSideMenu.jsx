@@ -11,7 +11,7 @@ const menuItems = [
     icon: FaChalkboardTeacher,
     children: [
       { key: "classes", label: "My Class", icon: FaUsers },
-      { key: "exams", label: "Exams", icon: FaClipboardList },
+      // { key: "exams", label: "Exams", icon: FaClipboardList },
       { key: "scores", label: "Scores", icon: FaChartBar }
     ]
   }

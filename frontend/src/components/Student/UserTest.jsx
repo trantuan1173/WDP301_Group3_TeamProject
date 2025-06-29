@@ -1,21 +1,25 @@
+// frontend/src/components/Student/UserTest.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiSearch } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { API_ENDPOINTS } from "../../config";
-import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
-export default function UserTest() {
+export default function UserTestPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchTests = async () => {
       if (!user || !user._id) return;
 
       try {
+        setIsLoading(true);
         const token = localStorage.getItem("token");
         const res = await axios.get(
           API_ENDPOINTS.GET_TESTS_BY_STUDENT_ID(user._id),
@@ -25,203 +29,127 @@ export default function UserTest() {
             },
           }
         );
-        setTests(res.data.data || []);
+
+
+        setTests(res.data.data);
+        // console.log("Tests fetched successfully:", res.data.data);
       } catch (error) {
         console.error("Failed to fetch tests:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchTests();
   }, [user]);
 
-  const filteredTests = useMemo(() => {
-    return tests.filter((test) => {
-      const keyword = searchQuery.toLowerCase();
-      const courseMatch =
-        test.courseId?.nameCourses?.toLowerCase().includes(keyword) ||
-        test.classId?.className?.toLowerCase().includes(keyword) ||
-        test.teacherId?.profileId?.name?.toLowerCase().includes(keyword);
-
-      const dueDate = new Date(test.dueDate);
-      const now = new Date();
-
-      const isSameDay =
-        now.getFullYear() === dueDate.getFullYear() &&
-        now.getMonth() === dueDate.getMonth() &&
-        now.getDate() === dueDate.getDate();
-
-      const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
-      const isFuture = dueDate > new Date(now.setHours(23, 59, 59, 999));
-
-      let statusMatch = true;
-      if (filterStatus === "upcoming") statusMatch = isFuture;
-      else if (filterStatus === "today") statusMatch = isSameDay;
-      else if (filterStatus === "past") statusMatch = isPast;
-
-      return courseMatch && statusMatch;
-    });
-  }, [tests, searchQuery, filterStatus]);
-
-  const weekdays = [
-    { label: "Thứ Hai", value: 1 },
-    { label: "Thứ Ba", value: 2 },
-    { label: "Thứ Tư", value: 3 },
-    { label: "Thứ Năm", value: 4 },
-    { label: "Thứ Sáu", value: 5 },
-    { label: "Thứ Bảy", value: 6 },
-    { label: "Chủ Nhật", value: 0 },
-  ];
-
-  const getMonday = (date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = (day === 0 ? -6 : 1) - day;
-    d.setDate(d.getDate() + diff);
-    return d;
-  };
-
-  const monday = getMonday(new Date());
-
-  const testsByWeekday = weekdays.map(({ label, value }) => {
-    const thisDay = new Date(monday);
-    thisDay.setDate(monday.getDate() + ((value + 7 - 1) % 7));
-
-    const filtered = filteredTests.filter((test) => {
-      const testDate = new Date(test.dueDate);
-      return (
-        testDate.getFullYear() === thisDay.getFullYear() &&
-        testDate.getMonth() === thisDay.getMonth() &&
-        testDate.getDate() === thisDay.getDate()
-      );
-    });
-
-    return {
-      label,
-      dateStr: thisDay.toLocaleDateString("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-      }),
-      tests: filtered,
-    };
-  });
-
-  const pad = (num) => num.toString().padStart(2, "0");
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">Bài Kiểm Tra Của Tôi</h2>
+      <h2 className="text-xl font-bold mb-4">My Test</h2>
 
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div className="flex items-center border rounded px-2 bg-gray-100 w-full max-w-md">
-          <input
-            type="text"
-            placeholder="Tên lớp học, khóa học, giáo viên..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="outline-none py-1 px-2 bg-transparent w-full"
-          />
-          <FiSearch className="text-gray-600" />
-        </div>
+      {isLoading ? (
+        <LoadingSpinner size={100} />
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            {/* Search box */}
+            <div className="flex items-center border rounded px-2 bg-gray-100 w-full max-w-md">
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="outline-none py-1 px-2 bg-transparent w-full"
+              />
+              <FiSearch className="text-gray-600" />
+            </div>
 
-        <div className="flex items-center gap-3">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="border px-3 py-1 rounded text-sm"
-          >
-            <option value="all">Tất cả</option>
-            <option value="upcoming">Chưa tới hạn</option>
-            <option value="today">Đến hạn hôm nay</option>
-            <option value="past">Đã quá hạn</option>
-          </select>
-          <select className="border px-3 py-1 rounded text-sm">
-            <option>Tuần này</option>
-            <option>Tuần trước</option>
-          </select>
-        </div>
-      </div>
+            {/* Tuần dropdown (placeholder) */}
+            <select className="ml-4 border px-3 py-1 rounded text-sm">
+              <option>Week</option>
+              <option>Previous Week</option>
+            </select>
+          </div>
 
-      <div className="overflow-x-auto rounded shadow-md">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-blue-400 text-white text-left">
-              <th className="p-3 border">Thứ</th>
-              <th className="p-3 border">Tên lớp</th>
-              <th className="p-3 border">Khoá học</th>
-              <th className="p-3 border">Giáo viên</th>
-              <th className="p-3 border">Thời gian</th>
-              <th className="p-3 border text-center">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {testsByWeekday.flatMap(({ label, dateStr, tests }, weekdayIndex) =>
-              tests.map((test, i) => {
-                const dueDate = new Date(test.dueDate);
-                const startHour = dueDate.getHours();
-                const startMin = dueDate.getMinutes();
-                const endHour = startHour + 1;
-                const timeStr = `45p (${startHour}h${pad(
-                  startMin
-                )} - ${endHour}h${pad(startMin)})`;
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-gray-100 text-sm text-gray-700">
+                <tr>
+                  <th className="p-3 border">Day</th>
+                  {/* <th className="p-3 border">Tên lớp</th> */}
+                  <th className="p-3 border">Course</th>
+                  <th className="p-3 border">Teacher</th>
+                  <th className="p-3 border">Time</th>
+                  <th className="p-3 border">Action</th>
+                  <th className="p-3 border">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tests
+                  // .filter(test => new Date(test.dueDate) > new Date())
+                  .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+                  .map((test, idx) => {
 
-                const now = new Date();
-                const isSameDay =
-                  now.getFullYear() === dueDate.getFullYear() &&
-                  now.getMonth() === dueDate.getMonth() &&
-                  now.getDate() === dueDate.getDate();
+                    const start = new Date(test.startDate);
+                    const end = new Date(test.dueDate);
 
-                const isPast = dueDate < new Date(now.setHours(0, 0, 0, 0));
-                const isFuture =
-                  dueDate > new Date(now.setHours(23, 59, 59, 999));
+                    // Compute duration in minutes
+                    const durationMs = end - start;
+                    const durationMin = Math.round(durationMs / 60000);
 
-                const rowBg =
-                  (i + weekdayIndex) % 2 === 0 ? "bg-white" : "bg-gray-50";
+                    const startHour = start.getHours().toString().padStart(2, "0");
+                    const startMin = start.getMinutes().toString().padStart(2, "0");
+                    const endHour = end.getHours().toString().padStart(2, "0");
+                    const endMin = end.getMinutes().toString().padStart(2, "0");
 
-                const actionButton = isPast ? (
-                  <button className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200">
-                    Xem kết quả
-                  </button>
-                ) : isSameDay ? (
-                  <button className="bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200">
-                    Làm bài
-                  </button>
-                ) : (
-                  <button
-                    disabled
-                    className="bg-gray-200 text-gray-600 px-3 py-1 rounded cursor-not-allowed"
-                  >
-                    Chưa mở
-                  </button>
-                );
+                    const timeStr = `${durationMin}p (${startHour}h${startMin} - ${endHour}h${endMin})`;
 
-                return (
-                  <tr
-                    key={test._id}
-                    className={`${rowBg} hover:bg-blue-50 transition`}
-                  >
-                    <td className="p-3 border">{`${label} (${dateStr})`}</td>
-                    <td className="p-3 border">{test.classId?.className}</td>
-                    <td className="p-3 border">{test.courseId?.nameCourses}</td>
-                    <td className="p-3 border">
-                      {test.teacherId?.profileId?.name}
+                    // Compute day of the week
+                    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    const day = daysOfWeek[start.getDay()];
+
+                    return (
+                      <tr key={test._id} className="text-sm">
+                        <td className="p-3 border text-center">{day}</td>
+                        {/* <td className="p-3 border">{test.classId?.name}</td> */}
+                        <td className="p-3 border">{test.courseId?.nameCourses}</td>
+                        <td className="p-3 border">{test.teacherId?.profileId?.name}</td>
+                        <td className="p-3 border">{timeStr}</td>
+                        <td className="p-3 border text-center">
+                          <button
+                            onClick={() => navigate(`/user/test/${test.testId._id}`)}
+                            title={test.submitted ? "Submitted": "Do test"}
+                            className={`px-3 py-1 text-sm rounded hover:brightness-110 
+                          ${test.submitted
+                                ? "bg-gray-400 text-white cursor-not-allowed"
+                                : test.isExpired
+                                  ? "bg-red-200 text-red-800 cursor-not-allowed"
+                                  : "bg-green-200 text-green-800 hover:bg-green-300 cursor-pointer"
+                              }`}
+                            disabled={test.submitted || test.isExpired}
+                          >
+                            {test.submitted ? "Submitted" : test.isExpired ? "Expired" : "Do test"}
+                          </button>
+
+                        </td>
+                        <td className="p-3 border text-center">{test.score}</td>
+                      </tr>
+                    );
+                  })}
+                {tests.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="text-center py-6 text-gray-500">
+                      No test available.
                     </td>
-                    <td className="p-3 border">{timeStr}</td>
-                    <td className="p-3 border text-center">{actionButton}</td>
                   </tr>
-                );
-              })
-            )}
-
-            {filteredTests.length === 0 && (
-              <tr>
-                <td colSpan="6" className="text-center py-6 text-gray-500">
-                  Không có bài kiểm tra.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

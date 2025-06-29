@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "../../../config";
 import NavBar from "../../Layouts/NavBar";
 import AdminAddTeacherClassForm from "./AdminAddTeacherClassForm";
 import LoadingSpinner from "../../LoadingSpinner";
+import AdminAddStudentClass from "./AdminAddStudentClass";
 
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
@@ -28,6 +29,8 @@ export default function AdminViewClassDetails() {
   const { classId } = useParams();
   const [classData, setClassData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [showAddStudentForm, setShowAddStudentForm] = useState(false);
   const [showAddTeacherForm, setShowAddTeacherForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,9 +93,11 @@ export default function AdminViewClassDetails() {
               onClick={() => setShowAddTeacherForm(true)}>
               {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
             </button>
-            <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+            <button
+              className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+              onClick={() => setShowAddStudentForm(true)}
             >
-              + Thêm học viên
+              + Add student
             </button>
             <button
               className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
@@ -114,6 +119,18 @@ export default function AdminViewClassDetails() {
           classId={classId}
           onSuccess={handleAddTeacherSuccess}
           onCancel={() => setShowAddTeacherForm(false)}
+        />
+      )}
+      {showAddStudentForm && (
+        <AdminAddStudentClass
+          classId={classId}
+          courseId={classData.course?._id || classData.course}
+          courseName={classData.course?.name || ""}
+          onSuccess={() => {
+            setShowAddStudentForm(false);
+            fetchClass();
+          }}
+          onCancel={() => setShowAddStudentForm(false)}
         />
       )}
       <hr className="mb-6" />

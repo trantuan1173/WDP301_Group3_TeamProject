@@ -369,55 +369,56 @@ const RouteCourse = () => {
                     alignItems: 'center',
                     justifyContent: 'center'
                 }}>
-                    <Carousel interval={5000} controls={coursesArr.length > 3} indicators={false} pause={false}>
-                        {chunkArray(coursesArr, 3).map((group, idx) => (
-                            <Carousel.Item key={idx}>
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '1fr 1fr 1fr',
-                                    gap: 24,
-                                    minHeight: 330
-                                }}>
-                                    {group.map((course, i) => (
-                                        <div
-                                            key={i}
-                                            style={{
-                                                background: '#f0f7ff',
-                                                border: '1px solid #c9e2fa',
-                                                borderRadius: 8,
-                                                padding: 16,
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                textAlign: 'center',
-                                                minHeight: 330,
-                                                alignSelf: 'flex-start'
-                                            }}
-                                        >
-                                            <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
-                                            <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
-                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                                            <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
-                                                background: '#19b46a',
-                                                color: '#fff',
-                                                border: '2px solid #19b46a',
-                                                borderRadius: 6,
-                                                padding: '6px 16px',
-                                                fontSize: 14,
-                                                fontWeight: 500,
-                                                cursor: 'pointer'
-                                            }}>Tìm hiểu thêm</button>
-                                        </div>
-                                    ))}
-                                    {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
-                                    {Array.from({ length: 3 - group.length }).map((_, idx2) => (
-                                        <div key={`empty-${idx2}`} />
-                                    ))}
-                                </div>
-                            </Carousel.Item>
-                        ))}
-                    </Carousel>
+                    <Carousel interval={5000} controls={true} indicators={false} pause={false}>
+    {chunkArray(coursesArr, 3).map((group, idx) => (
+        <Carousel.Item key={idx}>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr 1fr',
+                gap: 24,
+                minHeight: 330
+            }}>
+                {group.map((course, i) => (
+                    <div
+                        key={course._id || i}
+                        data-course-id={course.courseId._id}
+                        style={{
+                            background: '#f0f7ff',
+                            border: '1px solid #c9e2fa',
+                            borderRadius: 8,
+                            padding: 16,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            minHeight: 330,
+                            alignSelf: 'flex-start'
+                        }}
+                    >
+                        <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
+                        <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
+                        <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
+                        <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
+                            background: '#19b46a',
+                            color: '#fff',
+                            border: '2px solid #19b46a',
+                            borderRadius: 6,
+                            padding: '6px 16px',
+                            fontSize: 14,
+                            fontWeight: 500,
+                            cursor: 'pointer'
+                        }}>View More</button>
+                    </div>
+                ))}
+                {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
+                {Array.from({ length: 3 - group.length }).map((_, idx2) => (
+                    <div key={`empty-${idx2}`} />
+                ))}
+            </div>
+        </Carousel.Item>
+    ))}
+</Carousel>
                 </div>
             </div>
         </div>
@@ -442,6 +443,32 @@ const RouteCourse = () => {
 
     return (
         <div>
+            <style>
+            {`
+            .carousel-control-next, .carousel-control-prev {
+                width: 60px !important;
+                height: 60px !important;
+                top: 50%;
+                transform: translateY(-50%);
+                opacity: 1;
+                z-index: 10;
+            }
+            .carousel-control-next {
+                right: -30px !important;
+            }
+            .carousel-control-prev {
+                left: -30px !important;
+            }
+            .carousel-control-next-icon, .carousel-control-prev-icon {
+                background-color: rgba(180, 180, 180, 0.7);
+                border-radius: 50%;
+                box-shadow: 0 4px 16px #0002;
+                width: 40px;
+                height: 40px;
+                background-size: 60% 60%;
+            }
+            `}
+        </style>
             {renderHeader()}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
                 {sections}

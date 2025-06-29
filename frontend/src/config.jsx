@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
-  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
+  //GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
@@ -40,13 +40,23 @@ export const API_ENDPOINTS = {
 
   GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
 
+  ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
+  GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
+  UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
+
+
   // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
-  GET_TESTS_BY_STUDENT_ID: (studentId) =>
-    `${baseUrl}/api/test-assigns/student/${studentId}`,
+  STUDENT_SUBMIT_TEST: `${baseUrl}/api/testSubmission/submit`,
+  GET_STUDENT_EROLLMENT: (studentId) => `${baseUrl}/api/enrollments/student/${studentId}`,
+
+  GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
+  GET_ASSIGNED_TESTS_FOR_STUDENT: (studentId, testId) => `${baseUrl}/api/test-assigns/student/${studentId}/test/${testId}`,
+
+
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
   GET_CLASS_BY_TEACHERID: (teacherId) =>
@@ -65,8 +75,9 @@ export const API_ENDPOINTS = {
 
   CREATE_ATTENDANCE: `${baseUrl}/api/attendance`,
 
-  TEACHER_CREATE_TEST: `${baseUrl}/api/tests`,
-  TEACHER_GET_TESTS: `${baseUrl}/api/tests`,
+
+  GET_TEST_QUESTION_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
+
   //Guest endpoints
   GET_HIGHLIGHT_FEEDBACKS: `${baseUrl}/api/feedbacksCourse/highlight`,
   GET_HIGHLIGHT_TEACHER_FEEDBACKS: `${baseUrl}/api/feedbacksTeacher/highlight`,
@@ -81,9 +92,8 @@ export const API_ENDPOINTS = {
 
   PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
   //student endpoints
-  GET_CLASSES_BY_STUDENT_ID: (studentId) =>
-    `${baseUrl}/api/classes/student/${studentId}`,
-  GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
+  GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
+  // GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) =>
     `${baseUrl}/api/attendance/student/${studentId}`,
@@ -91,4 +101,5 @@ export const API_ENDPOINTS = {
   // Test
   DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
   UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
+  CREATE_TEST_FROM_AI: `${baseUrl}/api/tests/create-from-ai`,
 };

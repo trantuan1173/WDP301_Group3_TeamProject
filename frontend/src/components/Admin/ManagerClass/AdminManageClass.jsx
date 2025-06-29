@@ -6,6 +6,7 @@ import AdminCreateClassForm from "./AdminCreateClassForm";
 import LoadingSpinner from "../../LoadingSpinner";
 
 
+
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
   return `${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
@@ -142,7 +143,7 @@ const AdminManageClass = () => {
               paginatedClasses.map((row, idx) => (
                 <tr key={row._id} className="border-b border-gray-100">
                   <td className="py-2 px-2">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                  <td className="py-2 px-2">{row.className || ""}</td>
+                  <td className="py-2 px-2">{row.className || row.course|| ""}</td>
                   <td className="py-2 px-2">{row.courseId?.nameCourses || "Chưa có khóa học"}</td>
                   <td className="py-2 px-2">{getMonthYear(row.start_time)}</td>
                   <td className={`py-2 px-2 ${row.teacherId ? "text-green-500 font-bold" : "text-red-500 font-bold"}`}>
