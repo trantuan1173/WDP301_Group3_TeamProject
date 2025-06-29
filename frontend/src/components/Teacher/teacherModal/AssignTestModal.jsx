@@ -1,5 +1,5 @@
 // frontend/src/components/Teacher/teacherModal/AssignTestModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { FaUpload } from "react-icons/fa";
 import "../../../assets/CSS/MinhKhanhCSS.css"
@@ -7,6 +7,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+
 
 
 const AssignTestModal = ({
@@ -21,15 +22,17 @@ const AssignTestModal = ({
     selectedTest,
 }) => {
     const [title, setTitle] = useState('');
-    const [startTime, setStartTime] = useState(new Date()); // default: now
-    const [testDuration, setTestDuration] = useState(60); // default: 60 minutes
-
+    const [startTime, setStartTime] = useState(new Date());
+    const [testDuration, setTestDuration] = useState(60);
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
     const [excelFile, setExcelFile] = useState(null);
     const [questions, setQuestions] = useState([
         { question: "", options: ["", "", "", ""], correctAnswerIndex: 0 }
     ]);
+    const [numberOfQuestions, setNumberOfQuestions] = useState(null);
+    const [aiTopic, setAiTopic] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
 
 
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
@@ -68,12 +71,12 @@ const AssignTestModal = ({
             const dueDate = new Date(startTime.getTime() + testDuration * 60000);
 
             if (startTime < new Date()) {
-                alert("⚠️ Thời gian bắt đầu không được ở quá khứ.");
+                alert("Please select a future start time.");
                 return;
             }
 
-            if (testDuration <= 5) {
-                alert("⚠️ Thời gian bài kiểm tra phải lớn hơn 5 phút.");
+            if (testDuration < 5) {
+                alert("Test duration must be at least 5 minutes.");
                 return;
             }
 
@@ -103,11 +106,11 @@ const AssignTestModal = ({
                     q.options.every(opt => opt.trim() !== "")
                 );
                 if (!isValid) {
-                    alert("⚠️ Vui lòng điền đầy đủ nội dung câu hỏi và các lựa chọn.");
+                    alert("Please fill in the question and options.");
                     return;
                 }
                 // You may want to handle manual test creation here
-                alert("Vui lòng chọn đề hoặc tải đề lên.");
+                alert("Please select a test or upload a test.");
                 return;
             }
 
@@ -143,26 +146,100 @@ const AssignTestModal = ({
         }
     };
 
+    const resetForm = () => {
+        setTitle("");
+        setDescription("");
+        setQuestions([{ question: "", options: ["", "", "", ""], correctAnswerIndex: 0 }]);
+        setExcelFile(null);
+        setStartTime(new Date());
+        setTestDuration(60);
+        setNumberOfQuestions(null);
+    };
+
     function formatDateTimeLocal(date) {
         const pad = (n) => n.toString().padStart(2, '0');
         return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 
+    const handleAIPrompt = async () => {
+        try {
+            setIsGenerating(true);
+            let assignTestId = null;
+            if (startTime < new Date()) {
+                alert("Please select a future start time.");
+                return;
+            }
 
+            if (testDuration < 5) {
+                alert("Test duration must be at least 5 minutes.");
+                return;
+            }
+            const token = localStorage.getItem("token");
+    
+            const response = await axios.get(API_ENDPOINTS.GET_COURSE(courseId), {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+    
+            const course = response.data.data;
+            const prompt = `Tạo ${numberOfQuestions} câu trắc nghiệm tiếng Anh lớp trình độ ${course.details.type} level ${course.details.level} về ${aiTopic}, mỗi câu có 4 lựa chọn, chỉ 1 đáp án đúng`;
+            console.log(prompt);
+            const payload = {
+                title,
+                description,
+                courseId,
+                teacherId,
+                promptText: prompt
+            };
+    
+            const AIResponse = await axios.post(API_ENDPOINTS.CREATE_TEST_FROM_AI, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            assignTestId = AIResponse.data.data._id;
+            console.log(assignTestId);
+    
+            if (assignTestId) {
+                await axios.post(API_ENDPOINTS.TEACHER_ASSIGN_TEST, {
+                    courseId,
+                    testId: assignTestId,
+                    classId,
+                    title,
+                    teacherId,
+                    startDate: startTime.toISOString(),
+                    dueDate: new Date(startTime.getTime() + testDuration * 60000).toISOString(),
+                }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+            resetForm();
+            onSubmit?.();
+            onHide();
+        } catch (err) {
+            console.error("❌ Lỗi khi tạo đề bằng AI:", err);
+            alert("Không thể tạo đề kiểm tra bằng AI.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
     return (
         <Modal
             show={show}
-            onHide={onHide}
+            onHide={() => {
+                resetForm();
+                onHide();
+            }}
             centered
             dialogClassName="create-test-modal-at-teacher-create-test"
         >
-            <Modal.Body style={{ height: '75vh', width: '100%', overflowY: 'auto', padding: 32 }}>
+            <Modal.Body style={{ height: '80vh', width: '100%', overflowY: 'auto', padding: 32 }}>
                 <div className="text-center fw-bold" style={{ fontSize: 28, marginBottom: 24 }}>
-                    Giao bài kiểm tra
+                    Assign Test
                 </div>
                 <Form>
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Tên</Form.Label>
+                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Title</Form.Label>
                         <Form.Control
                             style={{
                                 borderRadius: 16,
@@ -177,10 +254,27 @@ const AssignTestModal = ({
                             required={true}
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Description</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            style={{
+                                borderRadius: 16,
+                                background: "#eaf3ff",
+                                boxShadow: "0 3px 6px #e0e7ef",
+                                fontSize: 20,
+                                minHeight: 48,
+                                marginTop: 4
+                            }}
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            required={true}
+                        />
+                    </Form.Group>
                     <div className="d-flex" style={{ gap: 24, marginBottom: 16 }}>
                         <Form.Group className="mb-0" style={{ flex: 1 }}>
                             <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>
-                                Thời gian bắt đầu
+                                Start Time
                             </Form.Label>
                             <Form.Control
                                 type="datetime-local"
@@ -200,7 +294,7 @@ const AssignTestModal = ({
 
                         <Form.Group className="mb-0" style={{ flex: 1 }}>
                             <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>
-                                Thời lượng bài kiểm tra (phút)
+                                Test Duration (minutes)
                             </Form.Label>
                             <Form.Control
                                 type="number"
@@ -220,7 +314,7 @@ const AssignTestModal = ({
 
                     </div>
                     <div style={{ marginBottom: 16, fontSize: 18, fontWeight: 500 }}>
-                        Thời gian kết thúc:{" "}
+                        End Time:{" "}
                         {new Date(startTime.getTime() + testDuration * 60000).toLocaleString("vi-VN", {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -233,7 +327,7 @@ const AssignTestModal = ({
 
 
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Đề được chọn</Form.Label>
+                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>Selected Test</Form.Label>
                         {selectedTest ? (
                             <div
                                 style={{
@@ -252,10 +346,10 @@ const AssignTestModal = ({
                                     fontWeight: 500
                                 }}
                             >
-                                <span><b>Tên:</b> {selectedTest.name}</span>
-                                <span><b>Số câu hỏi:</b> {selectedTest.questions}</span>
+                                <span><b>Title:</b> {selectedTest.name}</span>
+                                <span><b>Number of questions:</b> {selectedTest.questions}</span>
                                 {/* <span><b>Mức độ:</b> {selectedTest.level}</span> */}
-                                <span><b>Ngày tạo:</b> {selectedTest.date}</span>
+                                <span><b>Created at:</b> {selectedTest.date}</span>
                             </div>
                         ) : (
                             <div
@@ -274,7 +368,7 @@ const AssignTestModal = ({
                                     color: "#888"
                                 }}
                             >
-                                Chưa chọn đề nào
+                                Not selected any test
                             </div>
                         )}
                     </Form.Group>
@@ -284,7 +378,7 @@ const AssignTestModal = ({
                             <Form.Control
                                 type="text"
                                 value={excelFile ? excelFile.name : ""}
-                                placeholder="Tải đề lên từ thiết bị"
+                                placeholder="Upload test from device"
                                 style={{
                                     borderRadius: 12,
                                     background: "#e0e0e0",
@@ -316,7 +410,7 @@ const AssignTestModal = ({
                         </div>
 
                         {/* Download Section */}
-                        <div className="w-50 d-flex align-items-center justify-content-center"
+                        <div className="w-50 d-flex align-items-center justify-content-between"
                             style={{
                                 borderRadius: 12,
                                 background: "#e0e0e0",
@@ -326,8 +420,61 @@ const AssignTestModal = ({
                             }}
                             onClick={handleDownloadTemplate}
                         >
-                            <FontAwesomeIcon icon={faDownload} style={{ fontSize: 28, color: "#222" }} />
-                            <span style={{ marginLeft: 12, fontSize: 16, fontWeight: 600 }}>Tải file mẫu</span>
+                            <span style={{ marginLeft: 12, fontSize: 16, fontWeight: 600 }}>Download template</span>
+                            <FontAwesomeIcon icon={faDownload} style={{ fontSize: 28, color: "#222", marginRight: 16 }} />
+                        </div>
+                    </div>
+                    <div className="mb-3">
+                        <Form.Label className="fw-semibold" style={{ fontSize: 16 }}>
+                            Create question by AI
+                        </Form.Label>
+                        <div className="d-flex" style={{ gap: 12 }}>
+                            <Form.Control
+                                type="text"
+                                placeholder="Enter topic question"
+                                value={aiTopic}
+                                onChange={(e) => setAiTopic(e.target.value)}
+                                style={{
+                                    borderRadius: 12,
+                                    background: "#fffde7",
+                                    fontSize: 18,
+                                    padding: "0 16px",
+                                    boxShadow: "0 2px 6px #e0e7ef",
+                                    flex: 1,
+                                    height: 56
+                                }}
+                            />
+                            <Form.Control
+                                type="number"
+                                placeholder="Number of questions"
+                                value={numberOfQuestions}
+                                onChange={(e) => setNumberOfQuestions(e.target.value)}
+                                style={{
+                                    borderRadius: 12,
+                                    background: "#fffde7",
+                                    fontSize: 18,
+                                    padding: "0 16px",
+                                    boxShadow: "0 2px 6px #e0e7ef",
+                                    flex: 1,
+                                    height: 56
+                                }}
+                            />
+                            <Button
+                                style={{
+                                    background: "#ffca28",
+                                    color: "#4e342e",
+                                    border: "none",
+                                    borderRadius: 12,
+                                    fontWeight: 600,
+                                    fontSize: 18,
+                                    height: 56,
+                                    whiteSpace: "nowrap"
+                                }}
+                                disabled={isGenerating}
+                                onClick={() => handleAIPrompt()}
+                            >
+                                {isGenerating ? "Generating..." : "Generate"}
+                            </Button>
                         </div>
                     </div>
                     <div className="d-flex justify-content-center mb-3">
@@ -345,8 +492,9 @@ const AssignTestModal = ({
                                 height: 74,
                             }}
                             onClick={switchToChooseModal}
+                            disabled={isGenerating}
                         >
-                            Chọn đề từ ngân hàng câu hỏi
+                            Choose test from question bank
                         </Button>
                     </div>
                 </Form>
@@ -359,9 +507,12 @@ const AssignTestModal = ({
                             fontSize: 20,
                             minWidth: 100
                         }}
-                        onClick={onHide}
+                        onClick={() => {
+                            resetForm()
+                            onHide()
+                        }}
                     >
-                        Hủy
+                        Cancel
                     </Button>
                     <Button
                         variant="success"
@@ -372,9 +523,10 @@ const AssignTestModal = ({
                             minWidth: 100
                         }}
                         onClick={handleSubmit}
+                        disabled={isGenerating}
                     // disabled={!title}
                     >
-                        Giao
+                        Assign
                     </Button>
                 </div>
             </Modal.Body>

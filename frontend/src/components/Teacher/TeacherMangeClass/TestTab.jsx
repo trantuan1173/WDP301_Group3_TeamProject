@@ -31,6 +31,11 @@ const TestTab = ({ classId, courseId }) => {
         }
     }, []);
 
+    const handleCloseModal = () => {
+        setShowCreateModal(false);
+        setSelectedTest(null);
+    };
+    
     const fetchClassInfo = async () => {
         if (!classId) return;
         try {
@@ -135,8 +140,8 @@ const TestTab = ({ classId, courseId }) => {
                                     placeholder="Tìm kiếm bài kiểm tra..."
                                     className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow w-full"
                                 />
-                                <button type="button" className="rounded-full bg-white border-0 p-2 shadow">
-                                    <FontAwesomeIcon icon={faSearch} />
+                                <button type="button">
+                                    <FontAwesomeIcon size="xl" icon={faSearch} />
                                 </button>
                             </form>
                             <button
@@ -235,7 +240,7 @@ const TestTab = ({ classId, courseId }) => {
 
                     <AssignTestModal
                         show={showCreateModal}
-                        onHide={() => setShowCreateModal(false)}
+                        onHide={handleCloseModal}
                         onSubmit={() => {
                             setShowCreateModal(false);
                             fetchAssigns();
