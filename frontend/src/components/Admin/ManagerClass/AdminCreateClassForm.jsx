@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from "../../../config";
 
 export default function AdminCreateClassForm({ onSuccess, onCancel }) {
     const [form, setForm] = useState({
-        course: "",
+        className: "",
         courseId: "",
         progress: 0,
         note: "",
@@ -38,7 +38,6 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
         setForm((f) => ({
             ...f,
             courseId: course._id,
-            course: course.nameCourses,
         }));
         setCourseQuery(course.nameCourses);
         setShowCourseOptions(false);
@@ -102,44 +101,45 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                         {error}
                     </div>
                 )}
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                    <div className="relative">
-                        <label className="block mb-1 font-medium">Khóa học</label>
-                        <input
-                            type="text"
-                            value={courseQuery}
-                            onChange={handleCourseQueryChange}
-                            className="w-full bg-blue-100 p-2 rounded"
-                            placeholder="Nhập tên khóa học"
-                            autoComplete="off"
-                            onFocus={() => setShowCourseOptions(true)}
-                        />
-                        {showCourseOptions && courseQuery && filteredCourses.length > 0 && (
-                            <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
-                                {filteredCourses.map((c) => (
-                                    <li
-                                        key={c._id}
-                                        className="px-3 py-1 hover:bg-blue-100 cursor-pointer"
-                                        onClick={() => handleSelectCourse(c)}
-                                    >
-                                        {c.nameCourses}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                    <input type="hidden" name="courseId" value={form.courseId} />
-                    <div>
-                        <label className="block mb-1 font-medium">Tên lớp học</label>
-                        <input
-                            type="text"
-                            name="course"
-                            value={form.course}
-                            onChange={handleChange}
-                            className="w-full bg-blue-100 p-2 rounded"
-                            placeholder="Tên lớp học"
-                        />
-                    </div>
+                 <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="relative">
+                <label className="block mb-1 font-medium">Course</label>
+                <input
+                    type="text"
+                    value={courseQuery}
+                    onChange={handleCourseQueryChange}
+                    className="w-full bg-blue-100 p-2 rounded"
+                    placeholder="Enter course name"
+                    autoComplete="off"
+                    onFocus={() => setShowCourseOptions(true)}
+                />
+                {showCourseOptions && courseQuery && filteredCourses.length > 0 && (
+                    <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
+                        {filteredCourses.map((c) => (
+                            <li
+                                key={c._id}
+                                className="px-3 py-1 hover:bg-blue-100 cursor-pointer"
+                                onClick={() => handleSelectCourse(c)}
+                            >
+                                {c.nameCourses}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <input type="hidden" name="courseId" value={form.courseId} />
+            <div>
+                <label className="block mb-1 font-medium">Class name</label>
+                <input
+                    type="text"
+                    name="className"
+                    value={form.className}
+                    onChange={handleChange}
+                    className="w-full bg-blue-100 p-2 rounded"
+                    placeholder="Class name"
+                />
+            </div>
+                        
                     <div>
                         <label className="block mb-1 font-medium">Ghi chú</label>
                         <input
