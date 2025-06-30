@@ -9,6 +9,7 @@ import AdminAddStudentClass from "./AdminAddStudentClass";
 import AdminManageClassStudentList from "./AdminManageClassStudentList";
 import { FaChevronDown, FaChevronUp, FaPlus, FaUserPlus, FaCalendarAlt, FaArrowLeft, FaExchangeAlt, FaUsers } from "react-icons/fa";
 
+
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
   return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -80,8 +81,12 @@ export default function AdminViewClassDetails() {
   };
 
   return (
+    <div>
+<header className="w-full ">
+        <NavBar />
+      </header>
     <div className="bg-gray-50 min-h-screen px-6 md:px-16 py-8 font-sans">
-      <NavBar />
+      
 
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
@@ -198,6 +203,7 @@ export default function AdminViewClassDetails() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
