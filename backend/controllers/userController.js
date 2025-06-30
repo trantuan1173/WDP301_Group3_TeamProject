@@ -218,18 +218,53 @@ const adminCreateTeacher = async function (req, res) {
       roleId,
     })
 
-    // Generate token
-    const token = generateToken(user._id)
+    //Generate verification token (expires in 24 hours)
+    const verificationToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "your_jwt_secret",
+      { expiresIn: "24h" }
+    )
+    //Send verify email
+    try {
+      await sendVerifyEmail(email, verificationToken)
+      // Generate login token (shorter expiration)
+      const loginToken = generateToken(user._id)
 
-    res.status(201).json({
-      success: true,
-      data: {
-        _id: user._id,
-        email: user.email,
-        profile,
-        token,
-      },
-    })
+      res.status(201).json({
+        success: true,
+        message: "Registration successful! Please check your email to verify your account.",
+        data: {
+          _id: user._id,
+          email: user.email,
+          profile,
+          token: loginToken,
+        },
+      })
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError)
+      // Still return success but notify about email issue
+      res.status(201).json({
+        success: true,
+        message: "Registration successful, but failed to send verification email. Please try logging in later to resend verification.",
+        data: {
+          _id: user._id,
+          email: user.email,
+          profile,
+        },
+      })
+    }
+    // Generate token
+    // const token = generateToken(user._id)
+
+    // res.status(201).json({
+    //   success: true,
+    //   data: {
+    //     _id: user._id,
+    //     email: user.email,
+    //     profile,
+    //     token,
+    //   },
+    // })
   } catch (error) {
     res.status(500).json({
       success: false,
