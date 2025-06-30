@@ -32,6 +32,7 @@ import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
 import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
 import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
+import AttendanceForm from "./components/Teacher/AttendanceForm";
 
 
 const App = () => {
@@ -59,6 +60,7 @@ const App = () => {
         <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
         <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
            <Route path="/teacher" element={<TeacherDashboard />} />
+           <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
