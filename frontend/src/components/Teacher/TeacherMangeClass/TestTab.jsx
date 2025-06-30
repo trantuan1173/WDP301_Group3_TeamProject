@@ -117,7 +117,7 @@ const TestTab = ({ classId, courseId }) => {
             <div className="flex-1 p-6">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="font-bold text-3xl mb-8 text-[#111827]">Bài Kiểm Tra</h2>
-                    <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
+                    {/* <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
                         <div className="flex-1 flex justify-center">
                             <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
                                 Course: {courseName || "Chưa có tên khóa học"}
@@ -128,7 +128,7 @@ const TestTab = ({ classId, courseId }) => {
                                 {className || "Chưa có tên lớp"}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="bg-white rounded-2xl shadow p-6">
                         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">

@@ -48,7 +48,14 @@ export const UserDoingTest = () => {
         }
     }, []);
 
-
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = "Bạn có chắc chắn muốn rời khỏi trang? Bài làm của bạn có thể bị mất.";
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, []);
 
     useEffect(() => {
         if (!userId || !testId) return; // ⬅️ Don’t fetch until userId is available
