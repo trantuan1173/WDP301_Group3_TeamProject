@@ -233,11 +233,22 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
         end_time: sch.end_time,
       }));
       await axios.post(
-        API_ENDPOINTS.CREATE_BULK_SCHEDULE,
-        schedules,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (onSuccess) onSuccess();
+  API_ENDPOINTS.CREATE_BULK_SCHEDULE,
+  schedules,
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+// Cập nhật end_time cho lớp học bằng end_time của buổi cuối cùng
+if (schedules.length > 0) {
+  const lastSchedule = schedules[schedules.length - 1];
+  await axios.put(
+    API_ENDPOINTS.UPDATE_CLASS(classId),
+    { end_time: lastSchedule.end_time },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+
+if (onSuccess) onSuccess();
     } catch (err) {
       setError("Tạo lịch học thất bại.");
     } finally {

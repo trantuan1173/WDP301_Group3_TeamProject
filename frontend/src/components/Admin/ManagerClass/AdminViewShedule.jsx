@@ -37,19 +37,45 @@ export default function AdminViewSchedule() {
   };
 
   const handleSaveEdit = async (data) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(API_ENDPOINTS.UPDATE_SCHEDULE(editEvent.id), data, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setEditEvent(null);
-      fetchSchedules();
-    } catch (error) {
-      alert("Cập nhật lịch học thất bại!");
-    }
-  };
+  try {
+    const token = localStorage.getItem("token");
+    // Cập nhật schedule
+    await axios.put(API_ENDPOINTS.UPDATE_SCHEDULE(editEvent.id), data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  // Lấy tên lớp học
+    // Lấy lại danh sách schedule mới nhất
+    const res = await axios.get(API_ENDPOINTS.GET_SHEDULE_BY_CLASSID(classId), {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const newSchedules = res.data.data || [];
+
+    // Tìm schedule cuối cùng (end_time lớn nhất)
+    if (newSchedules.length > 0) {
+      const lastSchedule = newSchedules.reduce((a, b) =>
+        new Date(a.end_time) > new Date(b.end_time) ? a : b
+      );
+      // Nếu schedule vừa update là buổi cuối cùng thì cập nhật end_time cho class
+      if (
+        editEvent.id === lastSchedule._id ||
+        (data.end_time && new Date(data.end_time).getTime() > new Date(lastSchedule.end_time).getTime())
+      ) {
+        await axios.put(
+          API_ENDPOINTS.UPDATE_CLASS(classId),
+          { end_time: data.end_time },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+    }
+
+    setEditEvent(null);
+    fetchSchedules();
+  } catch (error) {
+    alert("Update schedule failed!");
+  }
+};
+
+  
   // Lấy tên lớp học
 const fetchClassName = async () => {
   const token = localStorage.getItem("token");

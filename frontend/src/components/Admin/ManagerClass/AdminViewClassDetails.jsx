@@ -6,6 +6,8 @@ import NavBar from "../../Layouts/NavBar";
 import AdminAddTeacherClassForm from "./AdminAddTeacherClassForm";
 import LoadingSpinner from "../../LoadingSpinner";
 import AdminAddStudentClass from "./AdminAddStudentClass";
+import AdminManageClassStudentList from "./AdminManageClassStudentList";
+import { FaChevronDown, FaChevronUp, FaPlus, FaUserPlus, FaCalendarAlt, FaArrowLeft, FaExchangeAlt, FaUsers } from "react-icons/fa";
 
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
@@ -32,6 +34,7 @@ export default function AdminViewClassDetails() {
 
   const [showAddStudentForm, setShowAddStudentForm] = useState(false);
   const [showAddTeacherForm, setShowAddTeacherForm] = useState(false);
+  const [showStudentList, setShowStudentList] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from;
@@ -77,43 +80,56 @@ export default function AdminViewClassDetails() {
   };
 
   return (
-    <div className="bg-white min-h-screen p-8">
+    <div className="bg-gray-50 min-h-screen px-6 md:px-16 py-8 font-sans">
       <NavBar />
-      <h2 className="text-2xl font-bold mb-4 p-8 ">
-        Khóa học {
-          typeof classData.course === "object"
-            ? (classData.course.name || classData.course._id || "Không rõ")
-            : (classData.course || "Không rõ")
-        }
-      </h2>
-      <div className="flex items-center mb-4 w-full">
-        <div className="flex gap-4 flex-1">
-          <div className="flex gap-4 flex-1">
-            <button className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-              onClick={() => setShowAddTeacherForm(true)}>
-              {classData.teacherId ? "Thay đổi giảng viên" : "+ Thêm giảng viên"}
-            </button>
-            <button
-              className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-              onClick={() => setShowAddStudentForm(true)}
-            >
-              + Add student
-            </button>
-            <button
-              className="bg-blue-100 text-gray-800 rounded-full min-w-[140px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
-              onClick={() => navigate(`/admin/class/${classId}/schedule`)}
-            >
-              Xem lịch học
-            </button>
-          </div>
+
+      {/* Header */}
+      <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
+        <h2 className="text-3xl font-bold text-gray-800">
+          Course:&nbsp;
+          {typeof classData.course === "object"
+            ? (classData.course.name || classData.course._id || "Unknown")
+            : (classData.course || "Unknown")}
+        </h2>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-wrap items-center gap-4 justify-between mb-10">
+        <div className="flex flex-wrap gap-4">
+          <button
+            className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${
+              classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
+            }`}
+            onClick={() => setShowAddTeacherForm(true)}
+          >
+            {classData.teacherId ? <FaExchangeAlt /> : <FaPlus />}
+            {classData.teacherId ? "Change Teacher" : "Add Teacher"}
+          </button>
+
+          <button
+            className="bg-green-600 text-white rounded-md px-5 py-2 font-semibold shadow-sm hover:bg-green-700 flex items-center gap-2 transition"
+            onClick={() => setShowAddStudentForm(true)}
+          >
+            <FaUserPlus /> Add Student
+          </button>
+
+          <button
+            className="bg-indigo-600 text-white rounded-md px-5 py-2 font-semibold shadow-sm hover:bg-indigo-700 flex items-center gap-2 transition"
+            onClick={() => navigate(`/admin/class/${classId}/schedule`)}
+          >
+            <FaCalendarAlt /> View Schedule
+          </button>
         </div>
+
         <button
-          className="ml-auto bg-gray-200 text-gray-800 rounded-full min-w-[110px] px-5 py-2 font-semibold shadow-sm border border-gray-300 hover:font-bold transition-all duration-150"
+          className="bg-gray-300 text-gray-800 rounded-md px-5 py-2 font-semibold shadow-sm hover:bg-gray-400 flex items-center gap-2 transition"
           onClick={handleBack}
         >
-          ← Quay lại
+          <FaArrowLeft /> Back
         </button>
       </div>
+
+      {/* Add Forms */}
       {showAddTeacherForm && (
         <AdminAddTeacherClassForm
           classId={classId}
@@ -133,52 +149,55 @@ export default function AdminViewClassDetails() {
           onCancel={() => setShowAddStudentForm(false)}
         />
       )}
-      <hr className="mb-6" />
 
-      <div className="mb-8">
-        <div className="grid grid-cols-2 gap-y-2 gap-x-12 max-w-2xl">
-          <div className="font-medium">Giáo viên phụ trách:</div>
-          <div className={classData.teacherId ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}>
-            {
-              classData.teacherId && typeof classData.teacherId === "object"
-                ? (classData.teacherId.email || classData.teacherId.name || "Chưa có giáo viên")
-                : (classData.teacherId || "Chưa có giáo viên")
-            }
+      {/* Class Info Section */}
+      <div className="bg-white rounded-xl shadow p-6 mb-8 max-w-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-12 text-[15px]">
+          <div className="text-gray-500">Teacher:</div>
+          <div className={classData.teacherId ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
+            {classData.teacherId && typeof classData.teacherId === "object"
+              ? (classData.teacherId.email || classData.teacherId.name || "No teacher")
+              : (classData.teacherId || "No teacher")}
           </div>
-          <div className="font-medium">Tên lớp:</div>
-          <div>
-            {classData.className || "Chưa đặt tên"}
-          </div>
-          <div className="font-medium">Thời gian học:</div>
-          <div>{classData.course?.detail?.durationDays} Buổi</div>
-          <div className="font-medium">Khóa học:</div>
-          <div>{classData.course?.name || ""}</div>
-          <div className="font-medium">Tháng mở:</div>
-          <div>{getMonthYear(classData.start_time)}</div>
-          <div className="font-medium">Trạng thái lớp:</div>
-          <div className={getStatusColor(status)}>{status}</div>
-          <div className="font-medium">Số học sinh:</div>
-          <div>{classData.students?.length || 0}</div>
+          <div className="text-gray-500">Class Name:</div>
+          <div className="text-gray-800">{classData.className || "Untitled"}</div>
+          <div className="text-gray-500">Duration:</div>
+          <div className="text-gray-800">{classData.course?.detail?.durationDays || "--"} sessions</div>
+          <div className="text-gray-500">Course:</div>
+          <div className="text-gray-800">{classData.course?.name || "N/A"}</div>
+          <div className="text-gray-500">Start Month:</div>
+          <div className="text-gray-800">{getMonthYear(classData.start_time)}</div>
+          <div className="text-gray-500">Status:</div>
+          <div className={`${getStatusColor(status)} font-semibold`}>{status}</div>
+          <div className="text-gray-500">Number of Students:</div>
+          <div className="text-gray-800">{classData.students?.length || 0}</div>
         </div>
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-500 mb-2 mt-8">Danh sách học viên</h3>
-      <hr className="mb-2" />
-      {(!classData.students || classData.students.length === 0) ? (
-        <div className="text-gray-600 mt-2">Không có dữ liệu học viên</div>
-      ) : (
-        <ul className="list-disc ml-8">
-          {classData.students.map((student, idx) => (
-            <li key={student._id || idx}>
-              {
-                typeof student === "object"
-                  ? (student.email || student.name || JSON.stringify(student) || "Không rõ")
-                  : (student || "Không rõ")
-              }
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Student List Section */}
+      <div className="max-w-5xl">
+        <button
+          className="flex items-center gap-2 text-3xl font-semibold text-blue-700 mb-2 mt-4 focus:outline-none hover:underline"
+          onClick={() => setShowStudentList((prev) => !prev)}
+        >
+          <FaUsers />
+          Student List
+          {showStudentList ? <FaChevronUp /> : <FaChevronDown />}
+        </button>
+        <div
+          className={`transition-all duration-500 overflow-hidden ${showStudentList ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"}`}
+        >
+          <hr className="mb-2" />
+          <div className="bg-white rounded-lg shadow border p-4">
+            <AdminManageClassStudentList
+  students={classData.students}
+  currentClassId={classData._id}
+  courseId={classData.course?._id || classData.course}
+  fetchClass={fetchClass}
+/>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
