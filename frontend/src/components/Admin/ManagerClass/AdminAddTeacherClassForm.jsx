@@ -96,7 +96,20 @@ export default function AdminAddTeacherClassForm({ classId, onSuccess, onCancel 
               className="w-full bg-blue-100 p-2 rounded"
               placeholder="Enter teacher's email or name"
               autoComplete="off"
-              onFocus={() => query && setFiltered(filtered)}
+              onFocus={() => {
+  if (!query) {
+    setFiltered(teachers);
+  } else {
+    setFiltered(
+      teachers.filter(
+        t =>
+          t.email.toLowerCase().includes(query.toLowerCase()) ||
+          t.profileId?.name?.toLowerCase().includes(query.toLowerCase())
+      )
+    );
+  }
+}}
+
             />
             {filtered.length > 0 && (
               <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
