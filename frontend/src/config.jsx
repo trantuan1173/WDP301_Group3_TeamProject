@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
   GET_ALL_CLASSES: `${baseUrl}/api/classes`,
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
+  UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
