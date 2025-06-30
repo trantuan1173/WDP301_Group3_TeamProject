@@ -42,8 +42,9 @@ export const API_ENDPOINTS = {
   DELETE_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
   CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
-  GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
-
+  GET_ALL_FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`,
+  GET_ALL_FEEDBACK_COURSE: `${baseUrl}/api/feedbacksCourse`,
+  GET_ALL_PAYMENT: `${baseUrl}/api/payments`,
   ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
   GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
