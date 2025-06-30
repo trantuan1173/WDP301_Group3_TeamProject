@@ -97,18 +97,18 @@ export default function AdminAddTeacherClassForm({ classId, onSuccess, onCancel 
               placeholder="Enter teacher's email or name"
               autoComplete="off"
               onFocus={() => {
-  if (!query) {
-    setFiltered(teachers);
-  } else {
-    setFiltered(
-      teachers.filter(
-        t =>
-          t.email.toLowerCase().includes(query.toLowerCase()) ||
-          t.profileId?.name?.toLowerCase().includes(query.toLowerCase())
-      )
-    );
-  }
-}}
+                if (!query) {
+                  setFiltered(teachers);
+                } else {
+                  setFiltered(
+                    teachers.filter(
+                      t =>
+                        t.email.toLowerCase().includes(query.toLowerCase()) ||
+                        t.profileId?.name?.toLowerCase().includes(query.toLowerCase())
+                    )
+                  );
+                }
+              }}
 
             />
             {filtered.length > 0 && (

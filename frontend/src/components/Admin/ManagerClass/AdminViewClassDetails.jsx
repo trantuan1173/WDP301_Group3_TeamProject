@@ -97,9 +97,8 @@ export default function AdminViewClassDetails() {
       <div className="flex flex-wrap items-center gap-4 justify-between mb-10">
         <div className="flex flex-wrap gap-4">
           <button
-            className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${
-              classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
+              }`}
             onClick={() => setShowAddTeacherForm(true)}
           >
             {classData.teacherId ? <FaExchangeAlt /> : <FaPlus />}
@@ -156,9 +155,10 @@ export default function AdminViewClassDetails() {
           <div className="text-gray-500">Teacher:</div>
           <div className={classData.teacherId ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
             {classData.teacherId && typeof classData.teacherId === "object"
-              ? (classData.teacherId.email || classData.teacherId.name || "No teacher")
+              ? (classData.teacherId.profileId?.name || "No teacher")
               : (classData.teacherId || "No teacher")}
           </div>
+
           <div className="text-gray-500">Class Name:</div>
           <div className="text-gray-800">{classData.className || "Untitled"}</div>
           <div className="text-gray-500">Duration:</div>
@@ -190,11 +190,11 @@ export default function AdminViewClassDetails() {
           <hr className="mb-2" />
           <div className="bg-white rounded-lg shadow border p-4">
             <AdminManageClassStudentList
-  students={classData.students}
-  currentClassId={classData._id}
-  courseId={classData.course?._id || classData.course}
-  fetchClass={fetchClass}
-/>
+              students={classData.students}
+              currentClassId={classData._id}
+              courseId={classData.course?._id || classData.course}
+              fetchClass={fetchClass}
+            />
           </div>
         </div>
       </div>
