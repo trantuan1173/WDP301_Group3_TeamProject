@@ -99,9 +99,28 @@ const getClasses = async function(req, res) {
 const getClass = async function(req, res) {
   try {
     const classItem = await Class.findById(req.params.id)
-      .populate("teacherId", "email")
-      .populate("students", "email")
-      .populate("courseId")
+      .populate([
+        {path: "teacherId", 
+          select: "profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        },
+        ])
+      .populate([
+        {path: "students", 
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        },
+        ])
+      .populate([
+        {path: "courseId", 
+          select: "nameCourses",
+        },
+        ])
 
       const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
       const courseDetails = await CourseDetail.findOne({ courseId: courseId });
@@ -112,7 +131,7 @@ const getClass = async function(req, res) {
           _id: classItem._id,
           teacherId: classItem.teacherId, 
           students: classItem.students, 
-          className: classItem.course,
+          className: classItem.className,
           course: {
             _id: courseId,
             name: classItem.courseId?.nameCourses,

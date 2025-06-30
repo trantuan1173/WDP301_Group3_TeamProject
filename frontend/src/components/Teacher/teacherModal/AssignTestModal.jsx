@@ -118,7 +118,7 @@ const AssignTestModal = ({
 
             // Assign the test if we have a testId
             if (assignTestId) {
-                await axios.post(API_ENDPOINTS.TEACHER_ASSIGN_TEST, {
+                await axios.post(API_ENDPOINTS.CREATE_TEST_ASSIGN, {
                     courseId,
                     testId: assignTestId,
                     classId,
@@ -201,7 +201,7 @@ const AssignTestModal = ({
             console.log(assignTestId);
     
             if (assignTestId) {
-                await axios.post(API_ENDPOINTS.TEACHER_ASSIGN_TEST, {
+                await axios.post(API_ENDPOINTS.CREATE_TEST_ASSIGN, {
                     courseId,
                     testId: assignTestId,
                     classId,
