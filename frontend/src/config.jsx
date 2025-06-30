@@ -1,6 +1,6 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.gicunhco.com';
-// const baseUrl = 'http://localhost:9999';
+// const baseUrl = 'https://beenglishcenter.gicunhco.com';
+const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
   AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
