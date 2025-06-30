@@ -114,7 +114,7 @@ const RouteCourse = () => {
             <Carousel interval={5000} controls={true} indicators={true} pause={false}>
             <Carousel.Item>
                 <img
-                    src="/images/Banner.png"
+                    src="/images/Banner.jpg"
                     alt="Banner 1"
                     style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
                 />
@@ -122,7 +122,7 @@ const RouteCourse = () => {
             {/* Thêm slide banner khác nếu muốn */}
             <Carousel.Item>
                 <img
-                    src="/images/Banner1.png"
+                    src="/images/Banner1.jpg"
                     alt="Banner 2"
                     style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
                 />
