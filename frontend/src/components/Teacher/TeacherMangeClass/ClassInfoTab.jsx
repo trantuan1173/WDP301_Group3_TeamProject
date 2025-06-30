@@ -8,9 +8,7 @@ export default function ClassInfoTab({ classInfo }) {
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <div className="flex-1">
-        <div className="font-bold text-xl mb-2">
-          {classInfo.className || "Tên lớp"}
-        </div>
+        
         <div className="mb-1">
           Khóa học: <span className="font-semibold">{course.name || "?"}</span>
         </div>

@@ -127,9 +127,11 @@ const CustomEvent = ({ event }) => {
           }}
           slotPropGetter={() => ({
             style: {
-              minHeight: "30px", // 👈 tăng chiều cao mỗi dòng giờ
+              minHeight: "25px", // 👈 tăng chiều cao mỗi dòng giờ
             },
           })}
+          min={new Date(1970, 1, 1, 7, 0, 0)}
+              max={new Date(1970, 1, 1, 23, 59, 59)}
         />
       </div>
     </div>

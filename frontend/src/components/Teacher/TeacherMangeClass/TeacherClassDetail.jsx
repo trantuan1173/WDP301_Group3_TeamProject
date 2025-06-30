@@ -56,7 +56,7 @@ export default function TeacherClassDetail({ classId, onBack }) {
         </button>
       )}
       <h1 className="text-2xl font-bold mb-6">
-        {classInfo?.className || "Tên lớp học"}
+        Class: {classInfo?.className || "Tên lớp học"}
       </h1>
 
       {/* Tabs */}
