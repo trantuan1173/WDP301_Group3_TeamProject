@@ -9,6 +9,7 @@ import AdminAddStudentClass from "./AdminAddStudentClass";
 import AdminManageClassStudentList from "./AdminManageClassStudentList";
 import { FaChevronDown, FaChevronUp, FaPlus, FaUserPlus, FaCalendarAlt, FaArrowLeft, FaExchangeAlt, FaUsers } from "react-icons/fa";
 
+
 const getMonthYear = (dateStr) => {
   const d = new Date(dateStr);
   return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -80,8 +81,12 @@ export default function AdminViewClassDetails() {
   };
 
   return (
+    <div>
+<header className="w-full ">
+        <NavBar />
+      </header>
     <div className="bg-gray-50 min-h-screen px-6 md:px-16 py-8 font-sans">
-      <NavBar />
+      
 
       {/* Header */}
       <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
@@ -97,9 +102,8 @@ export default function AdminViewClassDetails() {
       <div className="flex flex-wrap items-center gap-4 justify-between mb-10">
         <div className="flex flex-wrap gap-4">
           <button
-            className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${
-              classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
+              }`}
             onClick={() => setShowAddTeacherForm(true)}
           >
             {classData.teacherId ? <FaExchangeAlt /> : <FaPlus />}
@@ -190,14 +194,15 @@ export default function AdminViewClassDetails() {
           <hr className="mb-2" />
           <div className="bg-white rounded-lg shadow border p-4">
             <AdminManageClassStudentList
-  students={classData.students}
-  currentClassId={classData._id}
-  courseId={classData.course?._id || classData.course}
-  fetchClass={fetchClass}
-/>
+              students={classData.students}
+              currentClassId={classData._id}
+              courseId={classData.course?._id || classData.course}
+              fetchClass={fetchClass}
+            />
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
