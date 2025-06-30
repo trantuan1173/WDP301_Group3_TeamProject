@@ -28,18 +28,20 @@ export const API_ENDPOINTS = {
   GET_ALL_CLASSES: `${baseUrl}/api/classes`,
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
-  GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
+  GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
+  REMOVE_STUDENT_CLASS:(classId) => `${baseUrl}/api/classes/${classId}/students`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
-  GET_SHEDULE_BY_CLASSID: (classId) =>
-    `${baseUrl}/api/schedule/class/${classId}`,
+  GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
+
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
   DELETE_SHEDULE_BY_CLASSID: (classId) =>
     `${baseUrl}/api/schedule/class/${classId}`,
   CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
-  GET_ALL_STUDENT_FEEDBACK: `${baseUrl}/api/feedbacks`,
-
+  GET_ALL_FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`,
+  GET_ALL_FEEDBACK_COURSE: `${baseUrl}/api/feedbacksCourse`,
+  GET_ALL_PAYMENT: `${baseUrl}/api/payments`,
   ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
   GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
