@@ -48,7 +48,7 @@ const TeacherViewShedule = () => {
   const events = schedules.map((sch) => ({
     id: sch._id, // ID lịch học
     classId: sch.classId?._id, // ✅ đảm bảo lấy đúng ID lớp
-    title: sch.classId?.course || "Buổi học",
+    title: sch.classId?.className || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
     date: sch.date,

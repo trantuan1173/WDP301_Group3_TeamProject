@@ -5,9 +5,6 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import { useNavigate } from "react-router-dom";
 
-
-
-
 const roadmapData = {
     toeic: [
         {
@@ -113,7 +110,6 @@ const RouteCourse = () => {
         overflow: 'hidden',
     }}
 >
-
             {/* Banner background (ảnh) */}
             <Carousel interval={5000} controls={true} indicators={true} pause={false}>
             <Carousel.Item>
@@ -276,7 +272,6 @@ const RouteCourse = () => {
         </div>
     );
 
-
     // Component render cho từng loại roadmap và course
     const renderSection = (title, roadmapArr, coursesArr) => (
         <div style={{ marginBottom: 48 }}>
@@ -326,21 +321,14 @@ const RouteCourse = () => {
                     </div>
                     <Accordion defaultActiveKey="0" alwaysOpen>
                         {roadmapArr.map((item, idx) => (
-                            <Accordion.Item eventKey={idx.toString()} key={idx}
-                                style={{
-                                    background: '#f0f7ff',
-                                    border: '1px solid #c9e2fa',
-                                    borderRadius: 8,
-                                    marginBottom: 16
-                                }}
-                            >
+                            <Accordion.Item eventKey={idx.toString()} key={item.title}>
                                 <Accordion.Header>{item.title}</Accordion.Header>
                                 <Accordion.Body>
                                     <div style={{ fontSize: 13, marginBottom: 8 }}>{item.desc}</div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                         {item.levels.map((level, i) => (
                                             <button
-                                                key={i}
+                                                key={level.name}
                                                 className="btn btn-light w-100 mb-2 text-start"
                                                 style={{
                                                     border: '1px solid #bfc9d1',
@@ -370,55 +358,54 @@ const RouteCourse = () => {
                     justifyContent: 'center'
                 }}>
                     <Carousel interval={5000} controls={true} indicators={false} pause={false}>
-    {chunkArray(coursesArr, 3).map((group, idx) => (
-        <Carousel.Item key={idx}>
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
-                gap: 24,
-                minHeight: 330
-            }}>
-                {group.map((course, i) => (
-                    <div
-                        key={course._id || i}
-                        data-course-id={course.courseId._id}
-                        style={{
-                            background: '#f0f7ff',
-                            border: '1px solid #c9e2fa',
-                            borderRadius: 8,
-                            padding: 16,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            textAlign: 'center',
-                            minHeight: 330,
-                            alignSelf: 'flex-start'
-                        }}
-                    >
-                        <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
-                        <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
-                        <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                        <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
-                            background: '#19b46a',
-                            color: '#fff',
-                            border: '2px solid #19b46a',
-                            borderRadius: 6,
-                            padding: '6px 16px',
-                            fontSize: 14,
-                            fontWeight: 500,
-                            cursor: 'pointer'
-                        }}>View More</button>
-                    </div>
-                ))}
-                {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
-                {Array.from({ length: 3 - group.length }).map((_, idx2) => (
-                    <div key={`empty-${idx2}`} />
-                ))}
-            </div>
-        </Carousel.Item>
-    ))}
-</Carousel>
+                        {chunkArray(coursesArr, 3).map((group, idx) => (
+                            <Carousel.Item key={`group-${idx}`}>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr 1fr',
+                                    gap: 24,
+                                    minHeight: 330
+                                }}>
+                                    {group.map((course, i) => (
+                                        <div
+                                            key={course._id || i}
+                                            style={{
+                                                background: '#f0f7ff',
+                                                border: '1px solid #c9e2fa',
+                                                borderRadius: 8,
+                                                padding: 16,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                textAlign: 'center',
+                                                minHeight: 330,
+                                                alignSelf: 'flex-start'
+                                            }}
+                                        >
+                                            <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
+                                            <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
+                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
+                                            <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
+                                                background: '#19b46a',
+                                                color: '#fff',
+                                                border: '2px solid #19b46a',
+                                                borderRadius: 6,
+                                                padding: '6px 16px',
+                                                fontSize: 14,
+                                                fontWeight: 500,
+                                                cursor: 'pointer'
+                                            }}>Tìm hiểu thêm</button>
+                                        </div>
+                                    ))}
+                                    {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
+                                    {Array.from({ length: 3 - group.length }).map((_, idx2) => (
+                                        <div key={`empty-${idx2}`} />
+                                    ))}
+                                </div>
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
                 </div>
             </div>
         </div>
@@ -428,16 +415,16 @@ const RouteCourse = () => {
     let sections = [];
     if (filter === 'all') {
         sections = [
-            renderSection('TOEIC', roadmapData.toeic, toeicCourses),
-            renderSection('IELTS', roadmapData.ielts, ieltsCourses)
+            { key: 'toeic', jsx: renderSection('TOEIC', roadmapData.toeic, toeicCourses) },
+            { key: 'ielts', jsx: renderSection('IELTS', roadmapData.ielts, ieltsCourses) }
         ];
     } else if (filter === 'toeic') {
         sections = [
-            renderSection('TOEIC', roadmapData.toeic, toeicCourses)
+            { key: 'toeic', jsx: renderSection('TOEIC', roadmapData.toeic, toeicCourses) }
         ];
     } else if (filter === 'ielts') {
         sections = [
-            renderSection('IELTS', roadmapData.ielts, ieltsCourses)
+            { key: 'ielts', jsx: renderSection('IELTS', roadmapData.ielts, ieltsCourses) }
         ];
     }
 
@@ -471,7 +458,9 @@ const RouteCourse = () => {
         </style>
             {renderHeader()}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
-                {sections}
+                {sections.map(section => (
+                    <React.Fragment key={section.key}>{section.jsx}</React.Fragment>
+                ))}
             </div>
         </div>
     );
