@@ -19,11 +19,10 @@ export default function AdminManageAccount() {
 
   const [roles, setRoles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showIds, setShowIds] = useState({});
 
   const usersPerPage = 15;
 
-  // State cho các cột hiển thị
+  // State for column visibility
   const [showColumns, setShowColumns] = useState({
     id: false,
     gender: false,
@@ -44,13 +43,13 @@ export default function AdminManageAccount() {
       });
 
       if (response.status === 200 || response.status === 201) {
-        alert("Tạo tài khoản thành công");
+        alert("Account created successfully");
         setShowAddForm(false);
         fetchUsers();
       }
     } catch (error) {
-      console.error("Lỗi khi tạo tài khoản:", error);
-      alert("Tạo tài khoản thất bại");
+      console.error("Error creating account:", error);
+      alert("Failed to create account");
     }
   };
 
@@ -82,18 +81,18 @@ export default function AdminManageAccount() {
       );
 
       if (response.status === 200) {
-        alert("Cập nhật người dùng thành công");
+        alert("User updated successfully");
         setShowEditForm(null);
         fetchUsers();
       }
     } catch (error) {
-      console.error("Lỗi cập nhật người dùng:", error);
-      alert("Cập nhật người dùng thất bại");
+      console.error("Error updating user:", error);
+      alert("Failed to update user");
     }
   };
 
   const handleDeleteUser = async (id) => {
-    if (window.confirm("Bạn có chắc muốn xoá tài khoản này?")) {
+    if (window.confirm("Are you sure you want to delete this account?")) {
       try {
         const token = localStorage.getItem("token");
         await axios.delete(API_ENDPOINTS.DELETE_USER.replace(":userId", id), {
@@ -101,17 +100,13 @@ export default function AdminManageAccount() {
             Authorization: `Bearer ${token}`,
           },
         });
-        alert("Xóa tài khoản thành công");
+        alert("Account deleted successfully");
         fetchUsers();
       } catch (error) {
-        console.error("Lỗi khi xóa tài khoản:", error);
-        alert("Xóa tài khoản thất bại");
+        console.error("Error deleting account:", error);
+        alert("Failed to delete account");
       }
     }
-  };
-
-  const toggleShowId = (id) => {
-    setShowIds((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const fetchUsers = async () => {
@@ -197,38 +192,38 @@ export default function AdminManageAccount() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">QUẢN LÝ TÀI KHOẢN</h2>
+      <h2 className="text-2xl font-bold mb-6">ACCOUNT MANAGEMENT</h2>
 
-      {/* Thống kê */}
+      {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-[#00224D] text-white p-4 rounded-lg text-center font-semibold shadow">
-          Tổng người dùng: {totalUsers}
+          Total users: {totalUsers}
         </div>
         <div className="bg-[#00224D] text-white p-4 rounded-lg text-center font-semibold shadow">
-          Tổng giáo viên: {totalTeachers}
+          Total teachers: {totalTeachers}
         </div>
         <div className="bg-[#00224D] text-white p-4 rounded-lg text-center font-semibold shadow">
-          Tổng học viên: {totalStudents}
+          Total students: {totalStudents}
         </div>
       </div>
 
-      {/* Tìm kiếm + Lọc + Thêm + Hiển thị cột */}
+      {/* Search + Filter + Add + Show Columns */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Danh sách</span>
+          <span className="font-semibold">List</span>
           <div className="flex border rounded px-2 items-center">
             <input
               type="text"
-              placeholder="Tìm kiếm theo tên hoặc email..."
+              placeholder="Search by name or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="outline-none py-1 px-2 bg-transparent"
             />
             <FiSearch className="text-gray-600" />
           </div>
-          {/* Checkbox chọn cột */}
-          <div className="flex gap-2 ml-4">
-            <label className="flex items-center gap-1 text-sm">
+          {/* Column checkboxes */}
+          <div className="flex flex-wrap gap-2 ml-4">
+            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showColumns.id}
@@ -236,9 +231,9 @@ export default function AdminManageAccount() {
                   setShowColumns((prev) => ({ ...prev, id: !prev.id }))
                 }
               />{" "}
-              ID thật
+              UserID
             </label>
-            <label className="flex items-center gap-1 text-sm">
+            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showColumns.gender}
@@ -246,9 +241,9 @@ export default function AdminManageAccount() {
                   setShowColumns((prev) => ({ ...prev, gender: !prev.gender }))
                 }
               />{" "}
-              Giới tính
+              Gender
             </label>
-            <label className="flex items-center gap-1 text-sm">
+            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showColumns.dob}
@@ -256,9 +251,9 @@ export default function AdminManageAccount() {
                   setShowColumns((prev) => ({ ...prev, dob: !prev.dob }))
                 }
               />{" "}
-              Ngày sinh
+              Date of Birth
             </label>
-            <label className="flex items-center gap-1 text-sm">
+            <label className="flex items-center gap-1 text-sm whitespace-nowrap">
               <input
                 type="checkbox"
                 checked={showColumns.phone}
@@ -266,7 +261,7 @@ export default function AdminManageAccount() {
                   setShowColumns((prev) => ({ ...prev, phone: !prev.phone }))
                 }
               />{" "}
-              SĐT
+              Phone
             </label>
           </div>
         </div>
@@ -283,18 +278,18 @@ export default function AdminManageAccount() {
             <option value="student">Student</option>
           </select>
           <button className="bg-blue-100 text-blue-800 px-4 py-1 rounded shadow text-sm font-medium">
-            Xuất dữ liệu
+            Export Data
           </button>
           <button
             className="bg-indigo-600 text-white flex items-center gap-2 px-3 py-1 rounded shadow text-sm font-medium"
             onClick={() => setShowAddForm(true)}
           >
-            <FaPlus /> Tạo tài khoản
+            <FaPlus /> Create Account
           </button>
         </div>
       </div>
 
-      {/* Form */}
+      {/* Forms */}
       {showAddForm && (
         <AdminAddAccount
           onClose={() => setShowAddForm(false)}
@@ -313,17 +308,18 @@ export default function AdminManageAccount() {
         />
       )}
 
-      {/* Bảng người dùng */}
+      {/* User Table */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="min-w-full table-auto text-sm text-left">
           <thead className="bg-gray-200 font-semibold">
             <tr>
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Tên</th>
+              <th className="px-4 py-2">No.</th>
+              {showColumns.id && <th className="px-4 py-2">UserID</th>}
+              <th className="px-4 py-2">Name</th>
               <th className="px-4 py-2">Email</th>
-              {showColumns.gender && <th className="px-4 py-2">Giới tính</th>}
-              {showColumns.dob && <th className="px-4 py-2">Ngày sinh</th>}
-              {showColumns.phone && <th className="px-4 py-2">SĐT</th>}
+              {showColumns.gender && <th className="px-4 py-2">Gender</th>}
+              {showColumns.dob && <th className="px-4 py-2">Date of Birth</th>}
+              {showColumns.phone && <th className="px-4 py-2">Phone</th>}
               <th className="px-4 py-2">Role</th>
               <th className="px-4 py-2">Action</th>
             </tr>
@@ -331,9 +327,10 @@ export default function AdminManageAccount() {
           <tbody className="divide-y">
             {currentUsers.map((user, idx) => (
               <tr key={user.id}>
-                <td className="px-4 py-2">
-                  {showColumns.id ? user.id : idx + 1}
-                </td>
+                <td className="px-4 py-2">{indexOfFirstUser + idx + 1}</td>
+                {showColumns.id && (
+                  <td className="px-4 py-2 text-xs break-all">{user.id}</td>
+                )}
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
                 {showColumns.gender && <td className="px-4 py-2">{user.gender}</td>}
@@ -341,7 +338,6 @@ export default function AdminManageAccount() {
                 {showColumns.phone && <td className="px-4 py-2">{user.phone}</td>}
                 <td className="px-4 py-2">{user.role.nameRole}</td>
                 <td className="px-4 py-2 flex gap-2">
-
                   <FaEye
                     className="text-green-600 cursor-pointer"
                     onClick={() => setShowViewForm(user)}
@@ -359,8 +355,8 @@ export default function AdminManageAccount() {
             ))}
             {currentUsers.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-center py-4 text-gray-500 italic">
-                  Không tìm thấy người dùng nào.
+                <td colSpan={showColumns.id ? 9 : 8} className="text-center py-4 text-gray-500 italic">
+                  No users found.
                 </td>
               </tr>
             )}
