@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_ENDPOINTS } from '../config';
-import NavBar from '../components/Layouts/NavBar';
+import { API_ENDPOINTS } from "../config";
+import NavBar from "../components/Layouts/NavBar";
+import FeedbackList from "./FeedbackList";
 
 const ViewCourseDetails = () => {
   const { courseId } = useParams();
@@ -12,18 +13,30 @@ const ViewCourseDetails = () => {
   const [enrolled, setEnrolled] = useState(false);
 
   const navigate = useNavigate();
+  const [feedbacks, setFeedbacks] = useState([]);
 
   useEffect(() => {
-    axios.get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId))
-      .then(res => {
+    axios
+      .get(API_ENDPOINTS.GET_COURSE_BY_ID(courseId))
+      .then((res) => {
         console.log("API DATA:", res.data);
-        setCourse((res.data.data) || null);
+        setCourse(res.data.data || null);
 
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
         setCourse(null);
+      });
+
+    // Gọi API feedbacks
+    axios
+      .get(API_ENDPOINTS.GET_FEEDBACKS_COURSE(courseId))
+      .then((res) => {
+        setFeedbacks(res.data?.data || []);
+      })
+      .catch(() => {
+        setFeedbacks([]);
       });
   }, []);
   useEffect(() => {
@@ -216,6 +229,7 @@ const ViewCourseDetails = () => {
               {enrolled ? "Enrolled" : "Enroll"}
             </button>
           </div>
+          <FeedbackList feedbacks={feedbacks} />
         </div>
       </div>
     </div>

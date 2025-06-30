@@ -8,12 +8,22 @@ import {
   FaDollarSign,
   FaChartLine,
 } from "react-icons/fa";
+import { useState } from "react";
+import CourseFeedbackModal from "./CourseFeedbackModal";
+import TeacherFeedbackModal from "./TeacherFeedbackModal";
 
 export default function CourseDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { course } = location.state || {};
   const detail = course?.course?.detail;
+  const [showCourseFeedback, setShowCourseFeedback] = useState(false);
+  const [showTeacherFeedback, setShowTeacherFeedback] = useState(false);
+
+  const handleSaveFeedback = (data) => {
+    console.log("Saved feedback:", data);
+    // Gửi data về backend tại đây nếu cần
+  };
 
   if (!course) {
     return (
@@ -110,6 +120,19 @@ export default function CourseDetailPage() {
             >
               View Attendance
             </button>
+            <button
+              onClick={() => setShowCourseFeedback(true)}
+              className="py-2 px-4 bg-yellow-400 text-gray-800 rounded-lg hover:bg-yellow-300 transition"
+            >
+              Add feedback course
+            </button>
+
+            <button
+              onClick={() => setShowTeacherFeedback(true)}
+              className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-400 transition"
+            >
+              Add feedback teacher
+            </button>
           </div>
         </div>
       </div>
@@ -123,6 +146,25 @@ export default function CourseDetailPage() {
           {detail?.description || "No description available"}
         </p>
       </div>
+      {showCourseFeedback && (
+        <CourseFeedbackModal
+          courseName={course.course?.name}
+          onClose={() => setShowCourseFeedback(false)}
+          onSave={handleSaveFeedback}
+        />
+      )}
+
+      {showTeacherFeedback && (
+        <TeacherFeedbackModal
+          teacherName={course.teacher?.name}
+          className={course.className}
+          onClose={() => setShowTeacherFeedback(false)}
+          onSave={(data) => {
+            console.log("Teacher feedback saved:", data);
+            // Gửi lên backend nếu cần
+          }}
+        />
+      )}
     </div>
   );
 }

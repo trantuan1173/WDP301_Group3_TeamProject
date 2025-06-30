@@ -14,6 +14,7 @@ const userRoutes = require('./userRoutes.js');
 const testAssignRoutes = require('./testAssignRoutes.js');
 const paymentRoutes = require('./paymentRoutes.js');
 const enrollmentRoutes = require('./enrollmentRoutes.js');
+const eventDataRoutes = require('./eventDataRoutes.js');
 
 const router = express.Router();
 router.use('/payments', paymentRoutes);
@@ -33,5 +34,6 @@ router.use('/test-assigns', testAssignRoutes);
 
 router.use('/enrollments', enrollmentRoutes);
 router.use('/users', userRoutes);
+router.use('/eventsData', eventDataRoutes);
 
 module.exports=router;
