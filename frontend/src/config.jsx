@@ -1,6 +1,6 @@
 // API Configuration
-//const baseUrl = 'https://beenglishcenter.davidmusic.site/';
-const baseUrl = "http://localhost:9999";
+const baseUrl = 'https://beenglishcenter.gicunhco.com';
+// const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
   AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
@@ -102,4 +102,7 @@ export const API_ENDPOINTS = {
   DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
   UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,
   CREATE_TEST_FROM_AI: `${baseUrl}/api/tests/create-from-ai`,
+
+  //Statistics
+GET_STATISTICS_EVENT: (eventName) => `${baseUrl}/api/eventsData/event/${eventName}`
 };
