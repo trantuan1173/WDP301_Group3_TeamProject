@@ -1,6 +1,80 @@
 const Schedule = require("../models/scheduleModel.js")
 const Class = require("../models/classModel.js")
 
+
+function formatScheduleData(schedule) {
+  const pad = (n) => String(n).padStart(2, '0');
+
+  const toTimeStr = (date) => {
+    const d = new Date(date);
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const toDateStr = (date) => {
+    return new Date(date).toISOString().split("T")[0]; // yyyy-mm-dd
+  };
+
+  return {
+    date: toDateStr(schedule.date),
+    start_time: toTimeStr(schedule.start_time),
+    end_time: toTimeStr(schedule.end_time),
+  };
+}
+
+const checkTeacherScheduleConflict = async (teacherId, scheduleList, excludedClassId = null) => {
+  const now = new Date();
+
+  const otherClasses = await Class.find({
+    teacherId,
+    ...(excludedClassId && { _id: { $ne: excludedClassId } }),
+  });
+
+  const classIds = otherClasses.map(cls => cls._id);
+
+  const teacherSchedules = await Schedule.find({
+    classId: { $in: classIds },
+    date: { $gte: now },
+  }).populate("classId", "className");
+
+  const conflictSchedules = [];
+
+  for (const newSchedule of scheduleList) {
+    const newDate = new Date(newSchedule.date).toDateString();
+    const newStart = new Date(newSchedule.start_time);
+    const newEnd = new Date(newSchedule.end_time);
+
+    teacherSchedules.forEach(s => {
+      const sDate = new Date(s.date).toDateString();
+      const sStart = new Date(s.start_time);
+      const sEnd = new Date(s.end_time);
+
+      const isConflict =
+        sDate === newDate &&
+        (
+          (sStart <= newStart && sEnd > newStart) ||
+          (sStart < newEnd && sEnd >= newEnd) ||
+          (sStart >= newStart && sEnd <= newEnd)
+        );
+
+      if (isConflict) {
+        conflictSchedules.push({
+          yourSchedule: formatScheduleData(newSchedule),
+          conflictWith: {
+            className: s.classId.className,
+            ...formatScheduleData(s),
+          }
+        });
+      }
+    });
+  }
+
+  return {
+    hasConflict: conflictSchedules.length > 0,
+    conflictSchedules,
+  };
+};
+
+
 // Get all schedules
 const getSchedules = async (req, res) => {
   try {
@@ -101,6 +175,29 @@ const createSchedule = async (req, res) => {
       })
     }
 
+    if (classExists.teacherId) {
+      const scheduleToAdd = [{
+        classId,
+        date,
+        start_time,
+        end_time
+      }];
+
+      const { hasConflict, conflictSchedules } = await checkTeacherScheduleConflict(
+        classExists.teacherId,
+        scheduleToAdd,
+        classId
+      );
+
+      if (hasConflict) {
+        return res.status(409).json({
+          success: false,
+          message: `Teacher has a schedule conflict ${conflictSchedules[0].conflictWith.className}`,
+          conflictSchedules
+        });
+      }
+    }
+
     // Check for schedule conflicts
     const conflictingSchedule = await Schedule.findOne({
       classId,
@@ -156,16 +253,28 @@ const createBulkSchedule = async (req, res) => {
       return res.status(400).json({ success: false, message: "Dữ liệu không hợp lệ" });
     }
 
-    // Lấy classId từ phần tử đầu tiên
     const classId = scheduleList[0].classId;
 
-    // Kiểm tra lớp có tồn tại không
     const classExists = await Class.findById(classId);
     if (!classExists) {
       return res.status(404).json({ success: false, message: "Class not found" });
     }
+    if (classExists.teacherId) {
+      const { hasConflict, conflictSchedules } = await checkTeacherScheduleConflict(
+        classExists.teacherId,
+        scheduleList,
+        classId
+      );
+    
+      if (hasConflict) {
+        return res.status(409).json({
+          success: false,
+          message: `Teacher has a schedule conflict ${conflictSchedules[0].conflictWith.className}`,
+          conflictSchedules,
+        });
+      }
+    }
 
-    // Lấy toàn bộ lịch học hiện có của lớp này
     const existingSchedules = await Schedule.find({ classId });
 
     // Kiểm tra từng lịch mới có bị trùng không
@@ -238,6 +347,30 @@ const updateSchedule = async (req, res) => {
           success: false,
           message: "Schedule conflicts with an existing schedule",
         })
+      }
+    }
+
+    const scheduleToUpdate = {
+      classId: classId || (await Schedule.findById(req.params.id)).classId,
+      date,
+      start_time,
+      end_time,
+    };
+    
+    const classInfo = await Class.findById(scheduleToUpdate.classId);
+    if (classInfo?.teacherId) {
+      const { hasConflict, conflictSchedules } = await checkTeacherScheduleConflict(
+        classInfo.teacherId,
+        [scheduleToUpdate],
+        scheduleToUpdate.classId
+      );
+    
+      if (hasConflict) {
+        return res.status(409).json({
+          success: false,
+          message: `Teacher has a schedule conflict ${conflictSchedules[0].conflictWith.className}`,
+          conflictSchedules,
+        });
       }
     }
 
