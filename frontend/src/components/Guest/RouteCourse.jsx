@@ -90,45 +90,45 @@ const RouteCourse = () => {
     const renderHeader = () => (
         <div
             style={{
-            width: '100vw',
-            position: 'relative',
-            left: '50%',
-            right: '50%',
-            marginLeft: '-50vw',
-            marginRight: '-50vw',
-            overflow: 'hidden',
-            background: '#fff'
-        }}>
+                width: '100vw',
+                position: 'relative',
+                left: '50%',
+                right: '50%',
+                marginLeft: '-50vw',
+                marginRight: '-50vw',
+                overflow: 'hidden',
+                background: '#fff'
+            }}>
             <div
-    style={{
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
-        overflow: 'hidden',
-    }}
->
-            {/* Banner background (ảnh) */}
-            <Carousel interval={5000} controls={true} indicators={true} pause={false}>
-            <Carousel.Item>
-                <img
-                    src="/images/Banner.png"
-                    alt="Banner 1"
-                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
-                />
-            </Carousel.Item>
-            {/* Thêm slide banner khác nếu muốn */}
-            <Carousel.Item>
-                <img
-                    src="/images/Banner1.png"
-                    alt="Banner 2"
-                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
-                />
-            </Carousel.Item>
-        </Carousel>
-        </div>
+                style={{
+                    width: '100vw',
+                    position: 'relative',
+                    left: '50%',
+                    right: '50%',
+                    marginLeft: '-50vw',
+                    marginRight: '-50vw',
+                    overflow: 'hidden',
+                }}
+            >
+                {/* Banner background (ảnh) */}
+                <Carousel interval={5000} controls={true} indicators={true} pause={false}>
+                    <Carousel.Item>
+                        <img
+                            src="/images/Banner.png"
+                            alt="Banner 1"
+                            style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
+                        />
+                    </Carousel.Item>
+                    {/* Thêm slide banner khác nếu muốn */}
+                    <Carousel.Item>
+                        <img
+                            src="/images/Banner1.png"
+                            alt="Banner 2"
+                            style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
+                        />
+                    </Carousel.Item>
+                </Carousel>
+            </div>
             {/* Menu */}
             <div
                 style={{
@@ -268,7 +268,7 @@ const RouteCourse = () => {
                     Hỗ trợ
                 </div>
             </div>
-            
+
         </div>
     );
 
@@ -377,25 +377,45 @@ const RouteCourse = () => {
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 alignItems: 'center',
-                                                justifyContent: 'center',
+                                                justifyContent: 'flex-start',
                                                 textAlign: 'center',
-                                                minHeight: 330,
+                                                minHeight: 370, // Tăng chiều cao cố định
+                                                maxHeight: 370,
+                                                height: 370,
                                                 alignSelf: 'flex-start'
                                             }}
                                         >
-                                            <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
+                                            <img
+                                                src={course.imageURL}
+                                                alt={course.courseId.nameCourses}
+                                                style={{
+                                                    width: '100%',
+                                                    height: 160,
+                                                    borderRadius: 8,
+                                                    marginBottom: 8,
+                                                    objectFit: 'cover'
+                                                }}
+                                            />
                                             <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
                                             <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                                            <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
-                                                background: '#19b46a',
-                                                color: '#fff',
-                                                border: '2px solid #19b46a',
-                                                borderRadius: 6,
-                                                padding: '6px 16px',
-                                                fontSize: 14,
-                                                fontWeight: 500,
-                                                cursor: 'pointer'
-                                            }}>Tìm hiểu thêm</button>
+                                            <div style={{ flex: 1 }} />
+                                            <button
+                                                onClick={() => navigate(`/course/${course.courseId._id}`)}
+                                                style={{
+                                                    background: '#19b46a',
+                                                    color: '#fff',
+                                                    border: '2px solid #19b46a',
+                                                    borderRadius: 6,
+                                                    padding: '6px 16px',
+                                                    fontSize: 14,
+                                                    fontWeight: 500,
+                                                    cursor: 'pointer',
+                                                    marginTop: 'auto', // Đẩy nút xuống cuối card
+                                                    width: '100%'
+                                                }}
+                                            >
+                                                Tìm hiểu thêm
+                                            </button>
                                         </div>
                                     ))}
                                     {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}
@@ -431,7 +451,7 @@ const RouteCourse = () => {
     return (
         <div>
             <style>
-            {`
+                {`
             .carousel-control-next, .carousel-control-prev {
                 width: 60px !important;
                 height: 60px !important;
@@ -455,7 +475,7 @@ const RouteCourse = () => {
                 background-size: 60% 60%;
             }
             `}
-        </style>
+            </style>
             {renderHeader()}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
                 {sections.map(section => (
