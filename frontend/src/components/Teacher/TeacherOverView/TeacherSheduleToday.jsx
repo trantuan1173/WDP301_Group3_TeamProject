@@ -69,7 +69,7 @@ export default function TeacherSheduleToday() {
             <div className="font-semibold">
               Slot {idx + 1} | {new Date(sch.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(sch.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
-            <div>Courses: {sch.classId?.course || "?"}</div>
+            <div>Class: {sch.classId?.className || "?"}</div>
           </div>
         ))
       )}
