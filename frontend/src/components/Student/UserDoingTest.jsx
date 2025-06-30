@@ -3,50 +3,40 @@ import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../config";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
-const TOTAL_QUESTIONS = 20;
-const CORRECT_QUESTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 20];
-const WRONG_QUESTIONS = [13, 19];
-
-const QUESTION = [
-    {
-        id: 1,
-        title: "What is the capital of France?",
-        options: ["Berlin", "Madrid", "Paris", "Rome"],
-        answer: "Paris"
-    },
-    {
-        id: 2,
-        title: "What is 2 + 2?",
-        options: ["3", "4", "5", "6"],
-        answer: "4"
-    }
-    // You can add more mock questions here
-];
-
-const getStatus = (index, current) => {
-    if (index === current) return "current";
-    if (WRONG_QUESTIONS.includes(index)) return "wrong";
-    if (CORRECT_QUESTIONS.includes(index)) return "correct";
-    return "neutral";
-};
-
-const getColorStyle = (status) => {
-    switch (status) {
-        case "correct": return { bg: "#388e3c", color: "#fff" };
-        case "wrong": return { bg: "#f44336", color: "#fff" };
-        case "current": return { bg: "#ff5252", color: "#fff", border: "0 0 0 2px #222" };
-        default: return { bg: "#e0e0e0", color: "#222" };
-    }
-};
 
 export const UserDoingTest = () => {
+    const navigate = useNavigate();
     const [current, setCurrent] = useState(1);
     const [userId, setUserId] = useState(null);
     const [answers, setAnswers] = useState({});
+    const { testId } = useParams();
+    const [tests, setTests] = useState([]);
+    const [questionList, setQuestionList] = useState([]);
+    const [timeStr, setTimeStr] = useState("");
+    const [remainingTime, setRemainingTime] = useState("");
+    const [testAssignId, setTestAssignId] = useState("");
 
+
+
+    const getStatus = (index, current) => {
+        if (index === current) return "current";
+        if (answers[index]) return "answered";
+        return "neutral";
+    };
+
+
+    const getColorStyle = (status) => {
+        switch (status) {
+            case "answered": return { bg: "#4caf50", color: "#fff" }; // green
+            case "current": return { bg: "#ff5252", color: "#fff" };
+            default: return { bg: "#e0e0e0", color: "#222" };
+        }
+    };
+
+    // Lấy userId từ token
     const token = localStorage.getItem("token");
-
     useEffect(() => {
         if (token) {
             try {
@@ -57,6 +47,33 @@ export const UserDoingTest = () => {
             }
         }
     }, []);
+
+
+
+    useEffect(() => {
+        if (!userId || !testId) return; // ⬅️ Don’t fetch until userId is available
+        const fetchTests = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get(
+                    API_ENDPOINTS.GET_ASSIGNED_TESTS_FOR_STUDENT(userId, testId),
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+                setTests(res.data.data);
+                setTestAssignId(res.data.data._id);
+                setQuestionList(res.data.data.testId.questions);
+                console.log("Tests fetched successfully:", res.data.data);
+
+            } catch (error) {
+                console.error("Failed to fetch tests:", error);
+            }
+        };
+
+        fetchTests();
+    }, [userId, testId]); // ⬅️ Also include testId
+
 
     const handleNav = (direction) => {
         setCurrent((prev) => {
@@ -70,6 +87,48 @@ export const UserDoingTest = () => {
         setAnswers(prev => ({ ...prev, [questionIndex]: selectedAnswer }));
     };
 
+    useEffect(() => {
+        if (!tests || !tests.startDate || !tests.dueDate) return;
+
+        const start = new Date(tests.startDate);
+        const end = new Date(tests.dueDate);
+
+        const durationMs = end - start;
+        const durationMin = Math.round(durationMs / 60000);
+
+        const startHour = start.getHours().toString().padStart(2, "0");
+        const startMin = start.getMinutes().toString().padStart(2, "0");
+        const endHour = end.getHours().toString().padStart(2, "0");
+        const endMin = end.getMinutes().toString().padStart(2, "0");
+
+        setTimeStr(`${durationMin}p (${startHour}h${startMin} - ${endHour}h${endMin})`);
+    }, [tests]);
+
+    useEffect(() => {
+        if (!tests || !tests.startDate || !tests.dueDate) return;
+
+        const interval = setInterval(() => {
+            const now = new Date();
+            const end = new Date(tests.dueDate);
+            const diffMs = end - now;
+
+            if (diffMs <= 0) {
+                setRemainingTime("00:00");
+                clearInterval(interval);
+                return;
+            }
+
+            const totalSec = Math.floor(diffMs / 1000);
+            const min = Math.floor(totalSec / 60).toString().padStart(2, "0");
+            const sec = (totalSec % 60).toString().padStart(2, "0");
+
+            setRemainingTime(`${min}:${sec}`);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [tests]);
+
+
     const handleSubmit = async () => {
         const formattedAnswers = Object.entries(answers).map(([questionIndex, answer]) => ({
             questionIndex: parseInt(questionIndex),
@@ -78,7 +137,7 @@ export const UserDoingTest = () => {
 
         try {
             await axios.post(API_ENDPOINTS.STUDENT_SUBMIT_TEST, {
-                testId: '68580c0e7653da4040e2da53',
+                testAssignId: testAssignId,
                 studentId: userId,
                 answers: formattedAnswers
             }, {
@@ -86,13 +145,25 @@ export const UserDoingTest = () => {
             });
 
             alert("Nộp bài thành công!");
+            navigate(`/user`);
         } catch (err) {
             console.error("Lỗi khi nộp bài:", err);
             alert("Lỗi khi nộp bài kiểm tra!");
         }
     };
 
-    const currentQuestion = QUESTION.find(q => q.id === current);
+    useEffect(() => {
+        if (remainingTime === "00:00") {
+            // Only auto-submit if the test has loaded (testAssignId exists)
+            if (testAssignId) {
+                handleSubmit();
+            }
+        }
+    }, [remainingTime, testAssignId, questionList]);
+
+
+    const currentQuestion = questionList[current - 1];
+    const TOTAL_QUESTIONS = questionList.length || 0;
 
 
 
@@ -107,8 +178,11 @@ export const UserDoingTest = () => {
                 flexDirection: "column",
                 alignItems: "center"
             }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Thời gian hoàn thành</div>
-                <div style={{ color: "#00b200", fontWeight: 700, fontSize: 32, marginBottom: 24 }}>40:01</div>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Thời gian còn lại</div>
+                <div style={{ color: "#00b200", fontWeight: 700, fontSize: 32, marginBottom: 24 }}>
+                    {remainingTime || "00:00"}
+                </div>
+
 
                 <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>Câu hỏi</div>
                 <div style={{
@@ -179,10 +253,8 @@ export const UserDoingTest = () => {
                     fontSize: 22,
                     marginBottom: 8
                 }}>
-                    <span>Tiếng Anh Thiếu nhi 1</span>
-                    <span>Điểm: 9 (36/40)</span>
                     <span style={{ fontWeight: 500, fontSize: 18 }}>
-                        Thời gian: <span style={{ fontWeight: 700 }}>45p (7h45 - 8h30)</span>
+                        Thời gian: <span style={{ fontWeight: 700 }}>{timeStr || "..."}</span>
                     </span>
                 </div>
 
@@ -196,28 +268,34 @@ export const UserDoingTest = () => {
                     padding: 24
                 }}>
                     <h4 style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>
-                        Câu hỏi {current}: {currentQuestion ? currentQuestion.title : "Không có dữ liệu"}
+                        Câu hỏi {current}: {currentQuestion ? currentQuestion.question : "Không có dữ liệu"}
                     </h4>
 
                     {currentQuestion ? (
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                             {currentQuestion.options.map((opt, idx) => (
-                                <button
-                                    key={idx}
-                                    style={{
-                                        display: "block",
-                                        width: "100%",
-                                        padding: "10px 16px",
-                                        margin: "8px 0",
-                                        background: answers[current] === opt ? "#dbeafe" : "#fff",
-                                        border: "1px solid #ccc",
-                                        borderRadius: 8
-                                    }}
-                                    onClick={() => handleAnswer(current, opt)}
-                                >
+                                <label key={idx} style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    padding: "8px 12px",
+                                    margin: "6px 0",
+                                    background: "#fff",
+                                    border: "1px solid #ccc",
+                                    borderRadius: 8,
+                                    cursor: "pointer"
+                                }}>
+                                    <input
+                                        type="radio"
+                                        name={`question-${current}`}
+                                        value={opt}
+                                        checked={answers[current] === opt}
+                                        onChange={() => handleAnswer(current, opt)}
+                                        style={{ marginRight: 12 }}
+                                    />
                                     {opt}
-                                </button>
+                                </label>
                             ))}
+
                         </div>
                     ) : (
                         <p style={{ fontSize: 16, fontStyle: "italic", color: "#666" }}>

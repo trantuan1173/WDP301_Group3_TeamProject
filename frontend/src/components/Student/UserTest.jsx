@@ -1,10 +1,13 @@
+// frontend/src/components/Student/UserTest.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiSearch } from "react-icons/fi";
 import { useAuth } from "../../context/AuthContext";
 import { API_ENDPOINTS } from "../../config";
+import { useNavigate } from "react-router-dom";
 
 export default function UserTestPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [tests, setTests] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,7 +26,9 @@ export default function UserTestPage() {
             },
           }
         );
-        setTests(res.data.data || []);
+        console.log("Tests fetched successfully:", res.data.data);
+
+        setTests(res.data.data);
       } catch (error) {
         console.error("Failed to fetch tests:", error);
       }
@@ -32,9 +37,6 @@ export default function UserTestPage() {
     fetchTests();
   }, [user]);
 
-  const filteredTests = tests.filter((test) =>
-    test.classId?.course?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="p-6 bg-white rounded shadow-md">
@@ -66,7 +68,7 @@ export default function UserTestPage() {
           <thead className="bg-gray-100 text-sm text-gray-700">
             <tr>
               <th className="p-3 border">Thứ</th>
-              <th className="p-3 border">Tên lớp</th>
+              {/* <th className="p-3 border">Tên lớp</th> */}
               <th className="p-3 border">Khoá học</th>
               <th className="p-3 border">Giáo viên</th>
               <th className="p-3 border">Thời gian</th>
@@ -74,29 +76,49 @@ export default function UserTestPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredTests.map((test, idx) => {
-              const day = new Date(test.dueDate).getDay(); // 0 = Sunday
-              const startHour = new Date(test.dueDate).getHours();
-              const startMin = new Date(test.dueDate).getMinutes();
-              const endHour = startHour + 1;
-              const timeStr = `45p (${startHour}h${startMin} - ${endHour}h${startMin})`;
+            {tests
+              .filter(test => new Date(test.dueDate) > new Date())
+              .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+              .map((test, idx) => {
 
-              return (
-                <tr key={test._id} className="text-sm">
-                  <td className="p-3 border text-center">{day}</td>
-                  <td className="p-3 border">{test.classId?.name}</td>
-                  <td className="p-3 border">{test.courseId?.nameCourses}</td>
-                  <td className="p-3 border">{test.teacherId?.name}</td>
-                  <td className="p-3 border">{timeStr}</td>
-                  <td className="p-3 border text-center">
-                    <button className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300">
-                      Làm bài
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-            {filteredTests.length === 0 && (
+                const start = new Date(test.startDate);
+                const end = new Date(test.dueDate);
+
+                // Compute duration in minutes
+                const durationMs = end - start;
+                const durationMin = Math.round(durationMs / 60000);
+
+                const startHour = start.getHours().toString().padStart(2, "0");
+                const startMin = start.getMinutes().toString().padStart(2, "0");
+                const endHour = end.getHours().toString().padStart(2, "0");
+                const endMin = end.getMinutes().toString().padStart(2, "0");
+
+                const timeStr = `${durationMin}p (${startHour}h${startMin} - ${endHour}h${endMin})`;
+
+                // Compute day of the week
+                const daysOfWeek = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+                const day = daysOfWeek[start.getDay()];
+
+                return (
+                  <tr key={test._id} className="text-sm">
+                    <td className="p-3 border text-center">{day}</td>
+                    {/* <td className="p-3 border">{test.classId?.name}</td> */}
+                    <td className="p-3 border">{test.courseId?.nameCourses}</td>
+                    <td className="p-3 border">{test.teacherId?.email}</td>
+                    <td className="p-3 border">{timeStr}</td>
+                    <td className="p-3 border text-center">
+                      <button
+                        onClick={() => navigate(`/user/test/${test.testId._id}`)}
+                        className="bg-green-200 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-300"
+                      >
+                        Làm bài
+                      </button>
+
+                    </td>
+                  </tr>
+                );
+              })}
+            {tests.length === 0 && (
               <tr>
                 <td colSpan="6" className="text-center py-6 text-gray-500">
                   Không có bài kiểm tra.
