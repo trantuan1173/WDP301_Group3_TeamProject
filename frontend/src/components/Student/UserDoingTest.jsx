@@ -137,6 +137,8 @@ export const UserDoingTest = () => {
 
 
     const handleSubmit = async () => {
+        const confirmed = window.confirm("Bạn có chắc chắn muốn nộp bài? Sau khi nộp bạn sẽ không thể sửa đổi.");
+        if (!confirmed) return;
         const formattedAnswers = Object.entries(answers).map(([questionIndex, answer]) => ({
             questionIndex: parseInt(questionIndex),
             answer
