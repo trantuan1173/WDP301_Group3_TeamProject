@@ -121,39 +121,13 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                 >
                   <option value="">-- Chọn danh mục --</option>
                   {categories.map((cat, idx) => (
-                    <option key={idx} value={cat}>{cat}</option>
+                    <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
                 <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
               {errors.type && (
                 <p className="text-red-500 text-xs mt-1">{errors.type}</p>
-              )}
-              {!showNewCategoryInput && (
-                <button
-                  type="button"
-                  onClick={() => setShowNewCategoryInput(true)}
-                  className="text-blue-600 text-xs mt-1 flex items-center gap-1"
-                >
-                  <FaPlus className="text-xs" /> Thêm danh mục
-                </button>
-              )}
-              {showNewCategoryInput && (
-                <div className="mt-2 flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Tên danh mục mới"
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    className="border p-1 rounded flex-1 text-sm"
-                  />
-                  <button
-                    onClick={handleAddCategory}
-                    className="text-white bg-blue-600 px-3 py-1 rounded text-sm"
-                  >
-                    Thêm
-                  </button>
-                </div>
               )}
             </div>
             {/* Tên khóa học */}

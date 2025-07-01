@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 const Register = () => {
   const [formData, setFormData] = useState({
     profileData: {
-      
       name: '',
     },
     password: '',
@@ -17,7 +16,7 @@ const Register = () => {
     confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showVerifyMsg, setShowVerifyMsg] = useState(false); // Thêm state này
+  const [showVerifyMsg, setShowVerifyMsg] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -41,7 +40,7 @@ const Register = () => {
         setErrors((prev) => ({
           ...prev,
           confirmPassword:
-            value !== formData.password ? 'Mật khẩu xác nhận không khớp' : '',
+            value !== formData.password ? 'Passwords do not match' : '',
         }));
       }
 
@@ -50,7 +49,7 @@ const Register = () => {
           ...prev,
           confirmPassword:
             formData.confirmPassword && formData.confirmPassword !== value
-              ? 'Mật khẩu xác nhận không khớp'
+              ? 'Passwords do not match'
               : '',
         }));
       }
@@ -63,7 +62,7 @@ const Register = () => {
     if (formData.password !== formData.confirmPassword) {
       setErrors((prev) => ({
         ...prev,
-        confirmPassword: 'Mật khẩu xác nhận không khớp',
+        confirmPassword: 'Passwords do not match',
       }));
       return;
     }
@@ -74,106 +73,133 @@ const Register = () => {
       const response = await axios.post(`${API_ENDPOINTS.REGISTER}`, formData);
 
       if (response.status === 201) {
-        setShowVerifyMsg(true); // Hiện thông báo xác thực email
+        setShowVerifyMsg(true);
       }
     } catch (error) {
-      alert('Đăng ký thất bại');
+      alert('Registration failed');
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading) return <LoadingSpinner size={120} text="ĐANG ĐĂNG KÝ" />;
+  if (isLoading) return <LoadingSpinner size={120} text="Registering..." />;
 
- return (
-  <div className="w-full h-screen flex items-center justify-center bg-gray-100">
-    <div className="flex w-[90%] max-w-5xl h-[90%] bg-white rounded-2xl shadow-2xl overflow-hidden">
+  return (
+    <div className="min-h-screen flex">
+      {/* Left form */}
+      <div className="w-full md:w-7/10 lg:w-7/10 flex justify-center pt-6 py-30 lg:px-30">
+        <div className="max-w-md w-full space-y-8">
+          <div className="flex justify-between items-center">
+            <img
+              src="/images/logo.png"
+              className="h-20 w-auto"
+              alt="Logo"
+            />
+          </div>
+          <h2 className="mt-6 text-2xl font-bold text-gray-900 text-center">
+            Registration Form
+          </h2>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="profileData.name"
+                  placeholder="Full Name"
+                  value={formData.profileData.name}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className={`mt-1 w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'focus:ring-red-500' : 'focus:ring-indigo-500'}`}
+                />
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                )}
+              </div>
+            </div>
+            <div>
+              <button
+                type="submit"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white hover:opacity-90 transition duration-200"
+                style={{ backgroundColor: "#0a2c63" }}
+              >
+                Register
+              </button>
+            </div>
+          </form>
 
-      {/* Left Side: Background Image with Text Overlay */}
-      <div
-        className="w-1/2 relative bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/BannerRegister.png')" }} // Đổi path đúng ảnh bạn đã upload
-      >
-        <div className="absolute inset-0  flex flex-col items-center justify-end px-6 text-white">
-          
-          <p className="text-sm text-center max-w-[300px] drop-shadow-md ">
-            Join us to improve your English skills with top-quality courses!
-          </p>
+          {showVerifyMsg && (
+            <div className="text-green-600 font-semibold text-sm text-center mt-4">
+              Please check your email to verify your account.
+            </div>
+          )}
+
+          <div className="text-center text-sm text-gray-600 mt-4">
+            Already have an account?{" "}
+            <span
+              className="text-blue-600 hover:underline cursor-pointer font-semibold"
+              onClick={() => navigate('/login')}
+            >
+              Sign In
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Right Side: Registration Form */}
-      <div className="w-1/2 flex flex-col justify-center px-10 py-8">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-4 text-center">Registration Form</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="profileData.name"
-            placeholder="First Name"
-            value={formData.profileData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            className={`w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'focus:ring-red-500' : 'focus:ring-indigo-500'}`}
-          />
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword}</p>
-          )}
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition"
-          >
-            Register
-          </button>
-        </form>
-
-        {showVerifyMsg && (
-          <p className="mt-4 text-sm text-red-500 text-center">
-            Please check your email to verify your account.
-          </p>
-        )}
-
-        <p className="mt-4 text-sm text-gray-600 text-center">
-          Already have an account?{' '}
-          <span
-            className="underline text-indigo-600 cursor-pointer hover:text-indigo-800"
-            onClick={() => navigate('/login')}
-          >
-            Sign In
-          </span>
-        </p>
+      {/* Right image */}
+      <div className="hidden md:block md:w-3/10 lg:w-3/10 h-screen overflow-hidden">
+        <img
+          src="/images/BannerRegister.png"
+          alt="Register visual"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
-  </div>
-);
-
-
+  );
 };
 
 export default Register;

@@ -160,9 +160,10 @@ export default function AdminViewClassDetails() {
           <div className="text-gray-500">Teacher:</div>
           <div className={classData.teacherId ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
             {classData.teacherId && typeof classData.teacherId === "object"
-              ? (classData.teacherId.email || classData.teacherId.name || "No teacher")
+              ? (classData.teacherId.profileId?.name || "No teacher")
               : (classData.teacherId || "No teacher")}
           </div>
+
           <div className="text-gray-500">Class Name:</div>
           <div className="text-gray-800">{classData.className || "Untitled"}</div>
           <div className="text-gray-500">Duration:</div>
