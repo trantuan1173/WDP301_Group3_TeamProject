@@ -150,7 +150,7 @@ export default function AttendanceForm() {
               {/* Quay lại */}
               <div className="mb-4">
                 <button
-                  onClick={() => navigate("/teacher/schedule")}
+                  onClick={() => navigate("/teacher")}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded shadow"
                 >
                   Quay lại
