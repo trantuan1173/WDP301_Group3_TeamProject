@@ -90,15 +90,15 @@ const RouteCourse = () => {
     const renderHeader = () => (
         <div
             style={{
-            width: '100vw',
-            position: 'relative',
-            left: '50%',
-            right: '50%',
-            marginLeft: '-50vw',
-            marginRight: '-50vw',
-            overflow: 'hidden',
-            background: '#fff'
-        }}>
+                width: '100vw',
+                position: 'relative',
+                left: '50%',
+                right: '50%',
+                marginLeft: '-50vw',
+                marginRight: '-50vw',
+                overflow: 'hidden',
+                background: '#fff'
+            }}>
             <div
     style={{
         width: '100vw',
@@ -114,7 +114,7 @@ const RouteCourse = () => {
             <Carousel interval={5000} controls={true} indicators={true} pause={false}>
             <Carousel.Item>
                 <img
-                    src="/images/Banner.png"
+                    src="/images/Banner.jpg"
                     alt="Banner 1"
                     style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
                 />
@@ -122,7 +122,7 @@ const RouteCourse = () => {
             {/* Thêm slide banner khác nếu muốn */}
             <Carousel.Item>
                 <img
-                    src="/images/Banner1.png"
+                    src="/images/Banner1.jpg"
                     alt="Banner 2"
                     style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
                 />
@@ -268,7 +268,7 @@ const RouteCourse = () => {
                     Hỗ trợ
                 </div>
             </div>
-            
+
         </div>
     );
 
@@ -379,14 +379,15 @@ const RouteCourse = () => {
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 textAlign: 'center',
-                                                minHeight: 330,
+                                                minHeight: 370,
+                                                height: '100%',    
                                                 alignSelf: 'flex-start'
                                             }}
                                         >
-                                            <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "auto", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
+                                            <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "100%", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
                                             <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
                                             <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
-                                            <button  onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
+                                            <button onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
                                                 background: '#19b46a',
                                                 color: '#fff',
                                                 border: '2px solid #19b46a',
@@ -394,7 +395,9 @@ const RouteCourse = () => {
                                                 padding: '6px 16px',
                                                 fontSize: 14,
                                                 fontWeight: 500,
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                marginTop: 'auto',
+                                                width: '100%'
                                             }}>Tìm hiểu thêm</button>
                                         </div>
                                     ))}
@@ -431,7 +434,7 @@ const RouteCourse = () => {
     return (
         <div>
             <style>
-            {`
+                {`
             .carousel-control-next, .carousel-control-prev {
                 width: 60px !important;
                 height: 60px !important;
@@ -455,7 +458,7 @@ const RouteCourse = () => {
                 background-size: 60% 60%;
             }
             `}
-        </style>
+            </style>
             {renderHeader()}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
                 {sections.map(section => (

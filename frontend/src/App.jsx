@@ -44,13 +44,14 @@ const App = () => {
         <Route path="/admin/course/:id" element={<AdminDetailCourse />} />
         <Route path="/admin/class/:classId/schedule" element={<AdminViewSchedule />} />
 
-        <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
+        
         <Route element={<RequireAuth allowedRoles={["admin"]} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin*" element={<AdminDashboard />} />
+          <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
         </Route>
         <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
-           <Route path="/user" element={<UserDashboard />} />
+          <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/test/:testId" element={<UserDoingTest />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
           {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
@@ -71,11 +72,11 @@ const App = () => {
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
         <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
         <Route path="/payment-process" element={<UserPaymentProcess />} />
-       
-      
+
+
         <Route path="/courses/:id" element={<CourseDetailPage />} />
-          
-        
+
+
       </Routes>
     </AuthProvider>
   );
