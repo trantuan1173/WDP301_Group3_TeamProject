@@ -82,6 +82,7 @@ export default function UserTestPage() {
               className="ml-2 border px-3 py-1 rounded text-sm"
             >
               <option value="all">All Time</option>
+              <option value="today">Today</option>
               <option value="thisWeek">This Week</option>
               <option value="thisMonth">This Month</option>
             </select>
@@ -106,26 +107,36 @@ export default function UserTestPage() {
                 {tests
                   // .filter(test => new Date(test.dueDate) > new Date())
                   .filter((test) => {
+                    const testDate = new Date(test.startDate);
+                    const now = new Date();
+
+                    if (timeFilter === "today") {
+                      return (
+                        testDate.getFullYear() === now.getFullYear() &&
+                        testDate.getMonth() === now.getMonth() &&
+                        testDate.getDate() === now.getDate()
+                      );
+                    }
+
                     if (timeFilter === "thisWeek") {
-                      const now = new Date();
                       const startOfWeek = new Date(
                         now.setDate(now.getDate() - now.getDay())
                       );
                       const endOfWeek = new Date(startOfWeek);
                       endOfWeek.setDate(endOfWeek.getDate() + 6);
-                      const testDate = new Date(test.startDate);
                       return testDate >= startOfWeek && testDate <= endOfWeek;
                     }
+
                     if (timeFilter === "thisMonth") {
-                      const now = new Date();
-                      const testDate = new Date(test.startDate);
                       return (
                         testDate.getMonth() === now.getMonth() &&
                         testDate.getFullYear() === now.getFullYear()
                       );
                     }
+
                     return true; // 'all'
                   })
+
                   .filter((test) => {
                     const query = searchQuery.toLowerCase();
                     const title = test.testId?.title?.toLowerCase() || "";
@@ -224,7 +235,15 @@ export default function UserTestPage() {
                               : "Do test"}
                           </button>
                         </td>
-                        <td className="p-3 border text-center">{test.score}</td>
+                        <td className="p-3 border text-center">
+                          {test.submitted
+                            ? test.score != null
+                              ? Number.isInteger(test.score)
+                                ? test.score
+                                : test.score.toFixed(2)
+                              : "Not graded"
+                            : "-"}
+                        </td>
                       </tr>
                     );
                   })}

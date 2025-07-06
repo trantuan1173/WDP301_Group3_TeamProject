@@ -126,7 +126,7 @@ router.get("/course/:courseId", protect, getTestAssignsByCourse)
  *       200:
  *         description: Danh sách phân công bài kiểm tra
  */
-router.get("/student/:studentId", getTestAssignsByStudent) 
+router.get("/student/:studentId", protect, getTestAssignsByStudent) 
 
 /**
  * @swagger
