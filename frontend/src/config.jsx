@@ -29,7 +29,7 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
-  GET_CLASSES_BY_Course_ID: (courseId) => `${baseUrl}/api/classes/course/${courseId}`,
+  GET_CLASSES_BY_COURSE_ID: (courseId) => `${baseUrl}/api/classes/course/${courseId}`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   REMOVE_STUDENT_CLASS:(classId) => `${baseUrl}/api/classes/${classId}/students`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,

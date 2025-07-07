@@ -103,30 +103,35 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                 )}
                  <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="relative">
-                <label className="block mb-1 font-medium">Course</label>
-                <input
-                    type="text"
-                    value={courseQuery}
-                    onChange={handleCourseQueryChange}
-                    className="w-full bg-blue-100 p-2 rounded"
-                    placeholder="Enter course name"
-                    autoComplete="off"
-                    onFocus={() => setShowCourseOptions(true)}
-                />
-                {showCourseOptions && courseQuery && filteredCourses.length > 0 && (
-                    <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
-                        {filteredCourses.map((c) => (
-                            <li
-                                key={c._id}
-                                className="px-3 py-1 hover:bg-blue-100 cursor-pointer"
-                                onClick={() => handleSelectCourse(c)}
-                            >
-                                {c.nameCourses}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+  <label className="block mb-1 font-medium">Course</label>
+  <input
+    type="text"
+    value={courseQuery}
+    onChange={handleCourseQueryChange}
+    className="w-full bg-blue-100 p-2 rounded"
+    placeholder="Enter course name"
+    autoComplete="off"
+    onFocus={() => setShowCourseOptions(true)}
+    readOnly={false} // Cho phép nhập hoặc chỉ cần click cũng show dropdown
+  />
+  {showCourseOptions && (
+    <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">
+      {filteredCourses.length > 0 ? (
+        filteredCourses.map((c) => (
+          <li
+            key={c._id}
+            className="px-3 py-1 hover:bg-blue-100 cursor-pointer"
+            onClick={() => handleSelectCourse(c)}
+          >
+            {c.nameCourses}
+          </li>
+        ))
+      ) : (
+        <li className="px-3 py-1 text-gray-400">No courses found</li>
+      )}
+    </ul>
+  )}
+</div>
             <input type="hidden" name="courseId" value={form.courseId} />
             <div>
                 <label className="block mb-1 font-medium">Class name</label>

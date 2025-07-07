@@ -366,18 +366,27 @@ export default function AdminManageAccount() {
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 gap-2">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {/* Ẩn Prev nếu ở trang đầu */}
+        {currentPage > 1 && (
           <button
-            key={page}
-            onClick={() => setCurrentPage(page)}
-            className={`px-3 py-1 rounded ${currentPage === page
-              ? "bg-indigo-600 text-white"
-              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              }`}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="px-3 py-1 rounded bg-blue-500 text-white font-medium"
           >
-            {page}
+            Prev
           </button>
-        ))}
+        )}
+        {/* Hiện Next nếu chưa phải trang cuối */}
+        {currentPage < totalPages && (
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            className="px-3 py-1 rounded bg-blue-500 text-white font-medium"
+          >
+            Next
+          </button>
+        )}
+        <span className="ml-3 text-sm text-gray-600 self-center">
+          Page {currentPage} / {totalPages}
+        </span>
       </div>
     </div>
   );
