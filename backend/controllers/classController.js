@@ -474,7 +474,28 @@ const getClassByTeacherId = async (req, res) => {
     })
   }
 }
+// Get class by courseid 
+const getClassByCourseId = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const classes = await Class.find({ courseId })
+      .populate("teacherId", "email")
+      .populate("students", "email")
+      .populate("courseId");
 
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data: classes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch classes by courseId",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   getClasses,
   getClass,
@@ -485,5 +506,6 @@ module.exports = {
   removeStudentFromClass,
   getClassByStudentId,
   getClassByTeacherId,
+  getClassByCourseId,
 }
 

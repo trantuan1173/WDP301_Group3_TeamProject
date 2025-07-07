@@ -9,6 +9,7 @@ const {
   removeStudentFromClass,
   getClassByStudentId,
   getClassByTeacherId,
+  getClassByCourseId,
 } = require("../controllers/classController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
@@ -237,5 +238,5 @@ router.get("/student/:studentId", protect, getClassByStudentId)
  *         description: Danh sách lớp học của giáo viên
  */
 router.get("/teacher/:teacherId", protect, authorize("admin", "teacher"), getClassByTeacherId)
-
+router.get("/course/:courseId", protect, authorize("admin", "teacher"), getClassByCourseId);
 module.exports = router;

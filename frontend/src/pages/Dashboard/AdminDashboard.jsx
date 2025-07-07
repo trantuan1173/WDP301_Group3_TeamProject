@@ -7,6 +7,7 @@ import AdminManageCourse from '../../components/Admin/ManagerCourse/AdminManageC
 import AdminManageClass from '../../components/Admin/ManagerClass/AdminManageClass';
 import AdminOverView from '../../components/Admin/AdminOverView/AdminOverView';
 import AdminStatistics from '../../components/Admin/AdminStatistics/AdminStatistics';
+import AdminManageEnrollment from '../../components/Admin/ManageEnrollment/AdminManageEnrollment';
 
 
 function AdminDashboard() {
@@ -33,6 +34,7 @@ function AdminDashboard() {
           {selectedPage === 'account' && <AdminManageAccount />}
           {selectedPage === 'courses' && <AdminManageCourse />}
           {selectedPage === 'classes' && <AdminManageClass/>}
+          {selectedPage === 'enrollment' && <AdminManageEnrollment />}
           {selectedPage === 'statistics' && <AdminStatistics />}
         </div>
       </div>

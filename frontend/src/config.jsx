@@ -1,6 +1,6 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.gicunhco.com';
-// const baseUrl = 'http://localhost:9999';
+// const baseUrl = 'https://beenglishcenter.gicunhco.com';
+const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
   AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
@@ -29,14 +29,14 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
+  GET_CLASSES_BY_Course_ID: (courseId) => `${baseUrl}/api/classes/course/${courseId}`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   REMOVE_STUDENT_CLASS:(classId) => `${baseUrl}/api/classes/${classId}/students`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
 
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
-  DELETE_SHEDULE_BY_CLASSID: (classId) =>
-    `${baseUrl}/api/schedule/class/${classId}`,
+  DELETE_SHEDULE_BY_CLASSID: (classId) =>`${baseUrl}/api/schedule/class/${classId}`,
   CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
   GET_ALL_FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`,
@@ -45,8 +45,8 @@ export const API_ENDPOINTS = {
   ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
   GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
-
-
+  GET_ALL_ENROLLMENTS: `${baseUrl}/api/enrollments`,
+  GET_ENROLLMENT_BY_ID: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}`,
   // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
