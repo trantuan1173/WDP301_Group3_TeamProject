@@ -55,6 +55,7 @@ const AdminManageClass = () => {
   const itemsPerPage = 10;
   const [monthFilter, setMonthFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [scheduleMap, setScheduleMap] = useState({}); // {classId: [schedules]}
 
   const navigate = useNavigate();
 
@@ -86,8 +87,32 @@ const AdminManageClass = () => {
     }
   };
 
+  // Fetch all schedules once, then group by classId
+  const fetchSchedules = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(API_ENDPOINTS.GET_ALL_SCHEDULE, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Group schedules by classId
+      const map = {};
+      (response.data.data || []).forEach((sch) => {
+        const classId = sch.classId?._id || sch.classId;
+        if (!map[classId]) map[classId] = [];
+        map[classId].push(sch);
+      });
+      setScheduleMap(map);
+    } catch (error) {
+      console.error("Error fetching schedules:", error);
+    }
+  };
+
   useEffect(() => {
     fetchClasses();
+    fetchSchedules();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -123,6 +148,15 @@ const AdminManageClass = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Helper: lấy số buổi đã học và tổng số buổi từ scheduleMap
+  const getProgressInfo = (row) => {
+    const schedules = scheduleMap[row._id] || [];
+    const now = new Date();
+    const completed = schedules.filter(s => new Date(s.end_time) < now).length;
+    const total = schedules.length;
+    return { completed, total };
+  };
 
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
@@ -206,30 +240,38 @@ const AdminManageClass = () => {
                 <td colSpan={9} className="text-center py-8 font-normal">Loading data...</td>
               </tr>
             ) : (
-              paginatedClasses.map((row, idx) => (
-                <tr key={row._id} className="border-b border-gray-100">
-                  <td className="py-2 px-2 font-normal">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                  <td className="py-2 px-2 font-normal">{row.className || row.course || ""}</td>
-                  <td className="py-2 px-2 font-normal">{row.courseId?.nameCourses || "No course"}</td>
-                  <td className="py-2 px-2 font-normal">{getMonthYear(row.start_time)}</td>
-                  <td className={`py-2 px-2 font-normal ${row.teacherId ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}`}>
-                    {row.teacherId?.name || row.teacherId?.email || "No teacher"}
-                  </td>
-                  <td className="py-2 px-2 font-normal">{row.students?.length || 0}</td>
-                  <td className="py-2 px-2 font-normal">{row.progress}%</td>
-                  <td className={`py-2 px-2 font-semibold ${getStatusColor(getStatus(row.progress))}`}>
-                    {getStatus(row.progress)}
-                  </td>
-                  <td className="py-2 px-2">
-                    <button
-                      className="bg-gray-200 rounded-full px-4 py-1 font-normal text-base hover:bg-gray-300 transition-all"
-                      onClick={() => handleViewDetail(row._id)}
-                    >
-                      Detail
-                    </button>
-                  </td>
-                </tr>
-              ))
+              paginatedClasses.map((row, idx) => {
+                const { completed, total } = getProgressInfo(row);
+                return (
+                  <tr key={row._id} className="border-b border-gray-100">
+                    <td className="py-2 px-2 font-normal">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
+                    <td className="py-2 px-2 font-normal">{row.className || row.course || ""}</td>
+                    <td className="py-2 px-2 font-normal">{row.courseId?.nameCourses || "No course"}</td>
+                    <td className="py-2 px-2 font-normal">{getMonthYear(row.start_time)}</td>
+                    <td className={`py-2 px-2 font-normal ${row.teacherId ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}`}>
+                      {row.teacherId?.name || row.teacherId?.email || "No teacher"}
+                    </td>
+                    <td className="py-2 px-2 font-normal">{row.students?.length || 0}</td>
+                    <td className="py-2 px-2 font-normal">
+                      {row.progress}%{" "}
+                      <span className="text-xs text-gray-500">
+                        ({completed}/{total})
+                      </span>
+                    </td>
+                    <td className={`py-2 px-2 font-semibold ${getStatusColor(getStatus(row.progress))}`}>
+                      {getStatus(row.progress)}
+                    </td>
+                    <td className="py-2 px-2">
+                      <button
+                        className="bg-gray-200 rounded-full px-4 py-1 font-normal text-base hover:bg-gray-300 transition-all"
+                        onClick={() => handleViewDetail(row._id)}
+                      >
+                        Detail
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -241,7 +283,6 @@ const AdminManageClass = () => {
             Page {currentPage} / {totalPages}
           </div>
           <div className="flex gap-2">
-            {/* Ẩn Prev nếu ở trang đầu */}
             {currentPage > 1 && (
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -250,7 +291,6 @@ const AdminManageClass = () => {
                 Prev
               </button>
             )}
-            {/* Hiện Next nếu chưa phải trang cuối */}
             {currentPage < totalPages && (
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
