@@ -3,6 +3,7 @@ const Test = require("../models/testModel.js")
 const Class = require("../models/classModel.js")
 const Course = require("../models/courseModel.js")
 const TestSubmission = require("../models/testSubmissionModel.js")
+const { log } = require("handlebars")
 
 // Get all test assignments
 const getTestAssigns = async (req, res) => {
@@ -339,6 +340,34 @@ const getTestAssignsForStudent = async (req, res) => {
   }
 };
 
+// Get test assignments by teacher
+const getTestAssignsByTeacher = async (req, res) => {
+  try {
+    const teacherId = req.user._id; // from protect middleware
+
+    const testAssigns = await TestAssign.find({ teacherId })
+      .populate("courseId")
+      .populate("testId")
+      .populate("classId")
+      .populate("teacherId", "email");
+
+    res.status(200).json({
+      success: true,
+      count: testAssigns.length,
+      data: testAssigns,
+    });
+  } catch (error) {
+    console.log("Error fetching test assignments by teacher:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch test assignments by teacher",
+      error: error.message,
+    });
+  }
+};
+
+
+
 
 module.exports = {
   getTestAssigns,
@@ -349,5 +378,6 @@ module.exports = {
   updateTestAssign,
   deleteTestAssign,
   getTestAssignsByStudent,
-  getTestAssignsForStudent
+  getTestAssignsForStudent,
+  getTestAssignsByTeacher,
 }   

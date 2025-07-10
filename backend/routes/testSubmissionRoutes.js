@@ -9,6 +9,7 @@ const {
     deleteTestSubmission,
     gradeTestSubmission,
     getSubmissionStats,
+    getStudentScoresByTestAssign,
 } = require("../controllers/testSubmissionController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -90,6 +91,8 @@ router.post("/submit", protect, submitTest)
  */
 router.get("/test-assign/:testAssignId", protect, authorize("admin", "teacher"), getSubmissionsByTestAssign)
 
+router.get( "/scores-by-test-assign/:testAssignId", protect, authorize("admin", "teacher"),getStudentScoresByTestAssign);
+  
 /**
  * @swagger
  * /testSubmissions/test-assign/{testAssignId}/stats:

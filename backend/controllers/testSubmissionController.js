@@ -310,6 +310,41 @@ const getSubmissionStats = async (req, res) => {
   }
 }
 
+const getStudentScoresByTestAssign = async (req, res) => {
+  try {
+    const { testAssignId } = req.params;
+
+    const submissions = await TestSubmission.find({ testAssignId })
+      .populate({
+        path: "studentId",
+        select: "email profileId",
+        populate: {
+          path: "profileId",
+          model: "Profile",
+          select: "name"
+        }
+      });
+
+    const result = submissions.map((sub) => ({
+      studentEmail: sub.studentId?.email || "Unknown",
+      studentName: sub.studentId?.profileId?.name || "No name",
+      score: sub.score ?? null,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: result.length,
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch student scores",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getTestSubmissions,
   getSubmissionsByTestAssign,
@@ -320,4 +355,5 @@ module.exports = {
   deleteTestSubmission,
   gradeTestSubmission,
   getSubmissionStats,
+  getStudentScoresByTestAssign,
 }
