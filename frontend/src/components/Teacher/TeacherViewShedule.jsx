@@ -67,16 +67,16 @@ const CustomEvent = ({ event }) => {
   const isFutureDay = eventDate > new Date(now.setHours(23, 59, 59, 999));
 
   let buttonStyle = "bg-gray-400 text-white cursor-not-allowed";
-  let buttonLabel = "Điểm danh";
+  let buttonLabel = "Atendedance";
   let isDisabled = false;
 
   if (isPastDay) {
     buttonStyle = "bg-yellow-500 text-white hover:bg-yellow-600";
-    buttonLabel = "Xem điểm danh";
+    buttonLabel = "View Attendance";
     isDisabled = false;
   } else if (isSameDay) {
     buttonStyle = "bg-green-500 text-white hover:bg-green-600";
-    buttonLabel = "Điểm danh";
+    buttonLabel = "Take attendance";
     isDisabled = false;
   }
 
@@ -108,7 +108,7 @@ const CustomEvent = ({ event }) => {
 
   return (
     <div className="p-8 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Lịch dạy của tôi</h2>
+      <h2 className="text-2xl font-bold mb-6">My Schedule</h2>
       <div className="mt-6" style={{ height: 600 }}>
         <Calendar
           localizer={localizer}
@@ -120,7 +120,7 @@ const CustomEvent = ({ event }) => {
           views={["week", "month"]}
           style={{ height: 600 }}
           popup
-          culture="vi"
+          culture="en-US"
           onSelectEvent={() => {}}
           components={{
             event: CustomEvent,

@@ -5,7 +5,7 @@ import TeacherViewShedule from "../../components/Teacher/TeacherViewShedule";
 import TeacherOverView from "../../components/Teacher/TeacherOverView/TeacherOverView";
 import TeacherViewClass from "../../components/Teacher/TeacherMangeClass/TeacherViewClass";
 import TeacherClassDetail from "../../components/Teacher/TeacherMangeClass/TeacherClassDetail";
-//import TeacherManageTest from "../../components/Teacher/TeacherMangeClass/TeacherManageTest";
+// import TeacherManageTest from "../../components/Teacher/TeacherMangeClass/TeacherManageTest";
 import TeacherViewScore from "../../components/Teacher/TeacherMangeClass/TeacherViewScore";
 import UserProfileForm from "../../components/Student/UserProfileForm";
 
@@ -23,11 +23,13 @@ const TeacherDashboard = () => {
           selectedKey={selectedKey}
           onMenuSelect={(key) => {
             setSelectedKey(key);
-            setSelectedClassId(null); // reset khi chuyển menu
+            setSelectedClassId(null); // reset when switching menu
           }}
         />
         <div className="flex-1 p-4">
-          {selectedKey === "overview" && <TeacherOverView />}
+          {selectedKey === "overview" && (
+            <TeacherOverView onQuickAction={setSelectedKey} />
+          )}
           {selectedKey === "profile" && <UserProfileForm />}
           {selectedKey === "schedule" && <TeacherViewShedule />}
           {selectedKey === "classes" && (

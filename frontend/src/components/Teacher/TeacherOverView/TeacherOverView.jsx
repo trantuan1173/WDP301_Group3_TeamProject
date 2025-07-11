@@ -5,6 +5,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { jwtDecode } from "jwt-decode";
 
+
 export default function TeacherOverView({ onQuickAction }) {
   const [profile, setProfile] = useState(null);
 
@@ -123,8 +124,9 @@ export default function TeacherOverView({ onQuickAction }) {
       {/* Main grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left: Quick Actions, Take Attendance, Latest Upload */}
-        <div className="flex flex-col gap-6">
-          <TeacherQuickAction onQuickAction={onQuickAction} />
+         <div className="flex flex-col gap-6">
+          <TeacherQuickAction onQuickAction={(key) => onQuickAction(key)} />
+
           {/* Take attendance */}
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex justify-between items-center mb-2">

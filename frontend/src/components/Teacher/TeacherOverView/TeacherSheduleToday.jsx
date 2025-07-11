@@ -59,7 +59,7 @@ export default function TeacherSheduleToday() {
   return (
     <div className="bg-white rounded-xl shadow p-4 relative">
       <div className="font-bold text-lg mb-2">
-        {viewDate.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}
+        {viewDate.toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" })}
       </div>
       {daySchedules.length === 0 ? (
         <div className="text-gray-500">No schedule for this day.<br />Enjoy your day</div>
