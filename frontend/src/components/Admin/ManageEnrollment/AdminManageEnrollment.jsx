@@ -9,11 +9,17 @@ const AdminManageEnrollment = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedEnrollmentId, setSelectedEnrollmentId] = useState(null);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [courseFilter, setCourseFilter] = useState("All");
 
+  // Tính ngày mặc định: 1 tháng trước đến hôm nay
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+
+  const [fromDate, setFromDate] = useState(oneMonthAgo.toISOString().slice(0, 10));
+  const [toDate, setToDate] = useState(today.toISOString().slice(0, 10));
 
   // Fetch enrollments
   useEffect(() => {
@@ -35,7 +41,21 @@ const AdminManageEnrollment = () => {
     fetchEnrollments();
   }, []);
 
-  // Filter enrollments by search and date
+  // Lấy danh sách course duy nhất từ enrollments hiện tại
+  const courseList = React.useMemo(() => {
+    const map = {};
+    enrollments.forEach((item) => {
+      if (item.courseId?._id && item.courseId?.nameCourses) {
+        map[item.courseId._id] = item.courseId.nameCourses;
+      }
+    });
+    return [
+      { _id: "All", nameCourses: "All Courses" },
+      ...Object.entries(map).map(([id, nameCourses]) => ({ _id: id, nameCourses })),
+    ];
+  }, [enrollments]);
+
+  // Filter enrollments by search, date, and course
   const filtered = enrollments
     .slice()
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -46,7 +66,9 @@ const AdminManageEnrollment = () => {
       const enrolledAt = item.enrolledAt ? new Date(item.enrolledAt) : null;
       const matchFrom = fromDate ? (enrolledAt ? enrolledAt >= new Date(fromDate) : false) : true;
       const matchTo = toDate ? (enrolledAt ? enrolledAt <= new Date(toDate) : false) : true;
-      return matchSearch && matchFrom && matchTo;
+      const matchCourse =
+        courseFilter === "All" || item.courseId?._id === courseFilter;
+      return matchSearch && matchFrom && matchTo && matchCourse;
     });
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -73,15 +95,11 @@ const AdminManageEnrollment = () => {
       .finally(() => setLoading(false));
   };
 
-  const handleClearDate = () => {
-    setFromDate("");
-    setToDate("");
-  };
-
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
   return (
     <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">ENROLL MANAGEMENT</h2>
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           type="text"
@@ -98,6 +116,7 @@ const AdminManageEnrollment = () => {
             className="border rounded px-2 py-1 w-36"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
+            max={toDate}
           />
           To:{" "}
           <input
@@ -105,19 +124,20 @@ const AdminManageEnrollment = () => {
             className="border rounded px-2 py-1 w-36"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
+            min={fromDate}
+            max={today.toISOString().slice(0, 10)}
           />
-          <button
-            className={`ml-2 px-3 py-1 rounded font-semibold ${!fromDate && !toDate
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            onClick={handleClearDate}
-            type="button"
-            disabled={!fromDate && !toDate}
-          >
-            Clear
-          </button>
         </div>
+        {/* Dropdown chọn course */}
+        <select
+          className="border rounded px-2 py-1 w-56"
+          value={courseFilter}
+          onChange={e => setCourseFilter(e.target.value)}
+        >
+          {courseList.map((c) => (
+            <option key={c._id} value={c._id}>{c.nameCourses}</option>
+          ))}
+        </select>
       </div>
       <div className="bg-white rounded border shadow">
         <table className="min-w-full">
@@ -141,7 +161,7 @@ const AdminManageEnrollment = () => {
               paginated.map((item, idx) => (
                 <tr key={item._id} className="border-t">
                   <td className="py-2 px-3">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                  <td className="py-2 px-3">{item.studentId?.fullName || "N/A"}</td>
+                  <td className="py-2 px-3">{item.studentId?.profileId?.name || "N/A"}</td>
                   <td className="py-2 px-3">{item.studentId?.email}</td>
                   <td className="py-2 px-3">
                     {item.enrolledAt

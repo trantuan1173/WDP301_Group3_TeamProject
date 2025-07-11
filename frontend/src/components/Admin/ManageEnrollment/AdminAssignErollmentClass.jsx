@@ -91,7 +91,7 @@ const AdminAssignErollmentClass = ({ enrollmentId, onClose, onSuccess }) => {
       <h2 className="text-2xl font-bold text-center mb-4 text-blue-900">Assign Class</h2>
         <div className="mb-2 flex flex-col gap-2">
           <div>
-            <span className="font-semibold">Student:</span> {enrollment.studentId?.fullName || "N/A"}
+            <span className="font-semibold">Student:</span> {enrollment.studentId?.profileId?.name || "N/A"}
           </div>
           <div>
             <span className="font-semibold">Email:</span> {enrollment.studentId?.email}
