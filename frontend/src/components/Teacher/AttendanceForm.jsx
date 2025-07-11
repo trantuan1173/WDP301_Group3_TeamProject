@@ -18,6 +18,15 @@ export default function AttendanceForm() {
   const { classId } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
+
   const currentDate =
     queryParams.get("date") || new Date().toISOString().split("T")[0];
   const isToday = (() => {
@@ -36,50 +45,50 @@ export default function AttendanceForm() {
   })();
 
   useEffect(() => {
-  const fetchStudents = async () => {
-    try {
-      const res = await axios.get(
-        API_ENDPOINTS.GET_ATTENDANCES_BY_CLASS(classId, currentDate),
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    const fetchStudents = async () => {
+      try {
+        const res = await axios.get(
+          API_ENDPOINTS.GET_ATTENDANCES_BY_CLASS(classId, currentDate),
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-      const rawStudents = res.data.students || [];
+        const rawStudents = res.data.students || [];
 
-      const mapped = rawStudents.map((student) => ({
-        _id: student._id,
-        email: student.email,
-        name: student.profileId?.name || "Không rõ",
-        gender: student.profileId?.gender || "Không rõ",
-        dob: student.profileId?.dob || "",
-        attendance: student.attendance || null,
-      }));
+        const mapped = rawStudents.map((student) => ({
+          _id: student._id,
+          email: student.email,
+          name: student.profileId?.name || "Không rõ",
+          gender: student.profileId?.gender || "Không rõ",
+          dob: student.profileId?.dob || "",
+          imageURL: student.profileId?.imageURL || "",
+          attendance: student.attendance || null,
+        }));
 
-      const prefillAttendance = {};
-      const prefillNotes = {};
-      mapped.forEach((stu) => {
-        prefillAttendance[stu._id] =
-          typeof stu.attendance?.status === "boolean"
-            ? stu.attendance.status
-            : null;
-        prefillNotes[stu._id] = stu.attendance?.note || "";
-      });
+        const prefillAttendance = {};
+        const prefillNotes = {};
+        mapped.forEach((stu) => {
+          prefillAttendance[stu._id] =
+            typeof stu.attendance?.status === "boolean"
+              ? stu.attendance.status
+              : null;
+          prefillNotes[stu._id] = stu.attendance?.note || "";
+        });
 
-      setStudents(mapped);
-      setClassName(res.data.className || "");
-      setAttendances(prefillAttendance);
-      setNotes(prefillNotes);
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách học sinh:", error);
-    }
-  };
+        setStudents(mapped);
+        setClassName(res.data.className || "");
+        setAttendances(prefillAttendance);
+        setNotes(prefillNotes);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách học sinh:", error);
+      }
+    };
 
-  fetchStudents();
-}, [classId, currentDate]);
-
+    fetchStudents();
+  }, [classId, currentDate]);
 
   const handleAttendanceChange = (studentId, status) => {
     setAttendances((prev) => ({
@@ -121,9 +130,12 @@ export default function AttendanceForm() {
   };
 
   const filteredStudents = students
-    .filter((student) =>
-      student.name.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((student) => {
+      const searchText = removeVietnameseTones(search);
+      const name = removeVietnameseTones(student.name);
+      const email = student.email.toLowerCase();
+      return name.includes(searchText) || email.includes(searchText);
+    })
     .filter((student) => {
       const status = attendances[student._id];
       if (filterStatus === "present") return status === true;
@@ -150,15 +162,16 @@ export default function AttendanceForm() {
               {/* Quay lại */}
               <div className="mb-4">
                 <button
-                  onClick={() => navigate("/teacher")}
+                  // onClick={() => navigate("/teacher")}
+                  onClick={() => navigate(-1)}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded shadow"
                 >
-                  Quay lại
+                  Back
                 </button>
               </div>
 
               <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                {className ? `Lớp ${className}` : "Điểm danh"}
+                {className ? `Class ${className}` : "Attendance"}
               </h2>
 
               {/* Tìm kiếm & lọc */}
@@ -167,7 +180,7 @@ export default function AttendanceForm() {
                   <FiSearch className="text-gray-500" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm học sinh..."
+                    placeholder="Search student name, email..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="outline-none bg-transparent w-full py-2"
@@ -179,13 +192,14 @@ export default function AttendanceForm() {
                   onChange={(e) => setFilterStatus(e.target.value)}
                   className="border border-gray-300 bg-white px-3 py-2 rounded-md shadow-sm text-sm"
                 >
-                  <option value="all">Tất cả</option>
-                  <option value="present">Có mặt</option>
-                  <option value="absent">Vắng mặt</option>
+                  <option value="all">All</option>
+                  <option value="present">Present</option>
+                  <option value="absent">Absent</option>
                 </select>
 
                 <span className="text-green-600 font-semibold whitespace-nowrap">
-                  {filteredStudents.length} Học Sinh
+                  {filteredStudents.length}{" "}
+                  {filteredStudents.length === 1 ? "Student" : "Students"}
                 </span>
               </div>
 
@@ -196,13 +210,14 @@ export default function AttendanceForm() {
                     <table className="w-full min-w-[900px] text-left text-sm bg-blue-50">
                       <thead className="bg-blue-100 text-sm text-gray-700">
                         <tr>
-                          <th className="p-3 border">STT</th>
-                          <th className="p-3 border">Tên</th>
+                          <th className="p-3 border">#</th>
+                          <th className="p-3 border">Image</th>
+                          <th className="p-3 border">Name</th>
                           <th className="p-3 border">Email</th>
-                          <th className="p-3 border">Giới tính</th>
-                          <th className="p-3 border">Ngày sinh</th>
-                          <th className="p-3 border text-center">Có mặt</th>
-                          <th className="p-3 border text-center">Ghi chú</th>
+                          <th className="p-3 border">Gender</th>
+                          <th className="p-3 border">Date of birth</th>
+                          <th className="p-3 border text-center">State</th>
+                          <th className="p-3 border text-center">Note</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -214,6 +229,18 @@ export default function AttendanceForm() {
                             <td className="p-3 border text-center">
                               {idx + 1}
                             </td>
+                            <td className="p-3 border text-center">
+                              <img
+                                src={
+                                  student.imageURL
+                                    ? student.imageURL
+                                    : "/images/avatar-default.png"
+                                }
+                                alt={student.name || "Default avatar"}
+                                className="w-20 h-25 rounded-sm object-cover mx-auto"
+                              />
+                            </td>
+
                             <td className="p-3 border">{student.name}</td>
                             <td className="p-3 border">{student.email}</td>
                             <td className="p-3 border">{student.gender}</td>
@@ -233,7 +260,7 @@ export default function AttendanceForm() {
                                     handleAttendanceChange(student._id, true)
                                   }
                                 />
-                                <span className="ml-2">Có</span>
+                                <span className="ml-2">Present</span>
                               </label>
                               <label className="inline-flex items-center">
                                 <input
@@ -245,13 +272,13 @@ export default function AttendanceForm() {
                                     handleAttendanceChange(student._id, false)
                                   }
                                 />
-                                <span className="ml-2">Vắng</span>
+                                <span className="ml-2">Absent</span>
                               </label>
                             </td>
                             <td className="p-3 border text-center">
                               <input
                                 type="text"
-                                placeholder="Ghi chú..."
+                                placeholder="Note..."
                                 value={notes[student._id] || ""}
                                 disabled={!isToday}
                                 onChange={(e) =>
@@ -268,10 +295,10 @@ export default function AttendanceForm() {
                         {filteredStudents.length === 0 && (
                           <tr>
                             <td
-                              colSpan="7"
+                              colSpan="8"
                               className="text-center text-gray-500 py-6"
                             >
-                              Không có học sinh nào.
+                              There are no students..
                             </td>
                           </tr>
                         )}
@@ -288,7 +315,7 @@ export default function AttendanceForm() {
                     onClick={handleSaveAttendance}
                     className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
                   >
-                    Lưu điểm danh
+                    Save Attendance
                   </button>
                 </div>
               )}
@@ -296,12 +323,12 @@ export default function AttendanceForm() {
               {/* Ghi chú trạng thái khác */}
               {!isToday && !isFutureDate && (
                 <div className="text-right mt-6 text-gray-600 italic">
-                  Hết thời gian chỉnh sửa điểm danh.
+                  Time out to edit attendance.
                 </div>
               )}
               {isFutureDate && (
                 <div className="text-right mt-6 text-gray-600 italic">
-                  Chưa tới thời gian điểm danh.
+                  It's not time for roll call yet.
                 </div>
               )}
             </div>
