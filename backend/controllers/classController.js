@@ -142,7 +142,7 @@ const getClass = async function(req, res) {
         {path: "courseId", 
           select: "nameCourses",
         },
-        ])
+        ]);
 
     if (!classItem) {
       return res.status(404).json({
@@ -151,51 +151,23 @@ const getClass = async function(req, res) {
       })
     }
 
-    // Cập nhật tiến độ cho lớp này
-    await updateClassProgress(classItem._id);
-
-    // Lấy lại dữ liệu sau khi cập nhật progress
-    const updatedClass = await Class.findById(req.params.id)
-      .populate([
-        {path: "teacherId", 
-          select: "profileId",
-          populate: {
-            path: "profileId",
-            select: "name"
-          }
-        },
-        ])
-      .populate([
-        {path: "students", 
-          populate: {
-            path: "profileId",
-            select: "name"
-          }
-        },
-        ])
-      .populate([
-        {path: "courseId", 
-          select: "nameCourses",
-        },
-        ]);
-
-    const courseId = updatedClass.courseId?._id?.toString() ?? updatedClass.courseId?.toString();
+    const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
     const courseDetails = await CourseDetail.findOne({ courseId });
 
     const formattedClasses = {
-        _id: updatedClass._id,
-        teacherId: updatedClass.teacherId, 
-        students: updatedClass.students, 
-        className: updatedClass.className,
+        _id: classItem._id,
+        teacherId: classItem.teacherId, 
+        students: classItem.students, 
+        className: classItem.className,
         course: {
           _id: courseId,
-          name: updatedClass.courseId?.nameCourses,
+          name: classItem.courseId?.nameCourses,
           detail: courseDetails || null,
         },
-        progress: updatedClass.progress,
-        note: updatedClass.note,
-        start_time: updatedClass.start_time,
-        end_time: updatedClass.end_time,
+        progress: classItem.progress,
+        note: classItem.note,
+        start_time: classItem.start_time,
+        end_time: classItem.end_time,
       };
 
     res.status(200).json({
@@ -446,16 +418,8 @@ const getClassByStudentId = async (req, res) => {
       .populate("students", "email")       
       .populate("courseId");               
 
-    // Cập nhật tiến độ cho các lớp của học sinh này
-    await Promise.all(classes.map(cls => updateClassProgress(cls._id)));
 
-    // Lấy lại dữ liệu sau khi cập nhật progress
-    const updatedClasses = await Class.find({ students: studentId })
-      .populate("teacherId", "email")      
-      .populate("students", "email")       
-      .populate("courseId");               
-
-    const courseIdList = updatedClasses.map((cls) => cls.courseId?._id?.toString() ?? cls.courseId?.toString());
+    const courseIdList = classes.map((cls) => cls.courseId?._id?.toString() ?? cls.courseId?.toString());
     const courseDetails = await CourseDetail.find({ courseId: { $in: courseIdList } });
 
     const courseDetailMap = {};
@@ -463,7 +427,7 @@ const getClassByStudentId = async (req, res) => {
       courseDetailMap[detail.courseId.toString()] = detail;
     });
 
-    const formattedClasses = updatedClasses.map((cls) => {
+    const formattedClasses = classes.map((cls) => {
       const courseIdStr = cls.courseId?._id?.toString() ?? cls.courseId?.toString();
       const courseDetail = courseDetailMap[courseIdStr];
 
@@ -507,14 +471,7 @@ const getClassByTeacherId = async (req, res) => {
     const classes = await Class.find({ teacherId })
       .populate("courseId");
 
-    // Cập nhật tiến độ cho các lớp của giáo viên này
-    await Promise.all(classes.map(cls => updateClassProgress(cls._id)));
-
-    // Lấy lại dữ liệu sau khi cập nhật progress
-    const updatedClasses = await Class.find({ teacherId })
-      .populate("courseId");
-
-    const formattedClasses = updatedClasses.map((cls) => ({
+    const formattedClasses = classes.map((cls) => ({
       _id: cls._id,
       teacherId: cls.teacherId?._id?.toString() ?? cls.teacherId?.toString(),
       courseId: cls.courseId?._id?.toString() ?? cls.courseId?.toString(),
@@ -526,7 +483,7 @@ const getClassByTeacherId = async (req, res) => {
     }));
     res.status(200).json({
       success: true,
-      count: updatedClasses.length,
+      count: classes.length,
       data:  formattedClasses,
     });
   } catch (error) {
@@ -538,6 +495,7 @@ const getClassByTeacherId = async (req, res) => {
   }
 }
 
+
 // Get class by courseid 
 const getClassByCourseId = async (req, res) => {
   try {
@@ -547,19 +505,10 @@ const getClassByCourseId = async (req, res) => {
       .populate("students", "email")
       .populate("courseId");
 
-    // Cập nhật tiến độ cho các lớp của khóa học này
-    await Promise.all(classes.map(cls => updateClassProgress(cls._id)));
-
-    // Lấy lại dữ liệu sau khi cập nhật progress
-    const updatedClasses = await Class.find({ courseId })
-      .populate("teacherId", "email")
-      .populate("students", "email")
-      .populate("courseId");
-
     res.status(200).json({
       success: true,
-      count: updatedClasses.length,
-      data: updatedClasses,
+      count: classes.length,
+      data: classes,
     });
   } catch (error) {
     res.status(500).json({
