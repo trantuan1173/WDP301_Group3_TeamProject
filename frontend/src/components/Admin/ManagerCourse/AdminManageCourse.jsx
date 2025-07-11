@@ -8,9 +8,8 @@ import LoadingSpinner from "../../LoadingSpinner";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
-// Hàm chuẩn hóa dữ liệu course
+// Normalize course data
 function flattenCourseData(course) {
-    // Nếu courseId là object, lấy nameCourses từ đó
     const nameCourses = course.courseId?.nameCourses || "";
     const courseId = course.courseId?._id || course.courseId || "";
     return {
@@ -25,7 +24,6 @@ function flattenCourseData(course) {
         imageURL: course.imageURL,
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,
-        // Thêm các trường khác nếu cần
     };
 }
 
@@ -38,7 +36,7 @@ export default function AdminManageCourse() {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch courses
+    // Fetch all courses
     const fetchCourses = async () => {
         setLoading(true);
         try {
@@ -62,7 +60,7 @@ export default function AdminManageCourse() {
         fetchCourses();
     }, []);
 
-    // Lấy danh sách categories duy nhất
+    // Extract unique categories
     useEffect(() => {
         const uniqueCategories = new Set();
         courses?.forEach((item) => {
@@ -77,25 +75,26 @@ export default function AdminManageCourse() {
         setCategories([...uniqueCategories]);
     }, [courses]);
 
-    // Thêm course mới
+    // Add new course
     const handleAddCourse = (newCourse) => {
         setCourses([...courses, newCourse]);
     };
-    // xóa khóa học
+
+    // Delete a course
     const handleDeleteCourse = (deletedId) => {
         setCourses((prev) => prev.filter((c) => c._id !== deletedId));
         setViewingCourse(null);
     };
 
-    // Lọc theo tên khóa học
+    // Filter by course name
     const filteredCourses = courses.filter((course) => {
         const name = course.courseId?.nameCourses || course.nameCourses || "";
         return name.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
-    // Group theo category
+    // Group by category
     const groupedCourses = filteredCourses.reduce((acc, course) => {
-        const category = course?.type || "Khác";
+        const category = course?.type || "Others";
         if (!acc[category]) acc[category] = [];
         acc[category].push(course);
         return acc;
@@ -105,14 +104,14 @@ export default function AdminManageCourse() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h2 className="text-2xl font-bold mb-4">QUẢN LÝ KHOÁ HỌC</h2>
+            <h2 className="text-2xl font-bold mb-4">COURSE MANAGEMENT</h2>
 
-            {/* Search + Add */}
+            {/* Search and Add */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                 <div className="flex items-center border rounded px-2 bg-white w-full sm:w-auto">
                     <input
                         type="text"
-                        placeholder="Tìm kiếm khoá học..."
+                        placeholder="Search courses..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="outline-none py-1 px-2 bg-transparent w-full"
@@ -123,13 +122,13 @@ export default function AdminManageCourse() {
                     onClick={() => setShowAddPopup(true)}
                     className="bg-blue-600 text-white flex items-center gap-2 px-4 py-2 rounded shadow text-sm font-medium"
                 >
-                    <FaPlus /> Thêm khoá học
+                    <FaPlus /> Add Course
                 </button>
             </div>
 
-            {/* Grouped Course Sections */}
+            {/* Grouped Courses */}
             {Object.entries(groupedCourses).map(([category, courseList]) => (
-                <div key={category} className="mb-8 ">
+                <div key={category} className="mb-8">
                     <h3 className="text-lg font-semibold mb-4 uppercase">{category}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {courseList.map((course) => {
@@ -137,7 +136,7 @@ export default function AdminManageCourse() {
                             return (
                                 <div
                                     key={flatCourse._id}
-                                    className="bg-white rounded-lg shadow p-4 text-center"
+                                    className="bg-white rounded-lg shadow p-4 text-center flex flex-col min-h-[420px]"
                                 >
                                     <img
                                         src={flatCourse.imageURL}
@@ -149,17 +148,17 @@ export default function AdminManageCourse() {
                                     </h4>
                                     <p className="text-sm text-gray-600">Level: {flatCourse.level}</p>
                                     <p className="text-sm text-gray-600">
-                                        Thời lượng: {flatCourse.durationDays} buổi
+                                        Duration: {flatCourse.durationDays} sessions
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Học phí: {flatCourse.price?.toLocaleString()} VNĐ
+                                        Price: {flatCourse.price?.toLocaleString()} VND
                                     </p>
-
+                                    <div className="flex-1" />
                                     <button
                                         className="mt-2 bg-indigo-600 text-white text-sm px-3 py-1 rounded"
                                         onClick={() => setViewingCourse(flattenCourseData(course))}
                                     >
-                                        Chi tiết
+                                        Details
                                     </button>
                                 </div>
                             );

@@ -55,6 +55,7 @@ const AdminManageClass = () => {
   const itemsPerPage = 10;
   const [monthFilter, setMonthFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [courseFilter, setCourseFilter] = useState("All");
   const [scheduleMap, setScheduleMap] = useState({}); // {classId: [schedules]}
 
   const navigate = useNavigate();
@@ -125,6 +126,19 @@ const AdminManageClass = () => {
   );
 
   const months = getAllMonths(sortedClasses);
+  // Lấy danh sách course duy nhất từ classes hiện tại
+  const courseList = React.useMemo(() => {
+    const map = {};
+    classes.forEach((item) => {
+      if (item.courseId?._id && item.courseId?.nameCourses) {
+        map[item.courseId._id] = item.courseId.nameCourses;
+      }
+    });
+    return [
+      { _id: "All", nameCourses: "All Courses" },
+      ...Object.entries(map).map(([id, nameCourses]) => ({ _id: id, nameCourses })),
+    ];
+  }, [classes]);
 
   const filteredClasses = sortedClasses.filter((row) => {
     const matchSearch =
@@ -140,7 +154,10 @@ const AdminManageClass = () => {
       statusFilter === "All" ||
       getStatus(row.progress) === statusFilter;
 
-    return matchSearch && matchMonth && matchStatus;
+    const matchCourse =
+      courseFilter === "All" || row.courseId?._id === courseFilter;
+
+    return matchSearch && matchMonth && matchStatus && matchCourse;
   });
 
   const totalPages = Math.ceil(filteredClasses.length / itemsPerPage);
@@ -157,6 +174,7 @@ const AdminManageClass = () => {
     const total = schedules.length;
     return { completed, total };
   };
+
 
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
@@ -186,9 +204,19 @@ const AdminManageClass = () => {
             </svg>
           </span>
         </div>
-        {/* Month filter */}
+        {/* Course filter dropdown */}
         <select
-          className="bg-blue-100 text-gray-800 rounded-full px-3 py-1 font-normal shadow-sm min-w-[110px] text-sm transition-all"
+          className="bg-blue-100 text-gray-800 rounded-full px-3 py-1 font-normal shadow-sm w-48 text-sm transition-all"
+          value={courseFilter}
+          onChange={e => setCourseFilter(e.target.value)}
+          style={{ fontWeight: 400, fontFamily: "inherit" }}
+        >
+          {courseList.map((c) => (
+            <option key={c._id} value={c._id}>{c.nameCourses}</option>
+          ))}
+        </select>
+        <select
+          className="bg-blue-100 text-gray-800 rounded-full px-3 py-1 font-normal shadow-sm w-48 text-sm transition-all"
           value={monthFilter}
           onChange={e => setMonthFilter(e.target.value)}
           style={{ fontWeight: 400, fontFamily: "inherit" }}
@@ -198,9 +226,8 @@ const AdminManageClass = () => {
             <option key={m} value={m}>{m}</option>
           ))}
         </select>
-        {/* Status filter */}
         <select
-          className="bg-blue-100 text-gray-800 rounded-full px-3 py-1 font-normal shadow-sm min-w-[90px] text-sm transition-all"
+          className="bg-blue-100 text-gray-800 rounded-full px-3 py-1 font-normal shadow-sm w-48 text-sm transition-all"
           value={statusFilter}
           onChange={e => setStatusFilter(e.target.value)}
           style={{ fontWeight: 400, fontFamily: "inherit" }}
