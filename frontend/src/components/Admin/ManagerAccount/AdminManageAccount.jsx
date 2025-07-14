@@ -191,7 +191,7 @@ export default function AdminManageAccount() {
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-white-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6">ACCOUNT MANAGEMENT</h2>
 
       {/* Statistics */}

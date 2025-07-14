@@ -1,5 +1,4 @@
-import { useState, useEffect  } from 'react';
-import { useLocation } from 'react-router-dom'; 
+import { useParams, useNavigate } from "react-router-dom";
 import NavBar from "../../components/Layouts/NavBar";
 import AdminSideMenu from '../../components/Layouts/AdminSideMenu';
 import AdminManageAccount from '../../components/Admin/ManagerAccount/AdminManageAccount';
@@ -9,37 +8,38 @@ import AdminOverView from '../../components/Admin/AdminOverView/AdminOverView';
 import AdminStatistics from '../../components/Admin/AdminStatistics/AdminStatistics';
 import AdminManageEnrollment from '../../components/Admin/ManageEnrollment/AdminManageEnrollment';
 
+export default function AdminDashboard() {
+  const { selectedPage } = useParams();
+  const navigate = useNavigate();
 
-function AdminDashboard() {
-  const [selectedPage, setSelectedPage] = useState('overview');
-  const location = useLocation();
-  useEffect(() => {
-    if (location.state?.selectedPage) {
-      setSelectedPage(location.state.selectedPage);
-    }
-  }, [location.state]);
+  const handleMenuSelect = (key) => {
+    navigate(`/admin/${key}`);
+  };
 
   return (
-    <div className="h-screen flex flex-col">
-      <header className="w-full ">
+    <div className="h-screen">
+      <header className="fixed top-0 left-0 right-0 z-50">
         <NavBar />
       </header>
-      <div className="flex flex-1">
+
+      <aside className="fixed top-25 left-0 bottom-0 w-60 bg-white shadow-lg border-r border-white-100 z-40">
         <AdminSideMenu
-          onMenuSelect={(key) => setSelectedPage(key)}
-          selectedKey={selectedPage}
+          onMenuSelect={handleMenuSelect}
+          selectedKey={selectedPage || 'overview'}
         />
-        <div className="flex-1">
-          {selectedPage === 'overview' && <AdminOverView onQuickAction={setSelectedPage} />}
+      </aside>
+
+      <main className="ml-60 pt-20 p-6 h-screen overflow-auto bg-gray-100">
+        <div className="bg-white rounded-lg shadow p-6 min-h-full">
+          {selectedPage === 'overview' && <AdminOverView onQuickAction={handleMenuSelect} />}
           {selectedPage === 'account' && <AdminManageAccount />}
           {selectedPage === 'courses' && <AdminManageCourse />}
-          {selectedPage === 'classes' && <AdminManageClass/>}
+          {selectedPage === 'classes' && <AdminManageClass />}
           {selectedPage === 'enrollment' && <AdminManageEnrollment />}
           {selectedPage === 'statistics' && <AdminStatistics />}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
 
-export default AdminDashboard;
