@@ -84,7 +84,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
           setDurationDays(courseDetail?.durationDays || 0);
         }
       } catch (err) {
-        setError("Không lấy được thông tin lớp hoặc khóa học.");
+        setError("No information class or course.");
       }
     };
     fetchClassAndCourse();
@@ -249,12 +249,16 @@ if (schedules.length > 0) {
 }
 
 if (onSuccess) onSuccess();
-    } catch (err) {
+  } catch (err) {
+    if (err?.response?.status === 409) {
+      setError("Teacher has a schedule conflict.");
+    } else {
       setError("Tạo lịch học thất bại.");
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onCancel}>
       <div className="bg-white rounded-xl p-6 w-full max-w-5xl shadow-lg relative" onClick={e => e.stopPropagation()}>

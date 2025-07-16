@@ -68,7 +68,7 @@ export default function AdminViewClassDetails() {
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
   if (!classData) {
-    return <div className="p-8 text-red-500">Không tìm thấy dữ liệu lớp học.</div>;
+    return <div className="p-8 text-red-500">No class data.</div>;
   }
 
   const status = getStatus(classData.progress);

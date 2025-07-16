@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 
-export default function AdminUpdateSheduleForm({ open, onClose, event, onSave }) {
+export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, onError }) {
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [userSetEnd, setUserSetEnd] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (event) {
@@ -14,6 +15,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
       setStartTime(start.toISOString().slice(11, 16));
       setEndTime(end.toISOString().slice(11, 16));
       setUserSetEnd(false);
+      setError("");
     }
   }, [event]);
 
@@ -35,13 +37,24 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
     setUserSetEnd(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({
-      date: new Date(date).toISOString(),
-      start_time: new Date(`${date}T${startTime}`).toISOString(),
-      end_time: new Date(`${date}T${endTime}`).toISOString(),
-    });
+    setError("");
+    try {
+      await onSave({
+        date: new Date(date).toISOString(),
+        start_time: new Date(`${date}T${startTime}`).toISOString(),
+        end_time: new Date(`${date}T${endTime}`).toISOString(),
+      });
+      // Nếu thành công thì không làm gì
+    } catch (err) {
+      if (err?.response?.status === 409) {
+        setError("Teacher has a schedule conflict.");
+      } else {
+        setError("Failed to update schedule.");
+      }
+      if (onError) onError(err);
+    }
   };
 
   if (!open) return null;
@@ -56,10 +69,15 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
         onClick={e => e.stopPropagation()}
         onSubmit={handleSubmit}
       >
-        <h3 className="font-bold mb-4 text-2xl">Chỉnh sửa lịch học</h3>
+        <h3 className="font-bold mb-4 text-2xl">Edit Schedule</h3>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-3 text-center">
+            {error}
+          </div>
+        )}
         <div className="flex gap-4 mb-4">
           <label className="block flex-1">
-            Ngày:
+            Date:
             <input
               type="date"
               value={date}
@@ -69,7 +87,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
             />
           </label>
           <label className="block flex-1">
-            Bắt đầu:
+            Start:
             <input
               type="time"
               value={startTime}
@@ -81,7 +99,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
             />
           </label>
           <label className="block flex-1">
-            Kết thúc:
+            End:
             <input
               type="time"
               value={endTime}
@@ -94,8 +112,8 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave })
           </label>
         </div>
         <div className="flex gap-2 mt-4">
-          <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">Lưu</button>
-          <button type="button" className="bg-gray-300 px-4 py-2 rounded" onClick={onClose}>Hủy</button>
+          <button type="submit" className="bg-indigo-700 text-white px-4 py-2 rounded">Save</button>
+          <button type="button" className="bg-gray-300 px-4 py-2 rounded" onClick={onClose}>Cancel</button>
         </div>
       </form>
     </div>
