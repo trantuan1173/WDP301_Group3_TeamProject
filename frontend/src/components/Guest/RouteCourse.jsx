@@ -369,6 +369,7 @@ const RouteCourse = () => {
                                     {group.map((course, i) => (
                                         <div
                                             key={course._id || i}
+                                            data-course-id={course.courseId._id}
                                             style={{
                                                 background: '#f0f7ff',
                                                 border: '1px solid #c9e2fa',
@@ -398,7 +399,7 @@ const RouteCourse = () => {
                                                 cursor: 'pointer',
                                                 marginTop: 'auto',
                                                 width: '100%'
-                                            }}>Tìm hiểu thêm</button>
+                                            }}>View more</button>
                                         </div>
                                     ))}
                                     {/* Nếu group < 3 thì thêm ô trống cho đủ 3 cột */}

@@ -33,7 +33,7 @@
         console.log("Visit Event:", data);
 
         // Gửi về server nếu cần
-        fetch("http://localhost:9999/api/eventsData", {
+        fetch("https://beenglishcenter.gicunhco.com/api/eventsData", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -43,6 +43,55 @@
     }
 
     // public/event-tracker.js
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const url = new URL(window.location.href);
+    const path = url.pathname;
+
+    // Kiểm tra nếu là trang chi tiết khóa học
+    const courseDetailMatch = path.match(/^\/course\/([a-zA-Z0-9]+)$/);
+    if (courseDetailMatch) {
+        const courseId = courseDetailMatch[1];
+
+        const data = {
+            eventName: "viewCourse",
+            eventTime: new Date().toISOString(),
+            eventData: {
+                courseId: courseId,
+                url: window.location.href,
+                location: window.location.pathname,
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    colorDepth: screen.colorDepth,
+                },
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                cookiesEnabled: navigator.cookieEnabled,
+                plugins: Array.from(navigator.plugins).map(plugin => plugin.name),
+                doNotTrack: navigator.doNotTrack,
+                javaEnabled: navigator.javaEnabled(),
+                platform: navigator.platform,
+                vendor: navigator.vendor,
+                hardwareConcurrency: navigator.hardwareConcurrency,
+                deviceMemory: navigator.deviceMemory,
+                os: navigator.oscpu,
+            }
+        };
+
+        console.log("📦 ViewCourse event (direct access):", data);
+
+        fetch("https://beenglishcenter.gicunhco.com/api/eventsData", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+    }
+});
 
     document.addEventListener("DOMContentLoaded", () => {
         // Ghi nhận sự kiện "Tìm hiểu thêm"
@@ -89,7 +138,7 @@
                     console.log("📦 ViewCourse event:", data);
 
                     // Gửi về server nếu cần
-                    fetch("http://localhost:9999/api/eventsData", {
+                    fetch("https://beenglishcenter.gicunhco.com/api/eventsData", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -124,7 +173,7 @@
       
             try {
               // 3. Gọi API lấy thông tin giao dịch
-              const res = await fetch(`http://localhost:9999/api/payments/transaction/${transactionId}`, {
+              const res = await fetch(`https://beenglishcenter.gicunhco.com/api/payments/transaction/${transactionId}`, {
                 method: "GET",
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -173,7 +222,7 @@
                 console.log("✅ Payment Event Tracked:", eventData);
       
                 // Gửi về server nếu cần
-                fetch("http://localhost:9999/api/eventsData", {
+                fetch("https://beenglishcenter.gicunhco.com/api/eventsData", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -231,7 +280,7 @@
         console.log("Leave Event:", data);
 
         // Gửi về server nếu cần
-        fetch("http://localhost:9999/api/eventsData", {
+        fetch("https://beenglishcenter.gicunhco.com/api/eventsData", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
