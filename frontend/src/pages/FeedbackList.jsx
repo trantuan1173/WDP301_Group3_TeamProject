@@ -21,14 +21,16 @@ const FeedbackList = ({ feedbacks }) => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gridTemplateColumns: "1fr",
           gap: 24,
         }}
       >
         {feedbacks.map((fb, index) => (
           <div
             key={fb._id || index}
-            style={{
+            style={{width: "60%",
+        marginLeft: 0,        // căn trái
+        marginRight: "auto",
               border: "1px solid #e0e0e0",
               borderRadius: 12,
               padding: 20,
