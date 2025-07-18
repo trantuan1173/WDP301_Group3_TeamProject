@@ -78,22 +78,57 @@ export default function NavBar() {
                       </svg>
                       My Profile
                     </Link>
-                    <Link
-                      to="/user"
-                      className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
-                      onClick={() => setShowDropdown(false)}
-                    >
-                      {" "}
-                      <svg
-                        className="w-4 h-4 text-blue-500"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        aria-hidden="true"
+                    {user.role === "teacher" && (
+                      <Link
+                        to="/teacher"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
+                        onClick={() => setShowDropdown(false)}
                       >
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 0v12h12V4H4zm2 2h8v2H6V6z" />
-                      </svg>
-                      User Page
-                    </Link>
+                        <svg
+                          className="w-4 h-4 text-blue-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 0v12h12V4H4zm2 2h8v2H6V6z" />
+                        </svg>
+                        Teacher Page
+                      </Link>
+                    )}
+                    {user.role === "admin" && (
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        <svg
+                          className="w-4 h-4 text-blue-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 0v12h12V4H4zm2 2h8v2H6V6z" />
+                        </svg>
+                        Admin Page
+                      </Link>
+                    )} 
+                    {user.role === "student" && (
+                      <Link
+                        to="/user"
+                        className="flex items-center gap-2 px-4 py-3 text-sm text-gray-700 no-underline transition-colors duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-600"
+                        onClick={() => setShowDropdown(false)}
+                      >
+                        <svg
+                          className="w-4 h-4 text-blue-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          aria-hidden="true"
+                        >
+                          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 0v12h12V4H4zm2 2h8v2H6V6z" />
+                        </svg>
+                        Student Page
+                      </Link>
+                    )} 
 
                     <button
                       onClick={() => {

@@ -5,6 +5,9 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { jwtDecode } from "jwt-decode";
 
+import LoadingSpinner from "../../LoadingSpinner";
+
+
 export default function TeacherOverView({ onQuickAction }) {
   const [profile, setProfile] = useState(null);
 
@@ -35,6 +38,7 @@ export default function TeacherOverView({ onQuickAction }) {
     };
     fetchProfile();
   }, [userId, token]);
+  if (!profile) return <LoadingSpinner size={120} text="LOADING" />;
 
   return (
     <div>
@@ -124,7 +128,8 @@ export default function TeacherOverView({ onQuickAction }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left: Quick Actions, Take Attendance, Latest Upload */}
         <div className="flex flex-col gap-6">
-          <TeacherQuickAction onQuickAction={onQuickAction} />
+          <TeacherQuickAction onQuickAction={(key) => onQuickAction(key)} />
+
           {/* Take attendance */}
           <div className="bg-white rounded-xl shadow p-4">
             <div className="flex justify-between items-center mb-2">
@@ -168,6 +173,7 @@ export default function TeacherOverView({ onQuickAction }) {
         </div>
         {/* Right: Today Schedule */}
         <div>
+          
           <TeacherSheduleToday userId={userId} />
         </div>
       </div>

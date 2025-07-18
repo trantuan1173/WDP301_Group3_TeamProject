@@ -173,7 +173,7 @@ export default function UserOverView({ onQuickAction }) {
         </div>
 
         <div className="bg-white rounded-xl shadow p-4">
-          <div className="font-bold text-lg mb-1">Today's Schedule</div>
+          <div className="font-bold text-lg mb-1">My Schedule Coming Soon</div>
           <div className="text-gray-500 text-sm mb-3">
             Review what’s coming up for today
           </div>
@@ -196,7 +196,7 @@ export default function UserOverView({ onQuickAction }) {
                     </span>
                   </div>
                   <div className="text-sm text-gray-500">
-                    🏫 Class: {slot.classId?.course || "Unnamed Course"}
+                    🏫 Class: {slot.classId?.className || "Unnamed Course"}
                   </div>
                 </div>
               ))}

@@ -3,7 +3,7 @@ import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
 import VerifyPage from "./pages/Auth/VerifyPage";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import AdminDetailCourse from './components/Admin/ManagerCourse/AdminDetailCourse'
 import GuestView from './pages/GuestView'
@@ -32,6 +32,7 @@ import CourseDetailPage from "./components/Student/CourseDetailPage";
 import AttendanceDetail from "./components/Student/AttendanceDetail";
 import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
 import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
+import AttendanceForm from "./components/Teacher/AttendanceForm";
 
 
 const App = () => {
@@ -43,22 +44,27 @@ const App = () => {
         <Route path="/admin/course/:id" element={<AdminDetailCourse />} />
         <Route path="/admin/class/:classId/schedule" element={<AdminViewSchedule />} />
 
-        <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
+
         <Route element={<RequireAuth allowedRoles={["admin"]} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<Navigate to="/admin/overview" replace />} />
+
+          {/* Dashboard dùng param động */}
+          <Route path="/admin/:selectedPage" element={<AdminDashboard />} />
+          <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
         </Route>
         <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
           <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
-           <Route path="/user" element={<UserDashboard />} />
+          <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/test/:testId" element={<UserDoingTest />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
           {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
           <Route path="/attendance/:id" element={<AttendanceDetail />} />
 
         </Route>
-        <Route element={<RequireAuth allowedRoles={[ "teacher"]} />}>
-        <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
-           <Route path="/teacher" element={<TeacherDashboard />} />
+        <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+          <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
+          <Route path="/teacher" element={<TeacherDashboard />} />
+          <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />
         </Route>
         <Route path="/verify/:token" element={<VerifyPage />} />
         <Route path="/" element={<GuestView />} />
@@ -69,11 +75,11 @@ const App = () => {
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
         <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
         <Route path="/payment-process" element={<UserPaymentProcess />} />
-       
-      
+
+
         <Route path="/courses/:id" element={<CourseDetailPage />} />
-          
-        
+
+
       </Routes>
     </AuthProvider>
   );

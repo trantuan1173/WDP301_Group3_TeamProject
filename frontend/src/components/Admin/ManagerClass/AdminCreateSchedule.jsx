@@ -84,7 +84,7 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
           setDurationDays(courseDetail?.durationDays || 0);
         }
       } catch (err) {
-        setError("Không lấy được thông tin lớp hoặc khóa học.");
+        setError("No information class or course.");
       }
     };
     fetchClassAndCourse();
@@ -233,17 +233,32 @@ export default function AdminCreateSchedule({ classId, onSuccess, onCancel }) {
         end_time: sch.end_time,
       }));
       await axios.post(
-        API_ENDPOINTS.CREATE_BULK_SCHEDULE,
-        schedules,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (onSuccess) onSuccess();
-    } catch (err) {
+  API_ENDPOINTS.CREATE_BULK_SCHEDULE,
+  schedules,
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+// Cập nhật end_time cho lớp học bằng end_time của buổi cuối cùng
+if (schedules.length > 0) {
+  const lastSchedule = schedules[schedules.length - 1];
+  await axios.put(
+    API_ENDPOINTS.UPDATE_CLASS(classId),
+    { end_time: lastSchedule.end_time },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+
+if (onSuccess) onSuccess();
+  } catch (err) {
+    if (err?.response?.status === 409) {
+      setError("Teacher has a schedule conflict.");
+    } else {
       setError("Tạo lịch học thất bại.");
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onCancel}>
       <div className="bg-white rounded-xl p-6 w-full max-w-5xl shadow-lg relative" onClick={e => e.stopPropagation()}>

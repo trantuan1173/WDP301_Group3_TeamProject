@@ -192,7 +192,7 @@ export default function Login() {
             {/* Right image */}
             <div className="hidden md:block md:w-3/10 lg:w-3/10 h-screen overflow-hidden">
                 <img
-                    src="/images/loginimage.png"
+                    src="/images/loginimage.jpg"
                     alt="Login visual"
                     className="w-full h-full object-cover"
                 />

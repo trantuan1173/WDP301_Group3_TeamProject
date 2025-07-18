@@ -17,6 +17,9 @@ const TestTab = ({ classId, courseId }) => {
     const [teacherId, setTeacherId] = useState(null);
     const [selectedTestId, setSelectedTestId] = useState(null);
     const [selectedTest, setSelectedTest] = useState(null);
+    const [filterName, setFilterName] = useState("");
+    const [filterTime, setFilterTime] = useState("this"); // "this", "last", "next"
+
 
     // Lấy userId từ token
     useEffect(() => {
@@ -35,7 +38,7 @@ const TestTab = ({ classId, courseId }) => {
         setShowCreateModal(false);
         setSelectedTest(null);
     };
-    
+
     const fetchClassInfo = async () => {
         if (!classId) return;
         try {
@@ -112,6 +115,48 @@ const TestTab = ({ classId, courseId }) => {
         return { text: "Đang diễn ra", color: "#16a34a" }; // xanh
     };
 
+    const getTimeRange = () => {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // Sunday = 0
+        const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const monday = new Date(now.setDate(diffToMonday));
+        monday.setHours(0, 0, 0, 0);
+
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23, 59, 59, 999);
+
+        return { monday, sunday };
+    };
+
+
+    const isInWeek = (dateStr, weekType) => {
+        if (!dateStr) return false;
+        const date = new Date(dateStr);
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0=Sunday
+        const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const monday = new Date(now.setDate(diffToMonday));
+        monday.setHours(0, 0, 0, 0);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23, 59, 59, 999);
+
+        let rangeStart = new Date(monday);
+        let rangeEnd = new Date(sunday);
+
+        if (weekType === "last") {
+            rangeStart.setDate(rangeStart.getDate() - 7);
+            rangeEnd.setDate(rangeEnd.getDate() - 7);
+        } else if (weekType === "next") {
+            rangeStart.setDate(rangeStart.getDate() + 7);
+            rangeEnd.setDate(rangeEnd.getDate() + 7);
+        }
+
+        return date >= rangeStart && date <= rangeEnd;
+    };
+
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f5f9fc]">
             <div className="flex-1 p-6">
@@ -134,18 +179,21 @@ const TestTab = ({ classId, courseId }) => {
                         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
                             <span className="font-bold text-lg text-[#111827]">Danh sách</span>
                             <div className="flex-1 border-b-2 border-[#e0e7ef] mb-2 md:mb-0" />
-                            <form className="flex items-center gap-2 max-w-md w-full">
+                            <div className="flex flex-col md:flex-row gap-2 w-full max-w-2xl">
                                 <input
                                     type="text"
-                                    placeholder="Tìm kiếm bài kiểm tra..."
+                                    placeholder="Tìm kiếm theo tên..."
+                                    value={filterName}
+                                    onChange={(e) => setFilterName(e.target.value)}
                                     className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow w-full"
                                 />
-                                <button type="button">
-                                    <FontAwesomeIcon size="xl" icon={faSearch} />
-                                </button>
-                            </form>
+
+
+                            </div>
+
                             <button
                                 className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
+                                style={{borderRadius: "10px"}}
                                 onClick={() => setShowCreateModal(true)}
                             >
                                 <FontAwesomeIcon icon={faPlus} /> Tạo mới
@@ -153,68 +201,92 @@ const TestTab = ({ classId, courseId }) => {
                         </div>
 
                         <div className="flex gap-3 mb-4">
-                            <button
+                            <select
+                                value={filterTime}
+                                onChange={(e) => setFilterTime(e.target.value)}
+                                className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow"
+                            >
+                                <option value="">-- Tất cả thời gian --</option>
+                                <option value="past">Past </option>
+                                <option value="this">This week</option>
+                                <option value="future">Future </option>
+                            </select>
+                            {/* <button
                                 className="bg-[#DFE9FF] text-[#111827] rounded-lg px-6 py-2 font-semibold flex items-center gap-2 shadow"
                             >
-                                Thời gian
-                                <svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                            </button>
-                            <button
-                                className="bg-[#DFE9FF] text-[#111827] rounded-lg px-6 py-2 font-semibold flex items-center gap-2 shadow"
-                            >
-                                <FontAwesomeIcon icon={faFileExport} /> Xuất dữ liệu
-                            </button>
+                                <FontAwesomeIcon icon={faFileExport} /> Extract file
+                            </button> */}
                         </div>
 
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-[#f5f9fc] rounded-xl">
                                 <thead>
                                     <tr className="border-b-2 border-[#e0e7ef]">
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">STT</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Tên</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Thời gian</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Kết thúc</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">No</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Test name</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Start</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">End</th>
                                         {/* <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th> */}
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Trạng thái</th>
+                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Status</th>
                                         <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {assignData.length === 0 ? (
                                         <tr>
-                                            <td colSpan={6} className="text-center py-6 text-gray-400">Chưa có bài kiểm tra nào</td>
+                                            <td colSpan={6} className="text-center py-6 text-gray-400">No test have assigned</td>
                                         </tr>
                                     ) : (
-                                        assignData.map((assign, idx) => {
-                                            const status = getStatus(assign.startDate, assign.dueDate);
-                                            return (
-                                                <tr key={assign._id} className="border-b border-[#e0e7ef]">
-                                                    <td className="py-2 px-4">{idx + 1}</td>
-                                                    <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
-                                                    <td className="py-2 px-4 font-bold">
-                                                        {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
-                                                    </td>
-                                                    <td className="py-2 px-4 font-bold">
-                                                        {assign.dueDate ? new Date(assign.dueDate).toLocaleString("vi-VN") : ""}
-                                                    </td>
-                                                    {/* <td className="py-2 px-4">{assign.testId?.description || assign.description}</td> */}
-                                                    <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
-                                                        {status.text}
-                                                    </td>
-                                                    <td className="py-2 px-4">
-                                                        <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
-                                                            <FontAwesomeIcon icon={faEdit} />
-                                                        </button>
-                                                        <button className="p-1 text-blue-600 hover:text-blue-900">
-                                                            <FontAwesomeIcon icon={faFileExport} />
-                                                        </button>
-                                                        <button className="p-1 text-red-600 hover:text-red-900">
-                                                            <FontAwesomeIcon icon={faTrash} />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })
+                                        assignData
+                                            .filter((assign) => {
+                                                const title = assign.testId?.title || assign.title || "";
+                                                const matchName = title.toLowerCase().includes(filterName.toLowerCase());
+
+                                                const { monday, sunday } = getTimeRange();
+                                                const startDate = new Date(assign.startDate);
+
+                                                let matchTime = true;
+                                                if (filterTime === "this") {
+                                                    matchTime = startDate >= monday && startDate <= sunday;
+                                                } else if (filterTime === "past") {
+                                                    matchTime = startDate < monday;
+                                                } else if (filterTime === "future") {
+                                                    matchTime = startDate > sunday;
+                                                }
+
+                                                return matchName && matchTime;
+                                            })
+
+                                            .map((assign, idx) => {
+                                                const status = getStatus(assign.startDate, assign.dueDate);
+                                                return (
+                                                    <tr key={assign._id} className="border-b border-[#e0e7ef]">
+                                                        <td className="py-2 px-4">{idx + 1}</td>
+                                                        <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
+                                                        <td className="py-2 px-4 font-bold">
+                                                            {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
+                                                        </td>
+                                                        <td className="py-2 px-4 font-bold">
+                                                            {assign.dueDate ? new Date(assign.dueDate).toLocaleString("vi-VN") : ""}
+                                                        </td>
+                                                        {/* <td className="py-2 px-4">{assign.testId?.description || assign.description}</td> */}
+                                                        <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
+                                                            {status.text}
+                                                        </td>
+                                                        <td className="py-2 px-4">
+                                                            <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
+                                                                <FontAwesomeIcon icon={faEdit} />
+                                                            </button>
+                                                            <button className="p-1 text-blue-600 hover:text-blue-900">
+                                                                <FontAwesomeIcon icon={faFileExport} />
+                                                            </button>
+                                                            <button className="p-1 text-red-600 hover:text-red-900">
+                                                                <FontAwesomeIcon icon={faTrash} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })
                                     )}
                                 </tbody>
                             </table>

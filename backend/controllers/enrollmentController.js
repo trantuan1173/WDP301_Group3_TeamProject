@@ -5,7 +5,18 @@ const User = require("../models/userModel.js")
 // Get all enrollments
 const getEnrollments = async (req, res) => {
   try {
-    const enrollments = await Enrollment.find().populate("courseId").populate("studentId", "email")
+    const enrollments = await Enrollment.find()
+      .populate("courseId")
+      .populate([
+        {
+          path: "studentId",
+          select: "email profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        }
+      ]);
 
     res.status(200).json({
       success: true,
@@ -26,7 +37,16 @@ const getEnrollmentsByCourse = async (req, res) => {
   try {
     const { courseId } = req.params
 
-    const enrollments = await Enrollment.find({ courseId }).populate("studentId", "email")
+    const enrollments = await Enrollment.find({ courseId }).populate([
+      {
+        path: "studentId",
+        select: "email profileId",
+        populate: {
+          path: "profileId",
+          select: "name"
+        }
+      }
+    ]);
 
     res.status(200).json({
       success: true,
@@ -47,7 +67,18 @@ const getEnrollmentsByStudent = async (req, res) => {
   try {
     const { studentId } = req.params
 
-    const enrollments = await Enrollment.find({ studentId }).populate("courseId")
+    const enrollments = await Enrollment.find({ studentId })
+      .populate("courseId")
+      .populate([
+        {
+          path: "studentId",
+          select: "email profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        }
+      ]);
 
     res.status(200).json({
       success: true,
@@ -66,7 +97,18 @@ const getEnrollmentsByStudent = async (req, res) => {
 // Get single enrollment
 const getEnrollment = async (req, res) => {
   try {
-    const enrollment = await Enrollment.findById(req.params.id).populate("courseId").populate("studentId", "email")
+    const enrollment = await Enrollment.findById(req.params.id)
+      .populate("courseId")
+      .populate([
+        {
+          path: "studentId",
+          select: "email profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        }
+      ]);
 
     if (!enrollment) {
       return res.status(404).json({

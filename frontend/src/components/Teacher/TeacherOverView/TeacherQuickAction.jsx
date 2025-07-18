@@ -8,21 +8,27 @@ export default function TeacherQuickAction({ onQuickAction }) {
       <div className="flex flex-col gap-2">
         <button
           className="border rounded px-3 py-2 text-left hover:bg-blue-50"
-          onClick={() => onQuickAction("users")}
+          onClick={() => onQuickAction("profile")}
         >
-          Manage Users
+          Profile
         </button>
         <button
           className="border rounded px-3 py-2 text-left hover:bg-blue-50"
-          onClick={() => onQuickAction("courses")}
+          onClick={() => onQuickAction("schedule")}
         >
-          Manage Courses
+          Schedule
         </button>
         <button
           className="border rounded px-3 py-2 text-left hover:bg-blue-50"
           onClick={() => onQuickAction("classes")}
         >
-          Manage Classes
+          Classes
+        </button>
+        <button
+          className="border rounded px-3 py-2 text-left hover:bg-blue-50"
+          onClick={() => onQuickAction("scores")}
+        >
+          Scores
         </button>
       </div>
     </div>
