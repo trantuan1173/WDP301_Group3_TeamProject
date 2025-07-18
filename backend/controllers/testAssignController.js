@@ -79,7 +79,7 @@ const getTestAssignsByCourse = async (req, res) => {
 // Get test assignments by student
 const getTestAssignsByStudent = async (req, res) => {
   try {
-    const { studentId } = req.params
+    const { studentId } = req.params;
     // Tìm tất cả lớp mà học sinh này đang học
     const classItem = await Class.find({ students: studentId });
 
@@ -92,7 +92,7 @@ const getTestAssignsByStudent = async (req, res) => {
     }
 
     // Lấy danh sách classId
-    const classIds = classItem.map(cls => cls._id);
+    const classIds = classItem.map((cls) => cls._id);
 
     // Tìm tất cả bài kiểm tra đã gán cho các lớp đó
     const testAssigns = await TestAssign.find({ classId: { $in: classIds } })
@@ -100,40 +100,46 @@ const getTestAssignsByStudent = async (req, res) => {
       .populate("testId")
       .populate([
         {
-          path: "teacherId", 
+          path: "teacherId",
           select: "profileId",
           populate: {
             path: "profileId",
-            select: "name"
-          }
-        }
+            select: "name",
+          },
+        },
       ]);
 
     // Tìm tất cả bài đã nộp của học sinh này
     const submissions = await TestSubmission.find({
       studentId,
-      testAssignId: { $in: testAssigns.map(t => t._id) }
+      testAssignId: { $in: testAssigns.map((t) => t._id) },
     });
 
     // Gắn điểm vào mỗi bài kiểm tra
-    const resultWithScore = testAssigns.map(assign => {
-      const submission = submissions.find(sub => sub.testAssignId.toString() === assign._id.toString());
+    const resultWithScore = testAssigns.map((assign) => {
+      const submission = submissions.find(
+        (sub) => sub.testAssignId.toString() === assign._id.toString()
+      );
 
       const isExpired = new Date(assign.dueDate) < new Date();
       return {
         ...assign.toObject(),
         submitted: !!submission,
-        score: submission?.score || null,
+        score:
+          submission?.score != null
+            ? Math.round(submission.score * 100) / 100
+            : null,
+
         submittedAt: submission?.submittedAt || null,
         isExpired,
       };
     });
-    
+
     res.status(200).json({
       success: true,
       count: testAssigns.length,
       data: resultWithScore,
-    })
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -296,7 +302,7 @@ const deleteTestAssign = async (req, res) => {
 const getTestAssignsForStudent = async (req, res) => {
   try {
     const { studentId, testId } = req.params;
-    
+
     // Find all classes the student is in
     const classes = await Class.find({ students: studentId });
 
@@ -307,7 +313,7 @@ const getTestAssignsForStudent = async (req, res) => {
       });
     }
 
-    const classIds = classes.map(cls => cls._id);
+    const classIds = classes.map((cls) => cls._id);
 
     // Find the test assignment matching the testId and any of those classes
     const assignment = await TestAssign.findOne({
@@ -325,7 +331,6 @@ const getTestAssignsForStudent = async (req, res) => {
         message: "Test assignment not found for this student",
       });
     }
-
 
     res.status(200).json({
       success: true,
