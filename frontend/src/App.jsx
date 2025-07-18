@@ -62,6 +62,8 @@ const App = () => {
 
         </Route>
         <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+          <Route path="/teacher" element={<Navigate to="/teacher/overview" replace />} />
+          <Route path="/teacher/:selectedPage" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />

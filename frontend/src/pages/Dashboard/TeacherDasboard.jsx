@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import TeacherSideMenu from "../../components/Layouts/TeacherSideMenu";
 import NavBar from "../../components/Layouts/NavBar";
 import TeacherViewShedule from "../../components/Teacher/TeacherViewShedule";
@@ -10,8 +11,19 @@ import TeacherViewScore from "../../components/Teacher/TeacherMangeClass/Teacher
 import UserProfileForm from "../../components/Student/UserProfileForm";
 
 const TeacherDashboard = () => {
-  const [selectedKey, setSelectedKey] = useState("overview");
+  const { selectedPage } = useParams();
+  const navigate = useNavigate();
   const [selectedClassId, setSelectedClassId] = useState(null);
+
+  // Xác định tab mặc định từ URL param hoặc "overview"
+  const [selectedKey, setSelectedKey] = useState(selectedPage || "overview");
+
+  // Hàm chuyển tab và cập nhật URL
+  const handleMenuSelect = (key) => {
+    setSelectedKey(key);
+    setSelectedClassId(null);
+    navigate(`/teacher/${key}`);
+  };
 
   return (
     <div className="flex flex-col">
@@ -21,14 +33,11 @@ const TeacherDashboard = () => {
       <div className="flex min-h-screen bg-gray-50 ">
         <TeacherSideMenu
           selectedKey={selectedKey}
-          onMenuSelect={(key) => {
-            setSelectedKey(key);
-            setSelectedClassId(null); // reset when switching menu
-          }}
+          onMenuSelect={handleMenuSelect}
         />
         <div className="flex-1 p-4">
           {selectedKey === "overview" && (
-            <TeacherOverView onQuickAction={setSelectedKey} />
+            <TeacherOverView onQuickAction={handleMenuSelect} />
           )}
           {selectedKey === "profile" && <UserProfileForm />}
           {selectedKey === "schedule" && <TeacherViewShedule />}
