@@ -9,6 +9,7 @@ const {
   deleteTestAssign,
   getTestAssignsByStudent,
   getTestAssignsForStudent,
+  getTestAssignsByTeacher,
 } = require("../controllers/testAssignController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -130,6 +131,27 @@ router.get("/student/:studentId", protect, getTestAssignsByStudent)
 
 /**
  * @swagger
+ * /test-assigns/teacher/{teacherId}:
+ *   get:
+ *     summary: Lấy danh sách phân công bài kiểm tra theo giáo viên
+ *     description: Lấy danh sách phân công bài kiểm tra theo giáo viên
+ *     tags: [Test Assigns]
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách phân công bài kiểm tra
+ */
+router.get("/get-test-assigns-by-teacher", protect, authorize("teacher"), getTestAssignsByTeacher)
+
+/**
+ * @swagger
  * /test-assigns/{id}:
  *   get:
  *     summary: Lấy thông tin phân công bài kiểm tra (chỉ admin)
@@ -234,6 +256,7 @@ router.get(
   protect,
   getTestAssignsForStudent
 );
+
 
 
 module.exports = router

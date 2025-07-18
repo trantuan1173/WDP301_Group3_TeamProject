@@ -146,18 +146,23 @@ export const UserDoingTest = () => {
 
         try {
             await axios.post(API_ENDPOINTS.STUDENT_SUBMIT_TEST, {
-                testAssignId: testAssignId,
+                testAssignId,
                 studentId: userId,
-                answers: formattedAnswers
+                answers: formattedAnswers,
             }, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             alert("Nộp bài thành công!");
             navigate(`/user`);
         } catch (err) {
-            console.error("Lỗi khi nộp bài:", err);
-            alert("Lỗi khi nộp bài kiểm tra!");
+            if (err.response?.data?.message === "You have already submitted this test") {
+                alert("Bạn đã nộp bài này rồi. Không thể nộp lại. || You have already submitted this test");
+                navigate(`/user`);
+            } else {
+                console.error("Lỗi khi nộp bài:", err);
+                alert(" Lỗi khi nộp bài kiểm tra!");
+            }
         }
     };
 

@@ -31,7 +31,7 @@ export const API_ENDPOINTS = {
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
   GET_CLASSES_BY_COURSE_ID: (courseId) => `${baseUrl}/api/classes/course/${courseId}`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
-  REMOVE_STUDENT_CLASS:(classId) => `${baseUrl}/api/classes/${classId}/students`,
+  REMOVE_STUDENT_CLASS: (classId) => `${baseUrl}/api/classes/${classId}/students`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_ALL_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
@@ -43,7 +43,7 @@ export const API_ENDPOINTS = {
   GET_ALL_FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`,
   GET_ALL_FEEDBACK_COURSE: `${baseUrl}/api/feedbacksCourse`,
   GET_ALL_PAYMENT: `${baseUrl}/api/payments`,
-  ADD_STUDENT_INTO_CLASS: (classId)=>`${baseUrl}/api/classes/${classId}/students`,
+  ADD_STUDENT_INTO_CLASS: (classId) => `${baseUrl}/api/classes/${classId}/students`,
   GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
   GET_ALL_ENROLLMENTS: `${baseUrl}/api/enrollments`,
@@ -81,6 +81,9 @@ export const API_ENDPOINTS = {
 
   GET_TEST_QUESTION_BY_ID: (testId) => `${baseUrl}/api/tests/${testId}`,
 
+  GET_ASSIGNED_TESTS_BY_TEACHER: `${baseUrl}/api/test-assigns/get-test-assigns-by-teacher`,
+  GET_SUBMISSIONS_BY_TEST_ASSIGN: (testAssignId) => `${baseUrl}/api/testSubmission/scores-by-test-assign/${testAssignId}`,
+
   //Guest endpoints
   GET_HIGHLIGHT_FEEDBACKS: `${baseUrl}/api/feedbacksCourse/highlight`,
   GET_HIGHLIGHT_TEACHER_FEEDBACKS: `${baseUrl}/api/feedbacksTeacher/highlight`,
@@ -106,5 +109,5 @@ export const API_ENDPOINTS = {
   CREATE_TEST_FROM_AI: `${baseUrl}/api/tests/create-from-ai`,
 
   //Statistics
-GET_STATISTICS_EVENT: (eventName) => `${baseUrl}/api/eventsData/event/${eventName}`
+  GET_STATISTICS_EVENT: (eventName) => `${baseUrl}/api/eventsData/event/${eventName}`
 };
