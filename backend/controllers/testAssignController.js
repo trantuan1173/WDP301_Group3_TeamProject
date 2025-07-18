@@ -3,7 +3,6 @@ const Test = require("../models/testModel.js")
 const Class = require("../models/classModel.js")
 const Course = require("../models/courseModel.js")
 const TestSubmission = require("../models/testSubmissionModel.js")
-const { log } = require("handlebars")
 
 // Get all test assignments
 const getTestAssigns = async (req, res) => {
