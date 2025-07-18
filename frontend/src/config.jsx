@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
   CREATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   GET_ALL_COURSE_DETAIL: `${baseUrl}/api/courseDetail`,
   UPDATE_COURSE: `${baseUrl}/api/courses/:courseId`,
-  //GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
+  // GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   UPDATE_COURSE_DETAIL: `${baseUrl}/api/courseDetail/:courseDetailId`,
   DELETE_COURSE: `${baseUrl}/api/courses/:courseId`,
 
@@ -29,14 +29,15 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: (classId) => `${baseUrl}/api/classes/${classId}`,
   CREATE_CLASS: `${baseUrl}/api/classes`,
   UPDATE_CLASS: (classId) => `${baseUrl}/api/classes/${classId}`,
+  GET_CLASSES_BY_COURSE_ID: (courseId) => `${baseUrl}/api/classes/course/${courseId}`,
   GET_ALL_TEACHER: `${baseUrl}/api/users/allTeacher`,
   REMOVE_STUDENT_CLASS: (classId) => `${baseUrl}/api/classes/${classId}/students`,
   CREATE_SCHEDULE: `${baseUrl}/api/schedule`,
+  GET_ALL_SCHEDULE: `${baseUrl}/api/schedule`,
   GET_SHEDULE_BY_CLASSID: (classId) => `${baseUrl}/api/schedule/class/${classId}`,
 
   UPDATE_SCHEDULE: (scheduleId) => `${baseUrl}/api/schedule/${scheduleId}`,
-  DELETE_SHEDULE_BY_CLASSID: (classId) =>
-    `${baseUrl}/api/schedule/class/${classId}`,
+  DELETE_SHEDULE_BY_CLASSID: (classId) =>`${baseUrl}/api/schedule/class/${classId}`,
   CREATE_BULK_SCHEDULE: `${baseUrl}/api/schedule/bulk`,
 
   GET_ALL_FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`,
@@ -45,8 +46,8 @@ export const API_ENDPOINTS = {
   ADD_STUDENT_INTO_CLASS: (classId) => `${baseUrl}/api/classes/${classId}/students`,
   GET_EROLLED_STUDENTS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/enrollments/course/${courseId}`,
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
-
-
+  GET_ALL_ENROLLMENTS: `${baseUrl}/api/enrollments`,
+  GET_ENROLLMENT_BY_ID: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}`,
   // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
@@ -89,8 +90,7 @@ export const API_ENDPOINTS = {
   GET_FEEDBACKS_COURSE: (courseId) => `${baseUrl}/api/feedbacksCourse/highlight/${courseId}`,
 
   GET_COURSES: `${baseUrl}/api/courseDetail`,
-  GET_COURSE_BY_ID: (courseId) =>
-    `${baseUrl}/api/courseDetail/course/${courseId}`,
+  GET_COURSE_BY_ID: (courseId) => `${baseUrl}/api/courseDetail/course/${courseId}`,
 
   REGISTER_VERIFY_EMAIL: (token) => `${baseUrl}/api/users/verify/${token}`,
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,

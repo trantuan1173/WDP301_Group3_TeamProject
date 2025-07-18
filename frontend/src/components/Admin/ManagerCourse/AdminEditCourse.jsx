@@ -4,7 +4,6 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
 export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefresh, categories }) {
-  // Chuẩn hóa dữ liệu đầu vào cho form
   const [form, setForm] = useState({
     ...courseData,
     name: courseData.nameCourses || "",
@@ -17,6 +16,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     price: courseData.price || "",
     description: courseData.description || "",
   });
+
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [errors, setErrors] = useState({});
@@ -38,12 +38,12 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
 
   const validate = () => {
     const newErrors = {};
-    if (!form.imageURL.trim()) newErrors.imageURL = "Không được để trống";
-    if (!form.type.trim()) newErrors.type = "Không được để trống";
-    if (!form.name.trim()) newErrors.name = "Không được để trống";
-    if (!form.level.trim()) newErrors.level = "Không được để trống";
-    if (!form.duration.toString().trim()) newErrors.duration = "Không được để trống";
-    if (!form.price.toString().trim()) newErrors.price = "Không được để trống";
+    if (!form.imageURL.trim()) newErrors.imageURL = "Image URL is required";
+    if (!form.type.trim()) newErrors.type = "Category is required";
+    if (!form.name.trim()) newErrors.name = "Course name is required";
+    if (!form.level.trim()) newErrors.level = "Level is required";
+    if (!form.duration.toString().trim()) newErrors.duration = "Duration is required";
+    if (!form.price.toString().trim()) newErrors.price = "Price is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -53,14 +53,14 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     try {
       const token = localStorage.getItem("token");
 
-      // 1. Update tên khóa học
+      // 1. Update course name
       await axios.put(
         API_ENDPOINTS.UPDATE_COURSE.replace(":courseId", form.courseId),
         { nameCourses: form.name },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // 2. Update chi tiết khóa học
+      // 2. Update course detail
       await axios.put(
         API_ENDPOINTS.UPDATE_COURSE_DETAIL.replace(":courseDetailId", form.courseDetailId),
         {
@@ -74,13 +74,13 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("Cập nhật khóa học thành công!");
+      alert("Course updated successfully!");
       if (onSubmit) onSubmit({ ...form });
       if (onRefresh) onRefresh();
       onClose();
     } catch (err) {
-      console.error("Lỗi cập nhật khóa học:", err);
-      alert("Cập nhật khóa học thất bại!");
+      console.error("Error updating course:", err);
+      alert("Failed to update the course!");
     }
   };
 
@@ -88,7 +88,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
       <div
         className="bg-white rounded-2xl p-8 w-full max-w-2xl shadow-lg relative"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <button
           className="absolute top-4 right-6 text-red-600 text-3xl font-bold"
@@ -96,22 +96,24 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
         >
           ×
         </button>
-        <h2 className="text-3xl font-bold mb-8 text-center">Chỉnh sửa khóa học</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center">Edit Course</h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-          {/* Ảnh khóa học */}
+          {/* Course image */}
           <div className="flex justify-center items-start">
             <img
               src={form.imageURL}
-              alt="Xem trước ảnh"
+              alt="Image preview"
               className="rounded-xl object-contain"
               style={{ background: "#f3faff", width: "220px", height: "180px" }}
             />
           </div>
-          {/* Thông tin chính */}
+
+          {/* Main info */}
           <div className="flex flex-col gap-4">
-            {/* Danh mục */}
+            {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục khóa học</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Course Category</label>
               <div className="relative">
                 <select
                   name="type"
@@ -119,46 +121,19 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                   onChange={handleChange}
                   className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 appearance-none pr-8"
                 >
-                  <option value="">-- Chọn danh mục --</option>
-                  {categories.map((cat, idx) => (
-                    <option key={idx} value={cat}>{cat}</option>
+                  <option value="">-- Select category --</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
                 <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
-              {errors.type && (
-                <p className="text-red-500 text-xs mt-1">{errors.type}</p>
-              )}
-              {!showNewCategoryInput && (
-                <button
-                  type="button"
-                  onClick={() => setShowNewCategoryInput(true)}
-                  className="text-blue-600 text-xs mt-1 flex items-center gap-1"
-                >
-                  <FaPlus className="text-xs" /> Thêm danh mục
-                </button>
-              )}
-              {showNewCategoryInput && (
-                <div className="mt-2 flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Tên danh mục mới"
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    className="border p-1 rounded flex-1 text-sm"
-                  />
-                  <button
-                    onClick={handleAddCategory}
-                    className="text-white bg-blue-600 px-3 py-1 rounded text-sm"
-                  >
-                    Thêm
-                  </button>
-                </div>
-              )}
+              {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
             </div>
-            {/* Tên khóa học */}
+
+            {/* Course name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tên khóa học</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
               <div className="relative">
                 <input
                   type="text"
@@ -169,16 +144,15 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                 />
                 <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               </div>
-              {errors.name && (
-                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
           </div>
         </div>
-        {/* 2 cột: Trình độ/Thời lượng */}
+
+        {/* Level / Duration */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Trình độ/ Level</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
             <div className="relative">
               <input
                 type="text"
@@ -189,12 +163,11 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
               />
               <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
-            {errors.level && (
-              <p className="text-red-500 text-xs mt-1">{errors.level}</p>
-            )}
+            {errors.level && <p className="text-red-500 text-xs mt-1">{errors.level}</p>}
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Thời lượng</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
             <div className="relative">
               <input
                 type="text"
@@ -205,14 +178,13 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
               />
               <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
-            {errors.duration && (
-              <p className="text-red-500 text-xs mt-1">{errors.duration}</p>
-            )}
+            {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
           </div>
         </div>
-        {/* Học phí */}
+
+        {/* Tuition */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Học phí</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Tuition Fee</label>
           <div className="relative">
             <input
               type="text"
@@ -223,28 +195,28 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
             />
             <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
-          {errors.price && (
-            <p className="text-red-500 text-xs mt-1">{errors.price}</p>
-          )}
+          {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
         </div>
-        {/* Mô tả */}
+
+        {/* Description */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
             name="description"
-            placeholder="Thêm mô tả cho khóa học..."
+            placeholder="Add course description..."
             value={form.description}
             onChange={handleChange}
             className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400"
             rows={3}
           />
         </div>
+
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
             className="px-8 py-2 bg-green-600 text-white rounded-xl text-lg font-semibold hover:bg-green-700 transition"
           >
-            Lưu
+            Save
           </button>
         </div>
       </div>

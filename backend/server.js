@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./routes/swagger.js');
+require("./cron/classProgressCron");
 
 connectDB();
 const app=express();

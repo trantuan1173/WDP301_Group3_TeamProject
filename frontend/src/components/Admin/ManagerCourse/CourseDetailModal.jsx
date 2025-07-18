@@ -4,22 +4,22 @@ import { API_ENDPOINTS } from "../../../config";
 
 export default function CourseDetailModal({ courseData, onClose, onEdit, onDelete }) {
   const handleDelete = async () => {
-  if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
-  try {
-    await axios.delete(
-      API_ENDPOINTS.DELETE_COURSE.replace(":courseId", courseData.courseId),
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      }
-    );
-    alert("Đã xóa khóa học!");
-    if (typeof onDelete === "function") onDelete(courseData._id); // truyền id lên cha
-    onClose();
-  } catch (err) {
-    alert("Xóa khóa học thất bại!");
-    console.error(err);
-  }
-};
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
+    try {
+      await axios.delete(
+        API_ENDPOINTS.DELETE_COURSE.replace(":courseId", courseData.courseId),
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        }
+      );
+      alert("Course has been deleted!");
+      if (typeof onDelete === "function") onDelete(courseData._id);
+      onClose();
+    } catch (err) {
+      alert("Failed to delete the course!");
+      console.error(err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
@@ -34,71 +34,67 @@ export default function CourseDetailModal({ courseData, onClose, onEdit, onDelet
           ×
         </button>
 
-        <h2 className="text-3xl font-bold mb-6 text-center">Chi tiết khóa học</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Course Details</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-          {/* Ảnh khóa học */}
+          {/* Course Image */}
           <div className="flex justify-center items-start">
             <img
               src={courseData.imageURL}
-              alt={courseData.nameCourses || "Ảnh khóa học"}
+              alt={courseData.nameCourses || "Course Image"}
               className="max-h-48 rounded-lg object-contain"
               style={{ background: "#f3faff", width: "220px", height: "180px" }}
             />
           </div>
-          {/* Thông tin chính */}
+          {/* Basic Info */}
           <div className="flex flex-col gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Danh mục khóa học</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <div className="bg-blue-100 rounded p-2">{courseData.type}</div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tên khóa học</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
               <div className="bg-blue-100 rounded p-2">{courseData.nameCourses}</div>
             </div>
           </div>
         </div>
 
-        {/* 2 cột: Trình độ/Thời lượng và Học phí/Học phí ưu đãi */}
+        {/* Two-column: Level/Duration and Tuition */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Trình độ/ Level</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
             <div className="bg-blue-100 rounded p-2">{courseData.level}</div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Thời lượng</label>
-            <div className="bg-blue-100 rounded p-2">{courseData.durationDays} buổi</div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+            <div className="bg-blue-100 rounded p-2">{courseData.durationDays} sessions</div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Học phí</label>
-            <div className="bg-blue-100 rounded p-2">{courseData.price?.toLocaleString()} VNĐ</div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Tuition Fee</label>
+            <div className="bg-blue-100 rounded p-2">{courseData.price?.toLocaleString()} VND</div>
           </div>
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Học phí ưu đãi</label>
-            <div className="bg-blue-100 rounded p-2">{(courseData.salePrice || courseData.price)?.toLocaleString()} VNĐ</div>
-          </div> */}
         </div>
 
-        {/* Mô tả */}
+        {/* Description */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <div className="bg-blue-100 rounded p-2 max-h-[150px] overflow-y-auto whitespace-pre-line">
             {courseData.description}
           </div>
         </div>
 
-        {/* Lịch học (nếu có) */}
+        {/* Schedule (if any)
         {courseData.classes && courseData.classes.length > 0 && (
           <div className="mb-4">
-            <p className="font-semibold mb-2">Lịch học:</p>
+            <p className="font-semibold mb-2">Class Schedule:</p>
             <table className="w-full border text-sm">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="border p-1">Lớp học</th>
-                  <th className="border p-1">Ngày bắt đầu</th>
-                  <th className="border p-1">Giờ học</th>
-                  <th className="border p-1">Giảng viên</th>
-                  <th className="border p-1">Trạng thái</th>
+                  <th className="border p-1">Class</th>
+                  <th className="border p-1">Start Date</th>
+                  <th className="border p-1">Time</th>
+                  <th className="border p-1">Teacher</th>
+                  <th className="border p-1">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,20 +110,21 @@ export default function CourseDetailModal({ courseData, onClose, onEdit, onDelet
               </tbody>
             </table>
           </div>
-        )}
+        )} */}
 
+        {/* Actions */}
         <div className="flex justify-end gap-2 mt-6">
           <button
             onClick={onEdit}
             className="bg-indigo-600 text-white px-4 py-2 rounded"
           >
-            Chỉnh sửa
+            Edit
           </button>
           <button
             onClick={handleDelete}
             className="bg-red-600 text-white px-4 py-2 rounded"
           >
-            Xóa khóa học
+            Delete Course
           </button>
         </div>
       </div>

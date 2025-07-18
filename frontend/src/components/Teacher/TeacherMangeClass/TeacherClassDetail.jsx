@@ -7,7 +7,7 @@ import AttendanceTab from "./AttendanceTab";
 import TestTab from "./TestTab";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartLine, faUserCheck, faFileAlt } from "@fortawesome/free-solid-svg-icons";
-
+import LoadingSpinner from "../../LoadingSpinner"; // Assuming you have a LoadingSpinner component
 const TAB = {
   INFO: "INFO",
   STUDENTS: "STUDENTS",
@@ -37,13 +37,8 @@ export default function TeacherClassDetail({ classId, onBack }) {
     if (classId) fetchData();
   }, [classId]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <span className="text-lg font-semibold">Đang tải dữ liệu...</span>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner size={120} text="Loading..." />;
+
 
   return (
     <div className="p-8 bg-[#f6f7fb] min-h-screen">
@@ -56,7 +51,7 @@ export default function TeacherClassDetail({ classId, onBack }) {
         </button>
       )}
       <h1 className="text-2xl font-bold mb-6">
-        {classInfo?.className || "Tên lớp học"}
+        Class: {classInfo?.className || "Tên lớp học"}
       </h1>
 
       {/* Tabs */}

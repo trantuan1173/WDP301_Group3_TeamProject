@@ -20,7 +20,29 @@ function formatScheduleData(schedule) {
     end_time: toTimeStr(schedule.end_time),
   };
 }
+const updateClassProgress = async (classId) => {
+  try {
+    const classItem = await Class.findById(classId).populate("courseId");
+    if (!classItem) return;
 
+    const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
+    const courseDetail = await CourseDetail.findOne({ courseId });
+    if (!courseDetail || !courseDetail.durationDays) return;
+
+    const schedules = await Schedule.find({ classId });
+    const now = new Date();
+    const completedCount = schedules.filter(s => new Date(s.end_time) < now).length;
+
+    const progress = Math.min(
+      Math.floor((completedCount / courseDetail.durationDays) * 100),
+      100
+    );
+
+    await Class.findByIdAndUpdate(classId, { progress });
+  } catch (err) {
+    console.error("Lỗi cập nhật tiến độ lớp học:", err);
+  }
+};
 const checkTeacherScheduleConflict = async (teacherId, scheduleList, excludedClassId = null) => {
   const now = new Date();
 
@@ -99,31 +121,28 @@ const getClasses = async function(req, res) {
 const getClass = async function(req, res) {
   try {
     const classItem = await Class.findById(req.params.id)
-      .populate("teacherId", "email")
-      .populate("students", "email")
-      .populate("courseId")
-
-      const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
-      const courseDetails = await CourseDetail.findOne({ courseId: courseId });
-  
-
-  
-      const formattedClasses = {
-          _id: classItem._id,
-          teacherId: classItem.teacherId, 
-          students: classItem.students, 
-          className: classItem.course,
-          course: {
-            _id: courseId,
-            name: classItem.courseId?.nameCourses,
-            detail: courseDetails || null,
-          },
-          progress: classItem.progress,
-          note: classItem.note,
-          start_time: classItem.start_time,
-          end_time: classItem.end_time,
-        };
-      
+      .populate([
+        {path: "teacherId", 
+          select: "profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        },
+        ])
+      .populate([
+        {path: "students", 
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        },
+        ])
+      .populate([
+        {path: "courseId", 
+          select: "nameCourses",
+        },
+        ]);
 
     if (!classItem) {
       return res.status(404).json({
@@ -131,6 +150,25 @@ const getClass = async function(req, res) {
         message: "Class not found",
       })
     }
+
+    const courseId = classItem.courseId?._id?.toString() ?? classItem.courseId?.toString();
+    const courseDetails = await CourseDetail.findOne({ courseId });
+
+    const formattedClasses = {
+        _id: classItem._id,
+        teacherId: classItem.teacherId, 
+        students: classItem.students, 
+        className: classItem.className,
+        course: {
+          _id: courseId,
+          name: classItem.courseId?.nameCourses,
+          detail: courseDetails || null,
+        },
+        progress: classItem.progress,
+        note: classItem.note,
+        start_time: classItem.start_time,
+        end_time: classItem.end_time,
+      };
 
     res.status(200).json({
       success: true,
@@ -140,7 +178,6 @@ const getClass = async function(req, res) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch class",
-
       error: error.message,
     })
   }
@@ -371,6 +408,7 @@ const removeStudentFromClass = async (req, res) => {
 //   }
 // }
 
+// Get class by student id
 const getClassByStudentId = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -379,6 +417,7 @@ const getClassByStudentId = async (req, res) => {
       .populate("teacherId", "email")      
       .populate("students", "email")       
       .populate("courseId");               
+
 
     const courseIdList = classes.map((cls) => cls.courseId?._id?.toString() ?? cls.courseId?.toString());
     const courseDetails = await CourseDetail.find({ courseId: { $in: courseIdList } });
@@ -430,32 +469,66 @@ const getClassByTeacherId = async (req, res) => {
     const { teacherId } = req.params;
 
     const classes = await Class.find({ teacherId })
+      .populate("teacherId", "name email phone")  
       .populate("courseId");
 
-      const formattedClasses = classes.map((cls) => ({
-        _id: cls._id,
-        teacherId: cls.teacherId?._id?.toString() ?? cls.teacherId?.toString(),
-        courseId: cls.courseId?._id?.toString() ?? cls.courseId?.toString(),
-        className: cls.className,
-        progress: cls.progress,
-        note: cls.note,
-        start_time: cls.start_time,
-        end_time: cls.end_time,
-      }));
+    const formattedClasses = classes.map((cls) => ({
+      _id: cls._id,
+      teacher: cls.teacherId ? {
+        _id: cls.teacherId._id,
+        name: cls.teacherId.name,
+        email: cls.teacherId.email,
+        phone: cls.teacherId.phone,
+      } : null,
+      course: cls.courseId ? {
+        _id: cls.courseId._id,
+        name: cls.courseId.nameCourses,
+      } : null,
+      className: cls.className,
+      progress: cls.progress,
+      note: cls.note,
+      start_time: cls.start_time,
+      end_time: cls.end_time,
+    }));
+
     res.status(200).json({
       success: true,
-      count: classes.length,
-      data:  formattedClasses,
+      count: formattedClasses.length,
+      data: formattedClasses,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch class",
       error: error.message,
-    })
+    });
   }
 }
 
+
+
+// Get class by courseid 
+const getClassByCourseId = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const classes = await Class.find({ courseId })
+      .populate("teacherId", "email")
+      .populate("students", "email")
+      .populate("courseId");
+
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data: classes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch classes by courseId",
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   getClasses,
   getClass,
@@ -466,5 +539,7 @@ module.exports = {
   removeStudentFromClass,
   getClassByStudentId,
   getClassByTeacherId,
+  getClassByCourseId,
+  updateClassProgress,
 }
 

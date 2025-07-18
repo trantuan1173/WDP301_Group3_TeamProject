@@ -33,6 +33,7 @@ export default function AdminManageClassStudentList({
         <thead>
           <tr className="bg-gray-100 text-gray-700">
             <th className="py-2 px-3 text-left font-normal">No.</th>
+            <th className="py-2 px-3 text-left font-normal">Name</th>
             <th className="py-2 px-3 text-left font-normal">Email</th>
             <th className="py-2 px-3 text-center font-normal">Action</th>
           </tr>
@@ -41,6 +42,7 @@ export default function AdminManageClassStudentList({
           {students.map((student, idx) => (
             <tr key={student._id || idx} className="border-b hover:bg-gray-50">
               <td className="py-2 px-3">{idx + 1}</td>
+              <td className="py-2 px-3">{student.profileId?.name || "N/A"}</td>
               <td className="py-2 px-3">{student.email || "Unknown"}</td>
               <td className="py-2 px-3 text-center flex gap-3 justify-center">
                 <button
@@ -69,6 +71,7 @@ export default function AdminManageClassStudentList({
           ))}
         </tbody>
       </table>
+
       {showChangeModal && selectedStudent && (
         <AdminChangeClassStudent
           open={showChangeModal}

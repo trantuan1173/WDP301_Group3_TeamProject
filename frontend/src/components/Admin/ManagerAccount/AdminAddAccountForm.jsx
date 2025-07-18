@@ -69,46 +69,47 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            name="name"
-            value={formData.profileData.name}
-            onChange={handleChange}
-            type="text"
-            placeholder="Full Name"
-            className="w-full bg-blue-100 p-2 rounded"
-            required
-          />
-          <input
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            type="email"
-            placeholder="Email"
-            className="w-full bg-blue-100 p-2 rounded"
-            required
-          />
-          <input
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            type="password"
-            placeholder="Password"
-            className="w-full bg-blue-100 p-2 rounded"
-            required
-          />
-          <select
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full bg-blue-100 p-2 rounded"
-            required
-          >
-            <option value="">Roles</option>
-            <option value="teacher">Teacher</option>
-            <option value="student">Student</option>
-          </select>
-
+         <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2">
+            <input
+              name="name"
+              value={formData.profileData.name}
+              onChange={handleChange}
+              type="text"
+              placeholder="Full Name"
+              className="w-full bg-blue-100 p-2 rounded mb-2"
+              required
+            />
+            <input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              type="email"
+              placeholder="Email"
+              className="w-full bg-blue-100 p-2 rounded mb-2"
+              required
+            />
+            <input
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              type="password"
+              placeholder="Password"
+              className="w-full bg-blue-100 p-2 rounded mb-2"
+              required
+            />
+            <select
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full bg-blue-100 p-2 rounded mb-2"
+              required
+            >
+              <option value="">Roles</option>
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"

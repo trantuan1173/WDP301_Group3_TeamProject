@@ -4,14 +4,15 @@ import {
   BookOpen,
   Users,
   BarChart2,
-} from "lucide-react";
+  ClipboardPlus } from "lucide-react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", key: "overview" },
-  { icon: UserCog, label: "Quản lý tài khoản", key: "account" },
-  { icon: BookOpen, label: "Quản lý khóa học", key: "courses" },
-  { icon: Users, label: "Quản lý lớp học", key: "classes" },
-  { icon: BarChart2, label: "Thống kê", key: "statistics" },
+  { icon: UserCog, label: "Mangage Account", key: "account" },
+  { icon: BookOpen, label: "Manage Courses", key: "courses" },
+  { icon: Users, label: "Manage Classes", key: "classes" },
+  { icon: ClipboardPlus, label: "Manage Enrollments", key: "enrollment" },
+  { icon: BarChart2, label: "Statistics", key: "statistics" },
 ];
 
 export default function AdminSideMenu({ onMenuSelect, selectedKey }) {
