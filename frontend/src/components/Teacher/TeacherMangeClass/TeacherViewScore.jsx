@@ -14,7 +14,7 @@ const TeacherViewScore = () => {
   const [modalTestAssignId, setModalTestAssignId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("newest");
-  const [timeRange, setTimeRange] = useState("today");
+  const [timeRange, setTimeRange] = useState("week");
 
   const itemsPerPage = 10;
   const token = localStorage.getItem("token");

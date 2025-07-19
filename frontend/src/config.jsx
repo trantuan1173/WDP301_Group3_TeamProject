@@ -58,7 +58,7 @@ export const API_ENDPOINTS = {
 
   GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
   GET_ASSIGNED_TESTS_FOR_STUDENT: (studentId, testId) => `${baseUrl}/api/test-assigns/student/${studentId}/test/${testId}`,
-
+  CHANGE_PASSWORD: `${baseUrl}/api/users/change-password`,
 
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
