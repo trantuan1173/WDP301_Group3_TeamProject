@@ -13,14 +13,6 @@ const AdminManageEnrollment = () => {
   const itemsPerPage = 10;
   const [courseFilter, setCourseFilter] = useState("All");
 
-  // Tính ngày mặc định: 1 tháng trước đến hôm nay
-  const today = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(today.getMonth() - 1);
-
-  const [fromDate, setFromDate] = useState(oneMonthAgo.toISOString().slice(0, 10));
-  const [toDate, setToDate] = useState(today.toISOString().slice(0, 10));
-
   // Fetch enrollments
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -30,10 +22,16 @@ const AdminManageEnrollment = () => {
         const res = await axios.get(API_ENDPOINTS.GET_ALL_ENROLLMENTS, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setEnrollments(
-          (res.data.data || []).filter((item) => item.status === "pending")
-        );
+        
+        console.log("API Response:", res.data);
+        
+        const enrollmentData = res.data.data || res.data || [];
+        const filteredData = enrollmentData.filter((item) => item.status === "pending");
+        
+        console.log("Filtered enrollments:", filteredData);
+        setEnrollments(filteredData);
       } catch (err) {
+        console.error("Error fetching enrollments:", err);
         setEnrollments([]);
       }
       setLoading(false);
@@ -55,27 +53,43 @@ const AdminManageEnrollment = () => {
     ];
   }, [enrollments]);
 
-  // Filter enrollments by search, date, and course
-  const filtered = enrollments
-    .slice()
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .filter((item) => {
-      const matchSearch =
-        item.studentId?.email?.toLowerCase().includes(search.toLowerCase()) ||
-        item.courseId?.nameCourses?.toLowerCase().includes(search.toLowerCase());
-      const enrolledAt = item.enrolledAt ? new Date(item.enrolledAt) : null;
-      const matchFrom = fromDate ? (enrolledAt ? enrolledAt >= new Date(fromDate) : false) : true;
-      const matchTo = toDate ? (enrolledAt ? enrolledAt <= new Date(toDate) : false) : true;
-      const matchCourse =
-        courseFilter === "All" || item.courseId?._id === courseFilter;
-      return matchSearch && matchFrom && matchTo && matchCourse;
-    });
+  // Filter enrollments by search and course only
+  const filtered = React.useMemo(() => {
+    if (!enrollments || enrollments.length === 0) return [];
+    
+    return enrollments
+      .slice()
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt || a.enrolledAt);
+        const dateB = new Date(b.createdAt || b.enrolledAt);
+        return dateB - dateA;
+      })
+      .filter((item) => {
+        // Search filter
+        const searchTerm = search.toLowerCase();
+        const matchSearch = !search || (
+          (item.studentId?.email?.toLowerCase() || '').includes(searchTerm) ||
+          (item.courseId?.nameCourses?.toLowerCase() || '').includes(searchTerm) ||
+          (item.studentId?.profileId?.name?.toLowerCase() || '').includes(searchTerm)
+        );
+        
+        // Course filter
+        const matchCourse = courseFilter === "All" || item.courseId?._id === courseFilter;
+        
+        return matchSearch && matchCourse;
+      });
+  }, [enrollments, search, courseFilter]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, courseFilter]);
 
   // Refetch enrollments after assign
   const handleAssignSuccess = () => {
@@ -87,11 +101,14 @@ const AdminManageEnrollment = () => {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        setEnrollments(
-          (res.data.data || []).filter((item) => item.status === "pending")
-        );
+        const enrollmentData = res.data.data || res.data || [];
+        const filteredData = enrollmentData.filter((item) => item.status === "pending");
+        setEnrollments(filteredData);
       })
-      .catch(() => setEnrollments([]))
+      .catch((err) => {
+        console.error("Error refetching enrollments:", err);
+        setEnrollments([]);
+      })
       .finally(() => setLoading(false));
   };
 
@@ -100,35 +117,16 @@ const AdminManageEnrollment = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">ENROLL MANAGEMENT</h2>
+      
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           type="text"
-          placeholder="Search"
+          placeholder="Search by name, email, or course"
           className="border px-3 py-2 rounded w-64"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div className="flex items-center gap-2">
-          <span role="img" aria-label="calendar">📅</span>
-          From:{" "}
-          <input
-            type="date"
-            className="border rounded px-2 py-1 w-36"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            max={toDate}
-          />
-          To:{" "}
-          <input
-            type="date"
-            className="border rounded px-2 py-1 w-36"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            min={fromDate}
-            max={today.toISOString().slice(0, 10)}
-          />
-        </div>
-        {/* Dropdown chọn course */}
+        
         <select
           className="border rounded px-2 py-1 w-56"
           value={courseFilter}
@@ -139,6 +137,7 @@ const AdminManageEnrollment = () => {
           ))}
         </select>
       </div>
+      
       <div className="bg-white rounded border shadow">
         <table className="min-w-full">
           <thead>
@@ -155,21 +154,33 @@ const AdminManageEnrollment = () => {
           <tbody>
             {paginated.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center py-6">No pending enrollments found.</td>
+                <td colSpan={7} className="text-center py-6">
+                  {enrollments.length === 0 
+                    ? "No enrollments found." 
+                    : "No enrollments match your filters."}
+                </td>
               </tr>
             ) : (
               paginated.map((item, idx) => (
                 <tr key={item._id} className="border-t">
                   <td className="py-2 px-3">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
-                  <td className="py-2 px-3">{item.studentId?.profileId?.name || "N/A"}</td>
-                  <td className="py-2 px-3">{item.studentId?.email}</td>
+                  <td className="py-2 px-3">
+                    {item.studentId?.profileId?.name || "N/A"}
+                  </td>
+                  <td className="py-2 px-3">
+                    {item.studentId?.email || "N/A"}
+                  </td>
                   <td className="py-2 px-3">
                     {item.enrolledAt
                       ? new Date(item.enrolledAt).toLocaleDateString()
-                      : ""}
+                      : "N/A"}
                   </td>
-                  <td className="py-2 px-3">{item.courseId?.nameCourses}</td>
-                  <td className="py-2 px-3 capitalize">{item.status}</td>
+                  <td className="py-2 px-3">
+                    {item.courseId?.nameCourses || "N/A"}
+                  </td>
+                  <td className="py-2 px-3 capitalize">
+                    {item.status || "N/A"}
+                  </td>
                   <td className="py-2 px-3 flex gap-2">
                     <button
                       className="bg-blue-500 text-white px-3 py-1 rounded text-sm font-semibold hover:bg-blue-800 transition"
@@ -177,12 +188,7 @@ const AdminManageEnrollment = () => {
                     >
                       Assign
                     </button>
-                    <button
-                      className="border border-gray-600 px-3 py-1 rounded text-sm font-semibold hover:bg-gray-100 transition"
-                      disabled
-                    >
-                      Unassign
-                    </button>
+                    
                   </td>
                 </tr>
               ))
@@ -190,6 +196,7 @@ const AdminManageEnrollment = () => {
           </tbody>
         </table>
       </div>
+      
       {/* Pagination controls */}
       {totalPages > 1 && (
         <div className="flex justify-end mt-4 gap-2">
@@ -214,6 +221,7 @@ const AdminManageEnrollment = () => {
           </span>
         </div>
       )}
+      
       {selectedEnrollmentId && (
         <AdminAssignErollmentClass
           enrollmentId={selectedEnrollmentId}

@@ -58,11 +58,11 @@ const roadmapData = {
     ]
 };
 
-const RouteCourse = () => {
+const RouteCourse = ({ onSupportClick }) => {
     const navigate = useNavigate();
     const [toeicCourses, setToeicCourses] = useState([]);
     const [ieltsCourses, setIeltsCourses] = useState([]);
-    const [filter, setFilter] = useState('all'); // all | toeic | ielts
+    const [filter, setFilter] = useState('all');
     const [activeTab, setActiveTab] = useState('intro');
 
     useEffect(() => {
@@ -78,12 +78,20 @@ const RouteCourse = () => {
         };
         fetchCourses();
     }, []);
+
     const chunkArray = (arr, size) => {
         const result = [];
         for (let i = 0; i < arr.length; i += size) {
             result.push(arr.slice(i, i + size));
         }
         return result;
+    };
+
+    const handleSupportClick = () => {
+        setActiveTab('support');
+        if (onSupportClick) {
+            onSupportClick();
+        }
     };
 
     // Banner/Header
@@ -100,35 +108,34 @@ const RouteCourse = () => {
                 background: '#fff'
             }}>
             <div
-    style={{
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
-        overflow: 'hidden',
-    }}
->
-            {/* Banner background (ảnh) */}
-            <Carousel interval={5000} controls={true} indicators={true} pause={false}>
-            <Carousel.Item>
-                <img
-                    src="/images/Banner.jpg"
-                    alt="Banner 1"
-                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
-                />
-            </Carousel.Item>
-            {/* Thêm slide banner khác nếu muốn */}
-            <Carousel.Item>
-                <img
-                    src="/images/Banner1.jpg"
-                    alt="Banner 2"
-                    style={{ width: '100vw', height: "100%  ", objectFit: 'cover', display: 'block' }}
-                />
-            </Carousel.Item>
-        </Carousel>
-        </div>
+                style={{
+                    width: '100vw',
+                    position: 'relative',
+                    left: '50%',
+                    right: '50%',
+                    marginLeft: '-50vw',
+                    marginRight: '-50vw',
+                    overflow: 'hidden',
+                }}
+            >
+                {/* Banner background (ảnh) */}
+                <Carousel interval={5000} controls={true} indicators={true} pause={false}>
+                    <Carousel.Item>
+                        <img
+                            src="/images/Banner.jpg"
+                            alt="Banner 1"
+                            style={{ width: '100vw', height: "100%", objectFit: 'cover', display: 'block' }}
+                        />
+                    </Carousel.Item>
+                    <Carousel.Item>
+                        <img
+                            src="/images/Banner1.jpg"
+                            alt="Banner 2"
+                            style={{ width: '100vw', height: "100%", objectFit: 'cover', display: 'block' }}
+                        />
+                    </Carousel.Item>
+                </Carousel>
+            </div>
             {/* Menu */}
             <div
                 style={{
@@ -212,9 +219,7 @@ const RouteCourse = () => {
                         <option style={{ color: '#000' }} value="all">Khóa học</option>
                         <option style={{ color: '#000' }} value="toeic">TOEIC</option>
                         <option style={{ color: '#000' }} value="ielts">IELTS</option>
-
                     </select>
-                    {/* Icon mũi tên ▼ */}
                     <div
                         style={{
                             position: 'absolute',
@@ -251,7 +256,7 @@ const RouteCourse = () => {
 
                 {/* Hỗ trợ */}
                 <div
-                    onClick={() => setActiveTab('support')}
+                    onClick={handleSupportClick}
                     style={{
                         flex: 1,
                         textAlign: 'center',
@@ -268,7 +273,6 @@ const RouteCourse = () => {
                     Hỗ trợ
                 </div>
             </div>
-
         </div>
     );
 
@@ -316,7 +320,6 @@ const RouteCourse = () => {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-
                         {title} Roadmap
                     </div>
                     <Accordion defaultActiveKey="0" alwaysOpen>
@@ -381,7 +384,7 @@ const RouteCourse = () => {
                                                 justifyContent: 'center',
                                                 textAlign: 'center',
                                                 minHeight: 370,
-                                                height: '100%',    
+                                                height: '100%',
                                                 alignSelf: 'flex-start'
                                             }}
                                         >
@@ -436,29 +439,29 @@ const RouteCourse = () => {
         <div>
             <style>
                 {`
-            .carousel-control-next, .carousel-control-prev {
-                width: 60px !important;
-                height: 60px !important;
-                top: 50%;
-                transform: translateY(-50%);
-                opacity: 1;
-                z-index: 10;
-            }
-            .carousel-control-next {
-                right: -30px !important;
-            }
-            .carousel-control-prev {
-                left: -30px !important;
-            }
-            .carousel-control-next-icon, .carousel-control-prev-icon {
-                background-color: rgba(180, 180, 180, 0.7);
-                border-radius: 50%;
-                box-shadow: 0 4px 16px #0002;
-                width: 40px;
-                height: 40px;
-                background-size: 60% 60%;
-            }
-            `}
+                .carousel-control-next, .carousel-control-prev {
+                    width: 60px !important;
+                    height: 60px !important;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    opacity: 1;
+                    z-index: 10;
+                }
+                .carousel-control-next {
+                    right: -30px !important;
+                }
+                .carousel-control-prev {
+                    left: -30px !important;
+                }
+                .carousel-control-next-icon, .carousel-control-prev-icon {
+                    background-color: rgba(180, 180, 180, 0.7);
+                    border-radius: 50%;
+                    box-shadow: 0 4px 16px #0002;
+                    width: 40px;
+                    height: 40px;
+                    background-size: 60% 60%;
+                }
+                `}
             </style>
             {renderHeader()}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
