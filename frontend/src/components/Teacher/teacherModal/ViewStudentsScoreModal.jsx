@@ -33,6 +33,28 @@ const ViewStudentsScoreModal = ({ show, onClose, testAssignId }) => {
     fetchStudentScores();
   }, [testAssignId]);
 
+const getStatusBadge = (status) => {
+  const color = status === "submitted" ? "#4CAF50" : "#9E9E9E"; // green / gray
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "4px 10px",
+        borderRadius: "20px",
+        backgroundColor: color,
+        color: "#fff",
+        fontSize: "0.85rem",
+        fontWeight: "500",
+        textTransform: "capitalize",
+      }}
+    >
+      {status}
+    </span>
+  );
+};
+
+
   return (
     <Modal show={show} onHide={onClose} size="lg" centered>
       <Modal.Header closeButton>
@@ -53,6 +75,7 @@ const ViewStudentsScoreModal = ({ show, onClose, testAssignId }) => {
                 <th>Student Name</th>
                 <th>Email</th>
                 <th>Score</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -61,6 +84,7 @@ const ViewStudentsScoreModal = ({ show, onClose, testAssignId }) => {
                   <td>{s.studentName || "N/A"}</td>
                   <td>{s.studentEmail || "N/A"}</td>
                   <td>{s.score != null ? s.score : "N/A"}</td>
+                  <td>{getStatusBadge(s.status || "unknown")}</td>
                 </tr>
               ))}
             </tbody>
