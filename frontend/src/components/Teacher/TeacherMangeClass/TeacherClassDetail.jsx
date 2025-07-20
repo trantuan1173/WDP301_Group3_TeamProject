@@ -12,7 +12,7 @@ const TAB = {
   STUDENTS: "STUDENTS",
   ATTENDANCE: "ATTENDANCE",
   TEST: "TEST",
-  SOCRE: "SCORE",
+  SCORE: "SCORE",
 };
 
 export default function TeacherClassDetail({ classId, onBack }) {
@@ -96,7 +96,7 @@ export default function TeacherClassDetail({ classId, onBack }) {
       )}
       {activeTab === TAB.SCORE && (
         <div>
-          <div className="text-xl font-semibold text-[#1a237e]">Score content here...</div>
+          <ScoreTab classId={classInfo?._id} courseId={classInfo?.course?._id} />
         </div>
       )}
     </div>
