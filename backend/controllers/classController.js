@@ -529,6 +529,49 @@ const getClassByCourseId = async (req, res) => {
     });
   }
 };
+
+// Fetch Open day schedule (All Class have start time in the future)
+
+const openDaySchedule = async (req, res) => {
+  try {
+    const classes = await Class.find({ start_time: { $gte: new Date() } })
+      .populate("courseId");
+    if (!classes) return;
+
+    const courseIds = classes
+      .map(cls => cls.courseId?._id?.toString() ?? cls.courseId?.toString())
+      .filter(Boolean);
+
+    const courseDetails = await CourseDetail.find({ courseId: { $in: courseIds } });
+
+    const formattedClasses = classes.map((cls) => ({
+      _id: cls._id,
+      course: cls.courseId ? {
+        _id: cls.courseId._id,
+        name: cls.courseId.nameCourses,
+        detail: courseDetails.find(detail =>
+          detail.courseId.toString() === cls.courseId._id.toString()
+        ) || null,
+      } : null,
+      className: cls.className,
+      start_time: cls.start_time,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: classes.length,
+      data: formattedClasses,
+      message: "Fetch open day schedule successfully",
+    });
+  } catch (err) {
+    console.error("Lỗi fetch open day schedule:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch open day schedule",
+      error: err.message,
+    });
+  }
+};
 module.exports = {
   getClasses,
   getClass,
@@ -541,5 +584,6 @@ module.exports = {
   getClassByTeacherId,
   getClassByCourseId,
   updateClassProgress,
+  openDaySchedule,
 }
 

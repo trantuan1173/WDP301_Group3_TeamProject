@@ -10,6 +10,7 @@ const {
   getClassByStudentId,
   getClassByTeacherId,
   getClassByCourseId,
+  openDaySchedule,
 } = require("../controllers/classController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
@@ -21,6 +22,21 @@ const router = express.Router();
  *   name: Classes
  *   description: Quản lý lớp học
  */
+
+/**
+ * @swagger
+ * /classes/open-day-schedule:
+ *   get:
+ *     summary: Lấy danh sách lớp học có start_time trong tương lai (chỉ admin, teacher)
+ *     description: Lấy danh sách lớp học có start_time trong tương lai (chỉ admin, teacher)
+ *     tags: [Classes]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách lớp học có start_time trong tương lai
+ */
+router.get("/open-day-schedule", openDaySchedule) 
 
 /**
  * @swagger
@@ -196,6 +212,7 @@ router.post("/:id/students", protect, authorize("admin", "teacher"), addStudentT
  *         description: Xóa sinh viên khỏi lớp thành công
  */
 router.delete("/:id/students", protect, authorize("admin", "teacher"), removeStudentFromClass)
+
 
 /**
  * @swagger

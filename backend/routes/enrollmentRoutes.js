@@ -33,7 +33,7 @@ const router = express.Router()
  *       200:
  *         description: Danh sách đăng ký khóa học
  */
-router.get("/", protect, getEnrollments)
+router.get("/", protect, authorize("admin"), getEnrollments)
 
 /**
  * @swagger
