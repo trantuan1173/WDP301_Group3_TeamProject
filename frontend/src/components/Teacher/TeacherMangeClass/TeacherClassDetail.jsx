@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import ClassInfoTab from "./ClassInfoTab";
-import StudentListTab from "./StudentListTab";
+
 import AttendanceTab from "./AttendanceTab";
 import TestTab from "./TestTab";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChartLine, faUserCheck, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import  ScoreTab  from "./ScoreTab";
 import LoadingSpinner from "../../LoadingSpinner"; // Assuming you have a LoadingSpinner component
 const TAB = {
   INFO: "INFO",
   STUDENTS: "STUDENTS",
   ATTENDANCE: "ATTENDANCE",
   TEST: "TEST",
+  SOCRE: "SCORE",
 };
 
 export default function TeacherClassDetail({ classId, onBack }) {
@@ -42,80 +42,67 @@ export default function TeacherClassDetail({ classId, onBack }) {
 
   return (
     <div className="p-8 bg-[#f6f7fb] min-h-screen">
-      {onBack && (
-        <button
-          className="mb-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 font-semibold"
-          onClick={onBack}
-        >
-          ← Quay lại
-        </button>
-      )}
-      <h1 className="text-2xl font-bold mb-6">
-        Class: {classInfo?.className || "Tên lớp học"}
-      </h1>
+  {onBack && (
+    <button
+      className="mb-4 px-4 py-2 border-2 border-[#1a237e] rounded text-[#1a237e] font-semibold hover:bg-[#eaeafc]"
+      onClick={onBack}
+    >
+      Back
+    </button>
+  )}
 
-      {/* Tabs */}
-<div className="flex justify-between gap-6 mb-8 max-w-5xl mx-auto items-end">
-  {[
-    {
-      title: "Progress",
-      icon: faChartLine,
-      color: "from-blue-400 to-blue-600",
-      tab: TAB.INFO,
-    },
-    {
-      title: "Điểm danh",
-      icon: faUserCheck,
-      color: "from-green-400 to-blue-500",
-      tab: TAB.ATTENDANCE,
-    },
-    {
-      title: "Bài kiểm tra",
-      icon: faFileAlt,
-      color: "from-pink-400 to-blue-500",
-      tab: TAB.TEST,
-    },
-  ].map(({ title, icon, color, tab }) => {
-    const isActive = activeTab === tab;
-    return (
-      <div
-        key={tab}
-        className={`rounded-full p-[2px] w-full max-w-[400px] overflow-hidden 
-          bg-gradient-to-r ${color} shadow-sm
-        `}
-      >
-        <div className="rounded-full bg-white w-full h-full">
+  <h1 className="text-2xl font-bold mb-5">
+    Class: {classInfo?.className || "Tên lớp học"}
+  </h1>
+
+  {/* Bọc cả tabs và content */}
+  <div className="w-full  mx-auto ">
+    {/* Tabs */}
+    <div className="flex bg-white rounded-xl shadow overflow-hidden mb-8 w-full">
+      {[
+        { label: "Process", tab: TAB.INFO },
+        { label: "Attendance", tab: TAB.ATTENDANCE },
+        { label: "Test", tab: TAB.TEST },
+        { label: "Score", tab: TAB.SCORE },
+      ].map(({ label, tab }, index, array) => {
+        const isFirst = index === 0;
+        const isLast = index === array.length - 1;
+        const isActive = activeTab === tab;
+
+        return (
           <button
+            key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`w-full rounded-full py-4 px-6 font-semibold text-lg flex items-center justify-center
-              transition-all duration-300
-              ${isActive ? "text-blue-700 scale-[1.02]" : "text-gray-700"}
+            className={`flex-1  px-8 py-4 text-sm font-bold transition-all
+              ${isActive ? "bg-[#1a237e] text-white" : "text-[#1a237e] hover:bg-[#f6f7fb]"}
+              ${isFirst ? "rounded-l-xl" : ""}
+              ${isLast ? "rounded-r-xl" : ""}
             `}
           >
-            <FontAwesomeIcon icon={icon} className="mr-3 text-xl" />
-            {title}
+            {label}
           </button>
+        );
+      })}
+    </div>
+
+    {/* Tab content */}
+    <div className="bg-white rounded-xl shadow p-6 min-h-[300px]">
+      {activeTab === TAB.INFO && <ClassInfoTab classInfo={classInfo} />}
+      {activeTab === TAB.ATTENDANCE && (
+        <AttendanceTab classId={classInfo?._id} students={classInfo?.students || []} />
+      )}
+      {activeTab === TAB.TEST && (
+        <TestTab classId={classInfo?._id} courseId={classInfo?.course?._id} />
+      )}
+      {activeTab === TAB.SCORE && (
+        <div>
+          <div className="text-xl font-semibold text-[#1a237e]">Score content here...</div>
         </div>
-      </div>
-    );
-  })}
+      )}
+    </div>
+  </div>
 </div>
 
-      {/* Tab content */}
-      <div className="bg-white rounded-xl shadow p-6 min-h-[300px]">
-        {activeTab === TAB.INFO && <ClassInfoTab classInfo={classInfo} />}
-        {activeTab === TAB.STUDENTS && <StudentListTab students={classInfo?.students || []} />}
-        {activeTab === TAB.ATTENDANCE && (
-          <AttendanceTab classId={classInfo?._id} students={classInfo?.students || []} />
-        )}
-        {activeTab === TAB.TEST &&
-          <div>
-            <TestTab
-              classId={classInfo?._id}
-              courseId={classInfo?.course?._id}
-            />
-          </div>}
-      </div>
-    </div>
+
   );
-};
+}
