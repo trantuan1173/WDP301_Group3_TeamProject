@@ -52,6 +52,10 @@ const getAllFeedbacksATeacher = async (req, res) => {
       }
     })
     .populate({
+      path: "classId",
+      select: "className",
+    })
+    .populate({
       path: "studentId",
       select: "profileId",
       populate: {
@@ -206,7 +210,7 @@ const getFeedbacksTeacherHighlightForHome = async (req, res) => {
 // Create feedback
 const createFeedbackTeacher = async (req, res) => {
   try {
-    const { studentId, teacherId, feedback, rating } = req.body
+    const { studentId, teacherId, classId, feedback, rating } = req.body
 
     // Check if user exists
     const teacher = await User.findById(teacherId)
@@ -220,6 +224,7 @@ const createFeedbackTeacher = async (req, res) => {
     const feedbackTeacher = await FeedbackTeacher.create({
       studentId,
       teacherId,
+      classId,
       feedback,
       rating
     })
@@ -331,6 +336,47 @@ const highlightFeedbackTeacher = async (req, res) => {
   }
 }
 
+// Get feedbacks by Class
+const getFeedbacksTeacherByClass = async (req, res) => {
+  try {
+    const { classId } = req.params
+    const feedbacks = await FeedbackTeacher.find({ classId })
+    .populate({
+      path: "teacherId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "studentId",
+      select: "profileId",
+      populate: {
+        path: "profileId",
+        select: "name"
+      }
+    })
+    .populate({
+      path: "classId",
+      select: "className",
+    })
+    res.status(200).json({
+      success: true,
+      count: feedbacks.length,
+      data: feedbacks,
+    })
+    message: "Feedbacks fetched successfully";
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch feedbacks",
+      error: error.message,
+    })
+    message: "Failed to fetch feedbacks";
+  }
+}
+
 module.exports={
     getAllFeedbacksAllTeacher,
     getAllFeedbacksATeacher,
@@ -340,6 +386,7 @@ module.exports={
     createFeedbackTeacher,
     updateFeedbackTeacher,
     deleteFeedbackTeacher,
-    highlightFeedbackTeacher
+    highlightFeedbackTeacher,
+    getFeedbacksTeacherByClass
 }
     
