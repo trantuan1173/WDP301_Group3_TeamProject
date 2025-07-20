@@ -12,6 +12,11 @@ const feedbackTeacherSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: true,
+    },
     feedback: {
       type: String,
       required: true,
