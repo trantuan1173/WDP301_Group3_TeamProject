@@ -39,8 +39,8 @@ export default function ClassInfoTab({ classInfo }) {
 
   return (
     <div className="flex flex-col md:flex-row gap-8 items-center px-8">
-      <div className="flex-1 text-[1.125rem]"> {/* text tăng 1.5 lần từ base (1rem) */}
-        <div className="font-bold text-xl mb-2 text-[#1a237e]"> {/* tiêu đề lớn hơn */}
+      <div className="flex-1 text-[1.125rem]"> 
+        <div className="font-bold text-xl mb-2 text-[#1a237e]"> 
           Class Details
         </div>
         <div className="mb-2">
@@ -75,16 +75,16 @@ export default function ClassInfoTab({ classInfo }) {
         text={`${progress}%`}             
         styles={buildStyles({               
           textSize: "22px",               
-          textColor: "#1a237e", // màu text đậm hơn
-          pathColor: "#1565c0", // màu path đậm hơn
-          trailColor: "#bdbdbd", // màu nền đậm hơn một chút
-          textFontWeight: "700", // font weight đậm hơn (từ 500 -> 700)
+          textColor: "#1a237e", 
+          pathColor: "#1565c0", 
+          trailColor: "#bdbdbd", 
+          textFontWeight: "700", 
           textFontFamily: "'Poppins', 'Segoe UI', sans-serif",
           pathTransitionDuration: 0.5,
-          // Tăng độ dày của đường tròn
-          strokeLinecap: 'round', // làm tròn đầu đường
+          
+          strokeLinecap: 'round', 
         })}
-        strokeWidth={10} // tăng độ dày từ default (8) lên 10
+        strokeWidth={10} 
       />          
     </div>       
   </div>  
