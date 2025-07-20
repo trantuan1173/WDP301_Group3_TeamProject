@@ -38,53 +38,56 @@ export default function ClassInfoTab({ classInfo }) {
   const detail = course.detail || {};
 
   return (
-  <div className="flex flex-col md:flex-row gap-8 items-center px-6">
-    <div className="flex-1 text-[1.125rem]"> {/* text tăng 1.5 lần từ base (1rem) */}
-      <div className="font-bold text-xl mb-2 text-[#1a237e]"> {/* tiêu đề lớn hơn */}
-        Class Details
+    <div className="flex flex-col md:flex-row gap-8 items-center px-8">
+      <div className="flex-1 text-[1.125rem]"> {/* text tăng 1.5 lần từ base (1rem) */}
+        <div className="font-bold text-xl mb-2 text-[#1a237e]"> {/* tiêu đề lớn hơn */}
+          Class Details
+        </div>
+        <div className="mb-2">
+          <span className="font-bold">Course:</span>{" "}
+          <span className="font-semibold">{detail.level || "?"}</span>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold">Level:</span>{" "}
+          <span className="font-semibold">{detail.level || "?"}</span>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold">Type:</span>{" "}
+          <span className="font-semibold">{detail.type || "?"}</span>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold">Progress:</span>{" "}
+          <span className="font-semibold">
+            {sessionsDone}/{detail.durationDays || "?"} Slots
+          </span>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold">Class note:</span>{" "}
+          <span className="font-semibold">{classInfo.note || "No note"}</span>
+        </div>
       </div>
-      <div className="mb-2">
-        <span className="font-bold">Course:</span>{" "}
-        <span className="font-semibold">{detail.level || "?"}</span>
-      </div>
-      <div className="mb-2">
-        <span className="font-bold">Level:</span>{" "}
-        <span className="font-semibold">{detail.level || "?"}</span>
-      </div>
-      <div className="mb-2">
-        <span className="font-bold">Type:</span>{" "}
-        <span className="font-semibold">{detail.type || "?"}</span>
-      </div>
-      <div className="mb-2">
-        <span className="font-bold">Progress:</span>{" "}
-        <span className="font-semibold">
-          {sessionsDone}/{detail.durationDays || "?"} Slots
-        </span>
-      </div>
-      <div className="mb-2">
-        <span className="font-bold">Class note:</span>{" "}
-        <span className="font-semibold">{classInfo.note || "No note"}</span>
-      </div>
-    </div>
 
-    {/* Vòng tròn progress */}
-    <div className="flex flex-col items-center justify-center h-[240px]">
-      <div style={{ width: 180, height: 180 }}>
-        <CircularProgressbar
-  value={progress}
-  text={`${progress}%`}
-  styles={buildStyles({
-    textSize: "22px", 
-    textColor: "#3f51b5", 
-    pathColor: "#1976d2",
-    trailColor: "#e0e0e0",
-    textFontWeight: "500", 
-    textFontFamily: "'Poppins', 'Segoe UI', sans-serif", 
-  })}
-/>
-
-      </div>
+      {/* Vòng tròn progress */}
+      <div className="flex flex-col items-center justify-center h-[240px]">         
+    <div style={{ width: 180, height: 180 }}>           
+      <CircularProgressbar             
+        value={progress}             
+        text={`${progress}%`}             
+        styles={buildStyles({               
+          textSize: "22px",               
+          textColor: "#1a237e", // màu text đậm hơn
+          pathColor: "#1565c0", // màu path đậm hơn
+          trailColor: "#bdbdbd", // màu nền đậm hơn một chút
+          textFontWeight: "700", // font weight đậm hơn (từ 500 -> 700)
+          textFontFamily: "'Poppins', 'Segoe UI', sans-serif",
+          pathTransitionDuration: 0.5,
+          // Tăng độ dày của đường tròn
+          strokeLinecap: 'round', // làm tròn đầu đường
+        })}
+        strokeWidth={10} // tăng độ dày từ default (8) lên 10
+      />          
+    </div>       
+  </div>  
     </div>
-  </div>
-);
+  );
 }
