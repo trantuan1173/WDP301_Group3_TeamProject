@@ -168,7 +168,7 @@ const RouteCourse = ({ onSupportClick }) => {
 
                 {/* Lịch khai giảng */}
                 <div
-                    onClick={() => setActiveTab('schedule')}
+                    onClick={() => navigate("/guest/opening-schedule")}
                     style={{
                         flex: 1,
                         textAlign: 'center',

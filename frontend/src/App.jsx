@@ -33,6 +33,7 @@ import AttendanceDetail from "./components/Student/AttendanceDetail";
 import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
 import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
 import AttendanceForm from "./components/Teacher/AttendanceForm";
+import GuestViewOpemingSchedule from "./components/Guest/GuestViewOpeningSchedule";
 
 
 const App = () => {
@@ -78,6 +79,7 @@ const App = () => {
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
         <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
         <Route path="/payment-process" element={<UserPaymentProcess />} />
+        <Route path="/guest/opening-schedule" element={<GuestViewOpemingSchedule />} />
 
 
         <Route path="/courses/:id" element={<CourseDetailPage />} />
