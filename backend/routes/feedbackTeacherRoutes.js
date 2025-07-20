@@ -8,7 +8,8 @@ const {
   createFeedbackTeacher,
   updateFeedbackTeacher,
   deleteFeedbackTeacher,
-  highlightFeedbackTeacher
+  highlightFeedbackTeacher,
+  getFeedbacksTeacherByClass,
 } = require("../controllers/feedbackTeacherController.js")
 const { protect, authorize } = require("../middleware/authMiddleware.js")
 
@@ -20,6 +21,7 @@ const router = express.Router()
  *   name: Feedbacks Teacher
  *   description: Phản hồi
  */
+
 
 /**
  * @swagger
@@ -97,6 +99,28 @@ router.post("/", protect, createFeedbackTeacher)
  *         description: Thông tin phản hồi
  */
 router.get("/highlight/:teacherId", getFeedbacksTeacherHighlight)
+
+
+/**
+ * @swagger
+ * /feedbacksTeacher/class/:classId:
+ *   get:
+ *     summary: Lấy danh sách phản hồi theo lớp
+ *     description: Lấy danh sách phản hồi theo lớp
+ *     tags: [Feedbacks Teacher]
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách phản hồi
+ */
+router.get("/class/:classId", getFeedbacksTeacherByClass)
 
 /**
  * @swagger
