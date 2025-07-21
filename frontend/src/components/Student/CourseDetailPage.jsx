@@ -52,6 +52,7 @@ export default function CourseDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
       <NavBar />
+      <div className="mt-8" />
       <div className="max-w-5xl mx-auto bg-white shadow rounded-2xl overflow-hidden relative">
         <div className="relative rounded-t-2xl overflow-hidden">
           {detail?.imageURL ? (

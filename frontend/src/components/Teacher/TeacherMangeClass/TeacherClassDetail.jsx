@@ -12,7 +12,7 @@ const TAB = {
   STUDENTS: "STUDENTS",
   ATTENDANCE: "ATTENDANCE",
   TEST: "TEST",
-  SOCRE: "SCORE",
+  SCORE: "SCORE",
 };
 
 export default function TeacherClassDetail({ classId, onBack }) {
