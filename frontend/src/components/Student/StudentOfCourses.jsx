@@ -98,9 +98,7 @@ export default function StudentCourses() {
                   >
                     View Details
                   </button>
-                  <button className="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 hover:scale-105 transition duration-300">
-                    Go to Course
-                  </button>
+                  
                 </div>
 
                 <div className="absolute inset-0 pointer-events-none bg-indigo-100 opacity-0 group-hover:opacity-10 transition duration-300"></div>

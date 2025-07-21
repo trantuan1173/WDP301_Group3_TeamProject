@@ -103,7 +103,8 @@ export const API_ENDPOINTS = {
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) =>
     `${baseUrl}/api/attendance/student/${studentId}`,
-
+  FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`, 
+  FEEDBACK_COURSE: `${baseUrl}/api/feedbacksCourse`,
   // Test
   DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
   UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,

@@ -8,9 +8,11 @@ import {
   FaDollarSign,
   FaChartLine,
 } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import CourseFeedbackModal from "./CourseFeedbackModal";
 import TeacherFeedbackModal from "./TeacherFeedbackModal";
+import NavBar from "../Layouts/NavBar";
 
 export default function CourseDetailPage() {
   const location = useLocation();
@@ -19,6 +21,20 @@ export default function CourseDetailPage() {
   const detail = course?.course?.detail;
   const [showCourseFeedback, setShowCourseFeedback] = useState(false);
   const [showTeacherFeedback, setShowTeacherFeedback] = useState(false);
+  const [studentId, setStudentId] = useState();
+
+  // Lấy studentId từ token đăng nhập theo mẫu bạn yêu cầu
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        setStudentId(decodedToken.id || decodedToken._id || decodedToken.studentId);
+      }
+    } catch (err) {
+      setStudentId(undefined);
+    }
+  }, []);
 
   const handleSaveFeedback = (data) => {
     console.log("Saved feedback:", data);
@@ -35,6 +51,7 @@ export default function CourseDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
+      <NavBar />
       <div className="max-w-5xl mx-auto bg-white shadow rounded-2xl overflow-hidden relative">
         <div className="relative rounded-t-2xl overflow-hidden">
           {detail?.imageURL ? (
@@ -85,8 +102,15 @@ export default function CourseDetailPage() {
               <div className="flex items-center gap-2">
                 <FaDollarSign className="text-indigo-500" />
                 <span className="font-semibold">Price:</span>{" "}
-                {detail?.price ? `$${detail.price}` : "N/A"}
+                {detail?.price
+                  ? new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    maximumFractionDigits: 0,
+                  }).format(detail.price)
+                  : "N/A"}
               </div>
+
               <div className="flex items-center gap-2">
                 <FaClock className="text-indigo-500" />
                 <span className="font-semibold">Duration:</span>{" "}
@@ -108,31 +132,24 @@ export default function CourseDetailPage() {
           </div>
 
           <div className="flex flex-col justify-center gap-3">
-            <button
-              onClick={() => alert("Go to course")}
-              className="py-2 px-4 bg-indigo-800 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
-              Go to Course
-            </button>
-            <button
-              onClick={() => alert("View attendance")}
-              className="py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-            >
-              View Attendance
-            </button>
-            <button
-              onClick={() => setShowCourseFeedback(true)}
-              className="py-2 px-4 bg-yellow-400 text-gray-800 rounded-lg hover:bg-yellow-300 transition"
-            >
-              Add feedback course
-            </button>
-
-            <button
-              onClick={() => setShowTeacherFeedback(true)}
-              className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-400 transition"
-            >
-              Add feedback teacher
-            </button>
+            {course.progress >= 50 && (
+              <>
+                <button
+                  onClick={() => setShowCourseFeedback(true)}
+                  className="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                >
+                  Add feedback course
+                </button>
+                <button
+                  onClick={() => {
+                    setShowTeacherFeedback(true);
+                  }}
+                  className="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-400 transition"
+                >
+                  Add feedback teacher
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -149,6 +166,9 @@ export default function CourseDetailPage() {
       {showCourseFeedback && (
         <CourseFeedbackModal
           courseName={course.course?.name}
+          courseId={course.course?._id}
+          userId={studentId}
+          imageURL={detail?.imageURL}
           onClose={() => setShowCourseFeedback(false)}
           onSave={handleSaveFeedback}
         />
@@ -156,13 +176,13 @@ export default function CourseDetailPage() {
 
       {showTeacherFeedback && (
         <TeacherFeedbackModal
-          teacherName={course.teacher?.name}
+          teacherName={course.teacher?.email}
           className={course.className}
+          teacherId={course.teacher?._id}
+          classId={course._id}
+          studentId={studentId}
           onClose={() => setShowTeacherFeedback(false)}
-          onSave={(data) => {
-            console.log("Teacher feedback saved:", data);
-            // Gửi lên backend nếu cần
-          }}
+          onSuccess={() => {/* reload hoặc thông báo nếu cần */ }}
         />
       )}
     </div>
