@@ -83,9 +83,8 @@ const GuestViewTeacher = () => {
 
               return (
                 <div key={fb._id} className="px-2">
-                  {" "}
                   {/* Giảm padding giữa các slide */}
-                  <div className="bg-blue-100 rounded-lg shadow-lg p-4 h-full flex flex-col justify-between border border-blue-300">
+                  <div className="bg-blue-100 rounded-lg shadow-lg p-4 h-full flex flex-col justify-between border border-blue-300 min-h-[250px]">
                     {/* Avatar + Info */}
                     <div className="flex items-center mb-3">
                       <div className="w-10 h-10 rounded-full bg-blue-400 flex items-center justify-center text-lg font-semibold text-white mr-3">
@@ -102,7 +101,7 @@ const GuestViewTeacher = () => {
                     </div>
 
                     {/* Feedback */}
-                    <p className="text-blue-900 italic text-lg mb-3 leading-snug">
+                    <p className="text-blue-900 italic text-lg mb-3 leading-snug line-clamp-4 overflow-hidden">
                       "{fb.feedback}"
                     </p>
 
@@ -119,6 +118,7 @@ const GuestViewTeacher = () => {
       </div>
     </section>
   );
+
 };
 
 export default GuestViewTeacher;

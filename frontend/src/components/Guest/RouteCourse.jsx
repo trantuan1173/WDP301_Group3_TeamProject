@@ -4,6 +4,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import { useNavigate } from "react-router-dom";
+import GuestViewCourseRegistration from './GuestViewCourseRegistration';
 
 const roadmapData = {
     toeic: [
@@ -64,6 +65,7 @@ const RouteCourse = ({ onSupportClick }) => {
     const [ieltsCourses, setIeltsCourses] = useState([]);
     const [filter, setFilter] = useState('all');
     const [activeTab, setActiveTab] = useState('intro');
+    const [showGuideModal, setShowGuideModal] = useState(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -237,7 +239,10 @@ const RouteCourse = ({ onSupportClick }) => {
 
                 {/* Hướng dẫn */}
                 <div
-                    onClick={() => setActiveTab('guide')}
+                    onClick={() => {
+                        setActiveTab('guide');
+                        setShowGuideModal(true);
+                    }}
                     style={{
                         flex: 1,
                         textAlign: 'center',
@@ -439,38 +444,47 @@ const RouteCourse = ({ onSupportClick }) => {
         <div>
             <style>
                 {`
-                .carousel-control-next, .carousel-control-prev {
-                    width: 60px !important;
-                    height: 60px !important;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    opacity: 1;
-                    z-index: 10;
-                }
-                .carousel-control-next {
-                    right: -30px !important;
-                }
-                .carousel-control-prev {
-                    left: -30px !important;
-                }
-                .carousel-control-next-icon, .carousel-control-prev-icon {
-                    background-color: rgba(180, 180, 180, 0.7);
-                    border-radius: 50%;
-                    box-shadow: 0 4px 16px #0002;
-                    width: 40px;
-                    height: 40px;
-                    background-size: 60% 60%;
-                }
-                `}
+        .carousel-control-next, .carousel-control-prev {
+          width: 60px !important;
+          height: 60px !important;
+          top: 50%;
+          transform: translateY(-50%);
+          opacity: 1;
+          z-index: 10;
+        }
+        .carousel-control-next {
+          right: -30px !important;
+        }
+        .carousel-control-prev {
+          left: -30px !important;
+        }
+        .carousel-control-next-icon, .carousel-control-prev-icon {
+          background-color: rgba(180, 180, 180, 0.7);
+          border-radius: 50%;
+          box-shadow: 0 4px 16px #0002;
+          width: 40px;
+          height: 40px;
+          background-size: 60% 60%;
+        }
+      `}
             </style>
+
             {renderHeader()}
+
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
                 {sections.map(section => (
                     <React.Fragment key={section.key}>{section.jsx}</React.Fragment>
                 ))}
             </div>
+
+            {/* Kết nối modal */}
+            <GuestViewCourseRegistration show={showGuideModal} onClose={() => {
+                setShowGuideModal(false);
+                setActiveTab('intro');
+            }} />
         </div>
     );
+
 };
 
 export default RouteCourse;
