@@ -560,6 +560,28 @@ const authProfile = async (req, res) => {
     });
   }
 };
+const changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const token = req.headers.authorization?.split(' ')[1]; // "Bearer <token>"
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch)
+      return res.status(400).json({ success: false, message: "Current password is incorrect" });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password changed successfully" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: "Invalid token", error: error.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
@@ -575,4 +597,5 @@ module.exports = {
   authProfile,
   updateUserByAdmin,
   resendVerifyEmail,
+  changePassword,
 }

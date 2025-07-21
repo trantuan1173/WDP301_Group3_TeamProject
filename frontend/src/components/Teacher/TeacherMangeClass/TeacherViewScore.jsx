@@ -7,14 +7,15 @@ import ViewStudentsScoreModal from "../teacherModal/ViewStudentsScoreModal";
 
 const TeacherViewScore = () => {
   const [assignedTests, setAssignedTests] = useState([]);
-  const [selectedTestId, setSelectedTestId] = useState(null);
-  const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalShow, setModalShow] = useState(false);
   const [modalTestAssignId, setModalTestAssignId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("newest");
-  const [timeRange, setTimeRange] = useState("today");
+  const [timeRange, setTimeRange] = useState("week");
+  const [selectedClass, setSelectedClass] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
 
   const itemsPerPage = 10;
   const token = localStorage.getItem("token");
@@ -36,6 +37,14 @@ const TeacherViewScore = () => {
     fetchAssignedTests();
   }, []);
 
+  const classOptions = [
+    ...new Map(
+      assignedTests
+        .filter((t) => t.classId && t.classId.className)
+        .map((t) => [t.classId._id, t.classId])
+    ).values(),
+  ];
+
   const filteredAndSortedTests = [...assignedTests]
     .filter((test) => {
       const now = new Date();
@@ -53,11 +62,19 @@ const TeacherViewScore = () => {
       }
       return true;
     })
+    .filter((test) => {
+      if (selectedClass === "All") return true;
+      return test.classId?._id === selectedClass;
+    })
+    .filter((test) =>
+      test.testId?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     .sort((a, b) =>
       sortOrder === "newest"
         ? new Date(b.createdAt) - new Date(a.createdAt)
         : new Date(a.createdAt) - new Date(b.createdAt)
     );
+
 
   const paginatedTests = filteredAndSortedTests.slice(
     (currentPage - 1) * itemsPerPage,
@@ -80,9 +97,9 @@ const TeacherViewScore = () => {
       <Container className="mt-4">
         <h3 className="mb-3">Tests Assigned</h3>
 
-        <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
-          <div>
-            <label className="me-2 fw-semibold">Sort:</label>
+        <div className="d-flex flex-wrap align-items-end mb-3">
+          <div className="me-3">
+            <label className="fw-semibold">Sort:</label>
             <select
               className="form-select"
               value={sortOrder}
@@ -96,8 +113,8 @@ const TeacherViewScore = () => {
             </select>
           </div>
 
-          <div>
-            <label className="me-2 fw-semibold">Time:</label>
+          <div className="me-3">
+            <label className="fw-semibold">Time:</label>
             <select
               className="form-select"
               value={timeRange}
@@ -112,7 +129,41 @@ const TeacherViewScore = () => {
               <option value="all">All Time</option>
             </select>
           </div>
+
+          <div className="me-3">
+            <label className="fw-semibold">Class:</label>
+            <select
+              className="form-select"
+              value={selectedClass}
+              onChange={(e) => {
+                setSelectedClass(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="All">All Classes</option>
+              {classOptions.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.className}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ms-auto">
+            <label className="fw-semibold">Search:</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search test title..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
         </div>
+
 
         {filteredAndSortedTests.length === 0 ? (
           <p>No tests assigned yet.</p>
@@ -146,7 +197,6 @@ const TeacherViewScore = () => {
           </Table>
         )}
 
-        {/* Pagination only shows if more than 1 page */}
         {totalPages > 1 && (
           <Pagination className="justify-content-center mt-4">
             <Pagination.Prev
@@ -170,32 +220,6 @@ const TeacherViewScore = () => {
               onClick={() => setCurrentPage((prev) => prev + 1)}
             />
           </Pagination>
-        )}
-
-        {selectedTestId && (
-          <div className="mt-5">
-            <h4>🧑‍🎓 Submissions</h4>
-            {submissions.length === 0 ? (
-              <p>No student submissions for this test.</p>
-            ) : (
-              <Table striped bordered hover responsive>
-                <thead className="table-light">
-                  <tr>
-                    <th>Student Email</th>
-                    <th>Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {submissions.map((s) => (
-                    <tr key={s._id}>
-                      <td>{s.studentId?.email || s.studentId}</td>
-                      <td>{s.score != null ? s.score : "N/A"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            )}
-          </div>
         )}
       </Container>
 

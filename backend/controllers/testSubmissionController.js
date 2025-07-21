@@ -314,22 +314,52 @@ const getStudentScoresByTestAssign = async (req, res) => {
   try {
     const { testAssignId } = req.params;
 
-    const submissions = await TestSubmission.find({ testAssignId })
-      .populate({
-        path: "studentId",
-        select: "email profileId",
-        populate: {
-          path: "profileId",
-          model: "Profile",
-          select: "name"
-        }
+    // Find the test assignment and ensure it exists
+    const testAssign = await TestAssign.findById(testAssignId).populate("classId");
+    if (!testAssign) {
+      return res.status(404).json({
+        success: false,
+        message: "Test assignment not found",
       });
+    }
 
-    const result = submissions.map((sub) => ({
-      studentEmail: sub.studentId?.email || "Unknown",
-      studentName: sub.studentId?.profileId?.name || "No name",
-      score: sub.score ?? null,
-    }));
+    const classStudents = await User.find({ _id: { $in: testAssign.classId.students } })
+      .populate({
+        path: "profileId",
+        select: "name"
+      })
+      .select("email profileId");
+
+    const submissions = await TestSubmission.find({ testAssignId }).populate({
+      path: "studentId",
+      select: "email profileId",
+      populate: {
+        path: "profileId",
+        model: "Profile",
+        select: "name"
+      }
+    });
+
+    const submissionMap = new Map();
+    submissions.forEach((sub) => {
+      submissionMap.set(sub.studentId._id.toString(), {
+        studentEmail: sub.studentId.email,
+        studentName: sub.studentId.profileId?.name || "No name",
+        score: sub.score ?? 0,
+        status: "submitted"
+      });
+    });
+
+    const result = classStudents.map((student) => {
+      const existing = submissionMap.get(student._id.toString());
+      if (existing) return existing;
+      return {
+        studentEmail: student.email,
+        studentName: student.profileId?.name || "No name",
+        score: 0,
+        status: "not submitted"
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -344,6 +374,7 @@ const getStudentScoresByTestAssign = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getTestSubmissions,
