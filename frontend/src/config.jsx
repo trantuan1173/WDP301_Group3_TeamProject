@@ -83,7 +83,7 @@ export const API_ENDPOINTS = {
 
   GET_ASSIGNED_TESTS_BY_TEACHER: `${baseUrl}/api/test-assigns/get-test-assigns-by-teacher`,
   GET_SUBMISSIONS_BY_TEST_ASSIGN: (testAssignId) => `${baseUrl}/api/testSubmission/scores-by-test-assign/${testAssignId}`,
-
+  GET_FEEDBACK_TEACHER_BY_CLASS: (classId) => `${baseUrl}/api/feedbacksTeacher/class/${classId}`,
   //Guest endpoints
   GET_HIGHLIGHT_FEEDBACKS: `${baseUrl}/api/feedbacksCourse/highlight`,
   GET_HIGHLIGHT_TEACHER_FEEDBACKS: `${baseUrl}/api/feedbacksTeacher/highlight`,
