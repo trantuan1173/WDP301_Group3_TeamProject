@@ -88,13 +88,13 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                 }}
             >
                 <div className="text-center fw-bold" style={{ fontSize: 32, marginBottom: 18 }}>
-                    Chọn bộ đề
+                    Choose Test
                 </div>
                 <div className="d-flex justify-content-center mb-4">
                     <Form className="d-flex align-items-center" style={{ width: 350 }}>
                         <Form.Control
                             type="text"
-                            placeholder="Nhập tên đề"
+                            placeholder="Enter test name"
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                             style={{
@@ -218,12 +218,12 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                     <table style={{ width: "100%", fontSize: 18 }}>
                         <thead>
                             <tr style={{ borderBottom: "2px solid #e0e7ef" }}>
-                                <th style={{ width: 60, fontWeight: 600 }}>Chọn</th>
-                                <th style={{ fontWeight: 600 }}>Tên</th>
-                                <th style={{ fontWeight: 600 }}>Số câu hỏi</th>
-                                {/* <th style={{ fontWeight: 600 }}>Mức độ</th> */}
-                                <th style={{ fontWeight: 600 }}>Ngày tạo</th>
-                                <th style={{ fontWeight: 600 }}>Xem trước</th>
+                                <th style={{ width: 60, fontWeight: 600 }}></th>
+                                <th style={{ fontWeight: 600 }}>Name</th>
+                                <th style={{ fontWeight: 600 }}>Number of Questions</th>
+                                {/* <th style={{ fontWeight: 600 }}>Level</th> */}
+                                <th style={{ fontWeight: 600 }}>Date Created</th>
+                                <th style={{ fontWeight: 600 }}>Preview</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -266,7 +266,7 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                         }}
                         onClick={onBack}
                     >
-                        Hủy
+                        Cancel
                     </Button>
                     <Button
                         variant="success"
@@ -284,7 +284,7 @@ const ChooseTestModal = ({ show, onHide, onBack, courseId, classId, userId, onTe
                         }}
                         disabled={!selectedId}
                     >
-                        Lưu
+                        Save
                     </Button>
 
                 </div>

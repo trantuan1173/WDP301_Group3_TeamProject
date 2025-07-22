@@ -110,9 +110,9 @@ const TestTab = ({ classId, courseId }) => {
         const now = new Date();
         const start = new Date(startDate);
         const due = new Date(dueDate);
-        if (now < start) return { text: "Chưa bắt đầu", color: "#dc2626" }; // đỏ
-        if (now > due) return { text: "Đã kết thúc", color: "#a16207" }; // nâu
-        return { text: "Đang diễn ra", color: "#16a34a" }; // xanh
+        if (now < start) return { text: "Not started", color: "#dc2626" }; // đỏ
+        if (now > due) return { text: "Ended", color: "#a16207" }; // nâu
+        return { text: "In progress", color: "#16a34a" }; // xanh
     };
 
     const getTimeRange = () => {
@@ -161,7 +161,7 @@ const TestTab = ({ classId, courseId }) => {
         <div className="min-h-screen flex flex-col bg-[#f5f9fc]">
             <div className="flex-1 p-6">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="font-bold text-3xl mb-8 text-[#111827]">Bài Kiểm Tra</h2>
+                    {/* <h2 className="font-bold text-3xl mb-8 text-[#111827]">Test Management </h2> */}
                     <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
                         <div className="flex-1 flex justify-center">
                             <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
@@ -170,19 +170,19 @@ const TestTab = ({ classId, courseId }) => {
                         </div>
                         <div className="flex-1 flex justify-center">
                             <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
-                                {className || "Chưa có tên lớp"}
+                                {className || "No class found"}
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-2xl shadow p-6">
                         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                            <span className="font-bold text-lg text-[#111827]">Danh sách</span>
+                            <span className="font-bold text-lg text-[#111827]">Test List</span>
                             <div className="flex-1 border-b-2 border-[#e0e7ef] mb-2 md:mb-0" />
                             <div className="flex flex-col md:flex-row gap-2 w-full max-w-2xl">
                                 <input
                                     type="text"
-                                    placeholder="Tìm kiếm theo tên..."
+                                    placeholder="Search by name..."
                                     value={filterName}
                                     onChange={(e) => setFilterName(e.target.value)}
                                     className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow w-full"
@@ -196,7 +196,7 @@ const TestTab = ({ classId, courseId }) => {
                                 style={{borderRadius: "10px"}}
                                 onClick={() => setShowCreateModal(true)}
                             >
-                                <FontAwesomeIcon icon={faPlus} /> Tạo mới
+                                <FontAwesomeIcon icon={faPlus} /> Create Test
                             </button>
                         </div>
 
@@ -206,7 +206,7 @@ const TestTab = ({ classId, courseId }) => {
                                 onChange={(e) => setFilterTime(e.target.value)}
                                 className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow"
                             >
-                                <option value="">-- Tất cả thời gian --</option>
+                                <option value="">-- All time --</option>
                                 <option value="past">Past </option>
                                 <option value="this">This week</option>
                                 <option value="future">Future </option>
