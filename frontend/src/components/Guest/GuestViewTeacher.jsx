@@ -94,9 +94,7 @@ const GuestViewTeacher = () => {
                         <h3 className="text-sm font-semibold text-blue-800">
                           {teacherName}
                         </h3>
-                        <p className="text-xs text-blue-600">
-                          {fb.teacherId?.email}
-                        </p>
+                        
                       </div>
                     </div>
 
