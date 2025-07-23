@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "../../../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExport } from "@fortawesome/free-solid-svg-icons";
 import ViewStudentsScoreModal from "../teacherModal/ViewStudentsScoreModal";
+import LoadingSpinner from "../../LoadingSpinner";
 
 const ScoreTab = ({ classId }) => {
   const [assignData, setAssignData] = useState([]);
@@ -12,10 +13,13 @@ const ScoreTab = ({ classId }) => {
   const [filterTime, setFilterTime] = useState("this");
   const [selectedTestAssignId, setSelectedTestAssignId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchAssigns = async () => {
       if (!classId) return;
+      setLoading(true);
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(API_ENDPOINTS.GET_TEST_ASSIGN_BY_CLASS(classId), {
@@ -25,10 +29,13 @@ const ScoreTab = ({ classId }) => {
       } catch (err) {
         console.error("Failed to fetch assigns", err);
         setAssignData([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAssigns();
   }, [classId]);
+
 
   const getStatus = (startDate, dueDate) => {
     const now = new Date();
@@ -107,7 +114,7 @@ const ScoreTab = ({ classId }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.length === 0 ? (
+            {filteredData.length === 0 && !loading ? (
               <tr>
                 <td colSpan={6} className="text-center py-6 text-gray-400">
                   No tests assigned
@@ -137,7 +144,14 @@ const ScoreTab = ({ classId }) => {
               })
             )}
           </tbody>
+
         </table>
+        {loading && (
+          <div className="flex justify-center mt-6">
+            <LoadingSpinner />
+          </div>
+        )}
+
       </div>
 
       {/* Modal for viewing scores */}
