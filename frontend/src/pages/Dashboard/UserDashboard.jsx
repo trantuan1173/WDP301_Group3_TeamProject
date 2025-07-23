@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import NavBar from "../../components/Layouts/NavBar";
 import StudentSideMenu from "../../components/Layouts/StudentSideMenu";
 import UserProfileForm from "../../components/Student/UserProfileForm";
@@ -10,8 +11,17 @@ import UserTest from "../../components/Student/UserTest";
 import UserOverView from "../../components/Student/UserOverView";
 import StudentOfCourses from "../../components/Student/StudentOfCourses";
 import UserDashboardOverview from "../../components/Student/UserOverView";
+
 function UserDashboard({ selectedPage }) {
-  const [currentPage, setCurrentPage] = useState(selectedPage || "overview");
+  const { selectedUserPage } = useParams();
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(selectedUserPage || selectedPage || "overview");
+
+  // Hàm chuyển tab và cập nhật URL
+  const handleMenuSelect = (key) => {
+    setCurrentPage(key);
+    navigate(`/user/${key}`);
+  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -21,7 +31,7 @@ function UserDashboard({ selectedPage }) {
       <div className="flex flex-1" style={{ backgroundColor: "#F1F6FA" }}>
         <div>
           <StudentSideMenu
-            onMenuSelect={(key) => setCurrentPage(key)}
+            onMenuSelect={handleMenuSelect}
             selectedKey={currentPage}
           />
         </div>
@@ -35,9 +45,8 @@ function UserDashboard({ selectedPage }) {
           {currentPage === 'test' && <UserTest />}
           {currentPage === "courses" && <StudentOfCourses />}
           {currentPage === "overview" && (
-  <UserDashboardOverview onQuickAction={(key) => setCurrentPage(key)} />
-)}
-
+            <UserDashboardOverview onQuickAction={handleMenuSelect} />
+          )}
         </div>
       </div>
     </div>

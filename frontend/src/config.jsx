@@ -58,7 +58,7 @@ export const API_ENDPOINTS = {
 
   GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
   GET_ASSIGNED_TESTS_FOR_STUDENT: (studentId, testId) => `${baseUrl}/api/test-assigns/student/${studentId}/test/${testId}`,
-
+  CHANGE_PASSWORD: `${baseUrl}/api/users/change-password`,
 
   // Teacher endpoints
   GET_TEACHER_SCHEDULE: (userId) => `${baseUrl}/api/schedule/teacher/${userId}`,
@@ -83,7 +83,7 @@ export const API_ENDPOINTS = {
 
   GET_ASSIGNED_TESTS_BY_TEACHER: `${baseUrl}/api/test-assigns/get-test-assigns-by-teacher`,
   GET_SUBMISSIONS_BY_TEST_ASSIGN: (testAssignId) => `${baseUrl}/api/testSubmission/scores-by-test-assign/${testAssignId}`,
-
+  GET_FEEDBACK_TEACHER_BY_CLASS: (classId) => `${baseUrl}/api/feedbacksTeacher/class/${classId}`,
   //Guest endpoints
   GET_HIGHLIGHT_FEEDBACKS: `${baseUrl}/api/feedbacksCourse/highlight`,
   GET_HIGHLIGHT_TEACHER_FEEDBACKS: `${baseUrl}/api/feedbacksTeacher/highlight`,
@@ -96,13 +96,15 @@ export const API_ENDPOINTS = {
   RESEND_VERIFY_EMAIL: `${baseUrl}/api/users/resend-verify-email`,
 
   PAYMENT_CREATE_PAYMENT_URL: `${baseUrl}/api/payments/create_payment_url`,
+  GUEST_VIEW_OPENDAY_SCHEDULE: `${baseUrl}/api/classes/open-day-schedule`,
   //student endpoints
   GET_CLASSES_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/classes/student/${studentId}`,
   // GET_CLASS_BY_ID: (id) => `${baseUrl}/api/classes/${id}`,
   // Attendance
   GET_ATTENDANCE_BY_STUDENT_ID: (studentId) =>
     `${baseUrl}/api/attendance/student/${studentId}`,
-
+  FEEDBACK_TEACHER: `${baseUrl}/api/feedbacksTeacher`, 
+  FEEDBACK_COURSE: `${baseUrl}/api/feedbacksCourse`,
   // Test
   DOWNLOAD_XLSX_TEMPLATE: `${baseUrl}/api/tests/download-xlsx-template`,
   UPLOAD_TEST_FROM_XLSX: `${baseUrl}/api/tests/upload-xlsx`,

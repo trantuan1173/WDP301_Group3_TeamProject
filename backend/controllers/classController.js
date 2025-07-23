@@ -177,7 +177,7 @@ const checkTeacherScheduleConflict = async (teacherId, scheduleList, excludedCla
 
 
 // Get all classes
-const getClasses = async function(req, res) {
+const getClasses = async function (req, res) {
   try {
     const classes = await Class.find().populate("teacherId", "email").populate("students", "email").populate("courseId")
 
@@ -196,31 +196,34 @@ const getClasses = async function(req, res) {
 }
 
 // Get single class
-const getClass = async function(req, res) {
+const getClass = async function (req, res) {
   try {
     const classItem = await Class.findById(req.params.id)
       .populate([
-        {path: "teacherId", 
+        {
+          path: "teacherId",
           select: "profileId",
           populate: {
             path: "profileId",
             select: "name"
           }
         },
-        ])
+      ])
       .populate([
-        {path: "students", 
+        {
+          path: "students",
           populate: {
             path: "profileId",
             select: "name"
           }
         },
-        ])
+      ])
       .populate([
-        {path: "courseId", 
+        {
+          path: "courseId",
           select: "nameCourses",
         },
-        ]);
+      ]);
 
     if (!classItem) {
       return res.status(404).json({
@@ -233,20 +236,20 @@ const getClass = async function(req, res) {
     const courseDetails = await CourseDetail.findOne({ courseId });
 
     const formattedClasses = {
-        _id: classItem._id,
-        teacherId: classItem.teacherId, 
-        students: classItem.students, 
-        className: classItem.className,
-        course: {
-          _id: courseId,
-          name: classItem.courseId?.nameCourses,
-          detail: courseDetails || null,
-        },
-        progress: classItem.progress,
-        note: classItem.note,
-        start_time: classItem.start_time,
-        end_time: classItem.end_time,
-      };
+      _id: classItem._id,
+      teacherId: classItem.teacherId,
+      students: classItem.students,
+      className: classItem.className,
+      course: {
+        _id: courseId,
+        name: classItem.courseId?.nameCourses,
+        detail: courseDetails || null,
+      },
+      progress: classItem.progress,
+      note: classItem.note,
+      start_time: classItem.start_time,
+      end_time: classItem.end_time,
+    };
 
     res.status(200).json({
       success: true,
@@ -262,7 +265,7 @@ const getClass = async function(req, res) {
 }
 
 // Create class
-const createClass = async function(req, res) {
+const createClass = async function (req, res) {
   try {
     const classItem = await Class.create(req.body)
 
@@ -345,10 +348,10 @@ const updateClass = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    res.status(200).json({ 
-      success: true, 
-      data: updatedClass, 
-      message: "Class updated successfully" 
+    res.status(200).json({
+      success: true,
+      data: updatedClass,
+      message: "Class updated successfully"
     });
 
 
@@ -492,10 +495,16 @@ const getClassByStudentId = async (req, res) => {
     const { studentId } = req.params;
 
     const classes = await Class.find({ students: studentId })
-      .populate("teacherId", "email")      
-      .populate("students", "email")       
-      .populate("courseId");               
-
+      .populate({
+        path: "teacherId",
+        select: "email profileId",
+        populate: {
+          path: "profileId",
+          select: "name"
+        }
+      })
+      .populate("students", "email")
+      .populate("courseId");
 
     const courseIdList = classes.map((cls) => cls.courseId?._id?.toString() ?? cls.courseId?.toString());
     const courseDetails = await CourseDetail.find({ courseId: { $in: courseIdList } });
@@ -511,8 +520,8 @@ const getClassByStudentId = async (req, res) => {
 
       return {
         _id: cls._id,
-        teacher: cls.teacherId, 
-        students: cls.students, 
+        teacher: cls.teacherId,
+        students: cls.students,
         className: cls.className,
         course: {
           _id: courseIdStr,
@@ -547,16 +556,24 @@ const getClassByTeacherId = async (req, res) => {
     const { teacherId } = req.params;
 
     const classes = await Class.find({ teacherId })
-      .populate("teacherId", "name email phone")  
+      .populate(
+        {
+          path: "teacherId",
+          select: "email profileId",
+          populate: {
+            path: "profileId",
+            select: "name"
+          }
+        }
+      )
       .populate("courseId");
 
     const formattedClasses = classes.map((cls) => ({
       _id: cls._id,
       teacher: cls.teacherId ? {
         _id: cls.teacherId._id,
-        name: cls.teacherId.name,
+        name: cls.teacherId.profileId.name,
         email: cls.teacherId.email,
-        phone: cls.teacherId.phone,
       } : null,
       course: cls.courseId ? {
         _id: cls.courseId._id,

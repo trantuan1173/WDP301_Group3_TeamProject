@@ -33,6 +33,7 @@ import AttendanceDetail from "./components/Student/AttendanceDetail";
 import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherViewClass';
 import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
 import AttendanceForm from "./components/Teacher/AttendanceForm";
+import GuestViewOpemingSchedule from "./components/Guest/GuestViewOpeningSchedule";
 
 
 const App = () => {
@@ -59,9 +60,12 @@ const App = () => {
           <Route path="/user/profile" element={<StudentProfileDashboard />} />
           {/* <Route path="/attendance/:courseName" element={<AttendanceDetails />} /> */}
           <Route path="/attendance/:id" element={<AttendanceDetail />} />
+          <Route path="/user/:selectedUserPage?" element={<UserDashboard />} />
 
         </Route>
         <Route element={<RequireAuth allowedRoles={["teacher"]} />}>
+          <Route path="/teacher" element={<Navigate to="/teacher/overview" replace />} />
+          <Route path="/teacher/:selectedPage" element={<TeacherDashboard />} />
           <Route path="/teacher/class/:classId" element={<TeacherClassDetail />} />
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/attendance/:classId" element={<AttendanceForm />} />
@@ -75,6 +79,7 @@ const App = () => {
         <Route path="/course/:courseId" element={<ViewCourseDetails />} />
         <Route path="/enroll/:courseId" element={<UserEnrollCourse />} />
         <Route path="/payment-process" element={<UserPaymentProcess />} />
+        <Route path="/guest/opening-schedule" element={<GuestViewOpemingSchedule />} />
 
 
         <Route path="/courses/:id" element={<CourseDetailPage />} />

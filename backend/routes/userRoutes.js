@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUsers, getUser, createUser, updateUser, deleteUser, loginUser, adminCreateTeacher, getAllTeacher, verifyUser, forgotPassword, resetPassword, authProfile, updateUserByAdmin, resendVerifyEmail } = require("../controllers/userController.js");
+const { getUsers, getUser, createUser, updateUser, deleteUser, loginUser, adminCreateTeacher, getAllTeacher, verifyUser, forgotPassword, resetPassword, authProfile, updateUserByAdmin, resendVerifyEmail, changePassword } = require("../controllers/userController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
@@ -316,7 +316,31 @@ router.post("/forgot-password", forgotPassword);
  */
 router.post("/reset-password/:token", resetPassword);
 
+/**
+ * @swagger
+ * /users/change-password:
+ *   post:
+ *     summary: Change user password
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ */
 
+router.post("/change-password", protect, changePassword);
 
 module.exports = router;
 
