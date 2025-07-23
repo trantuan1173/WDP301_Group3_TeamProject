@@ -48,6 +48,8 @@ export const API_ENDPOINTS = {
   UPDATE_EROLLED_STATUS: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}/status`,
   GET_ALL_ENROLLMENTS: `${baseUrl}/api/enrollments`,
   GET_ENROLLMENT_BY_ID: (enrollmentId) => `${baseUrl}/api/enrollments/${enrollmentId}`,
+  GET_AVAILABLE_TEACHERS: (classId) => `${baseUrl}/api/classes/${classId}/available-teachers`,
+
   // Student endpoints
   FORGOT_PASSWORD: `${baseUrl}/api/users/forgot-password`,
   RESET_PASSWORD: `${baseUrl}/api/users/reset-password`,
