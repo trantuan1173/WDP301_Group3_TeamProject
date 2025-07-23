@@ -11,6 +11,7 @@ const {
   getClassByTeacherId,
   getClassByCourseId,
   openDaySchedule,
+  getAvailableTeachersForClass,
 } = require("../controllers/classController.js");
 const { protect, authorize } = require("../middleware/authMiddleware.js");
 
@@ -212,6 +213,27 @@ router.post("/:id/students", protect, authorize("admin", "teacher"), addStudentT
  *         description: Xóa sinh viên khỏi lớp thành công
  */
 router.delete("/:id/students", protect, authorize("admin", "teacher"), removeStudentFromClass)
+
+/**
+ * @swagger
+ * /classes/{id}/available-teachers:
+ *   get:
+ *     summary: Lấy danh sách giáo viên có thể dạy lớp (chỉ admin, teacher)
+ *     description: Lấy danh sách giáo viên có thể dạy lớp (chỉ admin, teacher)
+ *     tags: [Classes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách giáo viên có thể dạy lớp
+ */
+router.get("/:classId/available-teachers", protect, authorize("admin"), getAvailableTeachersForClass)
 
 
 /**

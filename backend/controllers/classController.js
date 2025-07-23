@@ -1,6 +1,84 @@
 const Class = require("../models/classModel.js");
 const CourseDetail = require("../models/courseDetailModel.js");
 const Schedule = require("../models/scheduleModel.js");
+const User = require("../models/userModel.js");
+// Get available teachers for a class based on its schedule
+const getAvailableTeachersForClass = async (req, res) => {
+  try {
+    const { classId } = req.params;
+    const classItem = await Class.findById(classId);
+    if (!classItem) {
+      return res.status(404).json({
+        success: false,
+        message: "Class not found",
+      });
+    }
+
+    const classSchedules = await Schedule.find({ classId });
+
+    const TEACHER_ROLE_ID = "682989e63009eb573cbc1444";
+    const allTeachers = await User.find({ roleId: TEACHER_ROLE_ID });
+    const allTeacherIds = allTeachers.map(t => t._id);
+
+    const allOtherClasses = await Class.find({ _id: { $ne: classId } });
+
+    const otherSchedules = await Schedule.find({
+      classId: { $in: allOtherClasses.map(cls => cls._id) },
+      date: { $gte: new Date() },
+    });
+
+    const teacherScheduleMap = {};
+    otherSchedules.forEach(sch => {
+      const tid = allOtherClasses.find(cls => cls._id.toString() === sch.classId.toString())?.teacherId?.toString();
+      if (tid) {
+        if (!teacherScheduleMap[tid]) teacherScheduleMap[tid] = [];
+        teacherScheduleMap[tid].push(sch);
+      }
+    });
+
+    const isConflict = (newSchedule, existingSchedule) => {
+      const newDate = new Date(newSchedule.date).toDateString();
+      const newStart = new Date(newSchedule.start_time);
+      const newEnd = new Date(newSchedule.end_time);
+
+      const sDate = new Date(existingSchedule.date).toDateString();
+      const sStart = new Date(existingSchedule.start_time);
+      const sEnd = new Date(existingSchedule.end_time);
+
+      return (
+        sDate === newDate &&
+        (
+          (sStart <= newStart && sEnd > newStart) ||
+          (sStart < newEnd && sEnd >= newEnd) ||
+          (sStart >= newStart && sEnd <= newEnd)
+        )
+      );
+    };
+
+    const availableTeachers = allTeachers.filter(teacher => {
+      const teacherId = teacher._id.toString();
+      const theirSchedules = teacherScheduleMap[teacherId] || [];
+      return !classSchedules.some(clsSchedule =>
+        theirSchedules.some(ts => isConflict(clsSchedule, ts))
+      );
+    });
+
+    res.status(200).json({
+      success: true,
+      count: availableTeachers.length,
+      data: availableTeachers,
+    });
+
+  } catch (err) {
+    console.error("Error fetching available teachers:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch available teachers",
+      error: err.message,
+    });
+  }
+};
+
 
 function formatScheduleData(schedule) {
   const pad = (n) => String(n).padStart(2, '0');
@@ -602,5 +680,6 @@ module.exports = {
   getClassByCourseId,
   updateClassProgress,
   openDaySchedule,
+  getAvailableTeachersForClass,
 }
 
