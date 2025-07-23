@@ -34,6 +34,7 @@ import TeacherViewClass from './components/Teacher/TeacherMangeClass/TeacherView
 import TeacherViewScore from './components/Teacher/TeacherMangeClass/TeacherViewScore';
 import AttendanceForm from "./components/Teacher/AttendanceForm";
 import GuestViewOpemingSchedule from "./components/Guest/GuestViewOpeningSchedule";
+import User1stUpdateProfile from './components/Student/User1stUpdateProfile';
 
 
 const App = () => {
@@ -54,7 +55,8 @@ const App = () => {
           <Route path="/admin/class/:classId" element={<AdminViewClassDetails />} />
         </Route>
         <Route element={<RequireAuth allowedRoles={["student", "teacher", "admin"]} />}>
-          <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} />
+          {/* <Route path="/update-profile" element={<UserDashboard selectedPage="profile" />} /> */}
+          <Route path="/update-profile" element={<User1stUpdateProfile/>} />
           <Route path="/user" element={<UserDashboard />} />
           <Route path="/user/test/:testId" element={<UserDoingTest />} />
           <Route path="/user/profile" element={<StudentProfileDashboard />} />

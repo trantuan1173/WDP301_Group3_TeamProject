@@ -16,7 +16,7 @@ const profileSchema = new mongoose.Schema(
       default: false,
     },
     phone: {
-      type: Number,
+      type: String,
       trim: true,
     },
     dob: {

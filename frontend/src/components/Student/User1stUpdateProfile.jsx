@@ -3,8 +3,11 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../config";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../LoadingSpinner";
+import NavBar from "../../components/Layouts/NavBar";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfileForm() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState({
     email: "",
     profileData: {
@@ -222,6 +225,7 @@ export default function UserProfileForm() {
         console.log("Profile updated successfully");
         setError("");
         setIsEditing(false);
+        navigate("/");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -231,8 +235,12 @@ export default function UserProfileForm() {
   };
 
   return (
+    <div className="h-screen flex flex-col">
+      <header className="w-full">
+              <NavBar />
+            </header>
     <div
-      className="flex-1 rounded shadow p-6 m-4"
+      className="flex-1 rounded shadow p-6 m-4 container mx-auto"
       style={{
         border: "1px solid #D6BDBD",
         borderRadius: "10px",
@@ -466,6 +474,7 @@ export default function UserProfileForm() {
                 Update Profile
               </button>
             )}
+           <span className="mx-2"></span>
             <button
               className={`px-6 py-4 rounded ${
                 isEditing && !uploadingImage
@@ -481,6 +490,7 @@ export default function UserProfileForm() {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

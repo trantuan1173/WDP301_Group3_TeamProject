@@ -10,7 +10,7 @@ const RequireAuth = ({ allowedRoles }) => {
   if (!allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
-  if (user.profile && user.profile.isUpdated === false && location.pathname !== "/update-profile") {
+  if (user.profileId && user.profileId.isUpdated === false && location.pathname !== "/update-profile") {
     return <Navigate to="/update-profile" replace />;
   }
 
