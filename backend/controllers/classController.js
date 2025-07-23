@@ -17,7 +17,11 @@ const getAvailableTeachersForClass = async (req, res) => {
     const classSchedules = await Schedule.find({ classId });
 
     const TEACHER_ROLE_ID = "682989e63009eb573cbc1444";
-    const allTeachers = await User.find({ roleId: TEACHER_ROLE_ID });
+    const allTeachers = await User.find({ roleId: TEACHER_ROLE_ID })
+    .populate({
+      path: "profileId",
+      select: "name",
+    });
     const allTeacherIds = allTeachers.map(t => t._id);
 
     const allOtherClasses = await Class.find({ _id: { $ne: classId } });
