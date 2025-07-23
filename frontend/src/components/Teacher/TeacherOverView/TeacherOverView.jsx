@@ -131,45 +131,9 @@ export default function TeacherOverView({ onQuickAction }) {
           <TeacherQuickAction onQuickAction={(key) => onQuickAction(key)} />
 
           {/* Take attendance */}
-          <div className="bg-white rounded-xl shadow p-4">
-            <div className="flex justify-between items-center mb-2">
-              <div className="font-bold text-lg">Take attendance</div>
-              <button className="text-blue-700 font-semibold px-3 py-1 rounded hover:bg-blue-50 text-sm">Details</button>
-            </div>
-            <div>
-              <div className="py-2 border-b">Class - A1</div>
-              <div className="py-2 border-b">Class - A2</div>
-              <div className="py-2">Class - A3</div>
-            </div>
-          </div>
+          
           {/* Latest upload file test */}
-          <div className="bg-white rounded-xl shadow p-4">
-            <div className="flex justify-between items-center mb-2">
-              <div className="font-bold text-lg">Latest upload file test</div>
-              <button className="text-blue-700 font-semibold px-3 py-1 rounded hover:bg-blue-50 text-sm">Details</button>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr>
-                  <th className="text-left py-1">File</th>
-                  <th className="text-left py-1">Courses</th>
-                  <th className="text-left py-1">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Test1.pdp</td>
-                  <td>Toeic foundation</td>
-                  <td>12 May 2025</td>
-                </tr>
-                <tr>
-                  <td>Test2.pdp</td>
-                  <td>Toeic begin</td>
-                  <td>12 May 2025</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          
         </div>
         {/* Right: Today Schedule */}
         <div>

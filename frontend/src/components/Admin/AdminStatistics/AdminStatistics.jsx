@@ -102,11 +102,10 @@
 // };
 
 // export default AdminStatistics;
-
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+
     AreaChart,
     Area,
     XAxis,
@@ -118,6 +117,7 @@ import { format, isWithinInterval } from "date-fns";
 import CourseViewChart from "./CourseViewChart";
 import CourseRevenueChart from "./CourseRevenueChart";
 import { API_ENDPOINTS } from "../../../config";
+import LoadingSpinner from "../../LoadingSpinner"; // Thêm dòng này
 
 const AdminStatistics = () => {
     const now = new Date();
@@ -125,14 +125,18 @@ const AdminStatistics = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [startDate, setStartDate] = useState(new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)); // 7 ngày trước
     const [endDate, setEndDate] = useState(now); // hôm nay
+    const [loading, setLoading] = useState(true); // Thêm state loading
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true); // Bắt đầu loading
             try {
                 const res = await axios.get(API_ENDPOINTS.GET_STATISTICS_EVENT("pageView"));
                 setEvents(res.data.data);
             } catch (error) {
                 console.error("Fetch pageView error:", error);
+            } finally {
+                setLoading(false); // Kết thúc loading
             }
         };
         fetchData();
@@ -168,6 +172,14 @@ const AdminStatistics = () => {
         setStartDate(new Date(now.getTime() - days * 24 * 60 * 60 * 1000));
         setEndDate(now);
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px] bg-white">
+                <LoadingSpinner />
+            </div>
+        );
+    }
 
     return (
         <div className="p-6">

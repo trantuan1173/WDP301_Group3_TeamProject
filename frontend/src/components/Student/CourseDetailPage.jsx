@@ -7,6 +7,7 @@ import {
   FaClock,
   FaDollarSign,
   FaChartLine,
+  FaEnvelope,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -120,7 +121,7 @@ export default function CourseDetailPage() {
               <div className="flex items-center gap-2">
                 <FaChalkboardTeacher className="text-indigo-500" />
                 <span className="font-semibold">Teacher:</span>{" "}
-                {course.teacher?.email || "N/A"}
+                {course.teacher?.profileId.name || "N/A"}
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
@@ -129,9 +130,13 @@ export default function CourseDetailPage() {
                   {course.progress ?? 0}%
                 </div>
               </div>
+              <div className="flex items-center gap-2">
+                <FaEnvelope className="text-indigo-500" />
+                <span className="font-semibold">Teacher Mail:</span>{" "}
+                {course.teacher?.email || "N/A"}
+              </div>
             </div>
           </div>
-
           <div className="flex flex-col justify-center gap-3">
             {course.progress >= 50 && (
               <>
@@ -177,7 +182,7 @@ export default function CourseDetailPage() {
 
       {showTeacherFeedback && (
         <TeacherFeedbackModal
-          teacherName={course.teacher?.email}
+          teacherName={course.teacher?.profileId?.name}
           className={course.className}
           teacherId={course.teacher?._id}
           classId={course._id}

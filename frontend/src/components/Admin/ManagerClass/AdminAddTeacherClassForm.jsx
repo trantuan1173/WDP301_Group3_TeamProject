@@ -10,26 +10,26 @@ export default function AdminAddTeacherClassForm({ classId, onSuccess, onCancel 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch teacher list on open
+  // Fetch available teachers for this class on open
   useEffect(() => {
     const fetchTeachers = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(API_ENDPOINTS.GET_ALL_TEACHER, {
+        const res = await axios.get(API_ENDPOINTS.GET_AVAILABLE_TEACHERS(classId), {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTeachers(res.data.data || res.data);
       } catch (err) {
-        setError("Failed to fetch teacher list.");
+        setError("Failed to fetch available teacher list.");
       }
     };
     fetchTeachers();
-  }, []);
+  }, [classId]);
 
-  // Filter teachers by email or name
+  // Khi teachers thay đổi và query rỗng, filtered sẽ là toàn bộ teachers
   useEffect(() => {
     if (!query) {
-      setFiltered([]);
+      setFiltered(teachers);
       return;
     }
     setFiltered(
@@ -96,20 +96,7 @@ export default function AdminAddTeacherClassForm({ classId, onSuccess, onCancel 
               className="w-full bg-blue-100 p-2 rounded"
               placeholder="Enter teacher's email or name"
               autoComplete="off"
-              onFocus={() => {
-                if (!query) {
-                  setFiltered(teachers);
-                } else {
-                  setFiltered(
-                    teachers.filter(
-                      t =>
-                        t.email.toLowerCase().includes(query.toLowerCase()) ||
-                        t.profileId?.name?.toLowerCase().includes(query.toLowerCase())
-                    )
-                  );
-                }
-              }}
-
+              onFocus={() => setFiltered(teachers)}
             />
             {filtered.length > 0 && (
               <ul className="absolute z-10 bg-white border rounded shadow max-h-40 overflow-auto w-full mt-1">

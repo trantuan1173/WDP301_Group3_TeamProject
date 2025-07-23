@@ -78,7 +78,7 @@ export default function TeacherSheduleToday() {
         <button
           className="absolute bottom-4 right-4 bg-blue-600 text-white rounded-full p-3 shadow hover:bg-blue-700 transition"
           onClick={handlePrevDay}
-          title="Quay lại lịch hôm nay"
+          title="Back to shedule today"
         >
           <FaArrowLeft />
         </button>
@@ -87,7 +87,7 @@ export default function TeacherSheduleToday() {
         <button
           className="absolute bottom-4 right-4 bg-blue-600 text-white rounded-full p-3 shadow hover:bg-blue-700 transition"
           onClick={handleNextDay}
-          title="Xem lịch ngày mai"
+          title="View next day schedule"
         >
           <FaArrowRight />
         </button>

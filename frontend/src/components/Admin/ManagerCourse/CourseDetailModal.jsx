@@ -70,7 +70,7 @@ export default function CourseDetailModal({ courseData, onClose, onEdit, onDelet
             <div className="bg-blue-100 rounded p-2">{courseData.durationDays} sessions</div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tuition Fee</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
             <div className="bg-blue-100 rounded p-2">{courseData.price?.toLocaleString()} VND</div>
           </div>
         </div>

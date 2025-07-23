@@ -18,7 +18,7 @@ const menuItems = [
 ];
 
 export default function TeacherSideMenu({ onMenuSelect, selectedKey }) {
-  const [openDropdown, setOpenDropdown] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(true);
 
   return (
     <div className="w-64 bg-gray-100 min-h-screen h-screen shadow-lg p-4 rounded-xl">

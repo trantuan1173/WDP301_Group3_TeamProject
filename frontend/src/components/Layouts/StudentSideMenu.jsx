@@ -14,7 +14,7 @@ import { FactoryIcon } from "lucide-react";
 
 const StudentSideMenu = ({ onMenuSelect, selectedKey }) => {
   const navigate = useNavigate();
-  const [isClassOpen, setIsClassOpen] = useState(false);
+  const [isClassOpen, setIsClassOpen] = useState(true);
   const baseClass = "p-3 text-gray-700 flex items-center gap-2 cursor-pointer";
   const hoverClass = "hover:bg-blue-100 hover:text-blue-900";
 
