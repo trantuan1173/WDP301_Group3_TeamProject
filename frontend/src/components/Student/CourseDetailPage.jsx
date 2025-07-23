@@ -14,12 +14,15 @@ import { jwtDecode } from "jwt-decode";
 import CourseFeedbackModal from "./CourseFeedbackModal";
 import TeacherFeedbackModal from "./TeacherFeedbackModal";
 import NavBar from "../Layouts/NavBar";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../config";
 
 export default function CourseDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { course } = location.state || {};
   const detail = course?.course?.detail;
+  console.log(course);
   const [showCourseFeedback, setShowCourseFeedback] = useState(false);
   const [showTeacherFeedback, setShowTeacherFeedback] = useState(false);
   const [studentId, setStudentId] = useState();
@@ -49,6 +52,24 @@ export default function CourseDetailPage() {
       </div>
     );
   }
+
+  const downloadZip = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(API_ENDPOINTS.DOWNLOAD_ALL_MATERIALS_ZIP(course._id), {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "class_materials.zip");
+      document.body.appendChild(link);
+      link.click();
+    } catch (err) {
+      console.error("Error downloading zip:", err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
@@ -138,6 +159,12 @@ export default function CourseDetailPage() {
             </div>
           </div>
           <div className="flex flex-col justify-center gap-3">
+            <button
+              onClick={downloadZip}
+              className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Download Learner Material
+            </button>
             {course.progress >= 50 && (
               <>
                 <button

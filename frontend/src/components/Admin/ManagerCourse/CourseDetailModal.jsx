@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 
 export default function CourseDetailModal({ courseData, onClose, onEdit, onDelete }) {
+
+  const [materials, setMaterials] = useState([]);
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
@@ -21,10 +23,50 @@ export default function CourseDetailModal({ courseData, onClose, onEdit, onDelet
     }
   };
 
+  useEffect(() => {
+    const fetchMaterials = async () => {
+      try {
+        const res = await axios.get(
+          API_ENDPOINTS.GET_ALL_LEARNING_MATERIALS_BY_COURSE_ID(courseData.courseId),
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          }
+        );
+        setMaterials(res.data.learningMaterials);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMaterials();
+  }, [courseData.courseId]);
+
+
+  const handleDownloadMaterial = async (materialId, title) => {
+    try {
+      const res = await axios.get(
+        API_ENDPOINTS.DOWNLOAD_LEARNING_MATERIAL(materialId),
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", title); // Tạo tên file
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error("Error downloading material:", err);
+      alert("Failed to download material");
+    }
+  };  
+
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
       <div
-        className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg relative"
+        className="bg-white rounded-xl p-6 w-full max-w-3xl shadow-lg relative max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <button
@@ -80,6 +122,37 @@ export default function CourseDetailModal({ courseData, onClose, onEdit, onDelet
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <div className="bg-blue-100 rounded p-2 max-h-[150px] overflow-y-auto whitespace-pre-line">
             {courseData.description}
+          </div>
+        </div>
+        {/* Learning Materials */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Learning Materials</label>
+          <div className="bg-blue-100 rounded p-2 max-h-[150px] overflow-y-auto whitespace-pre-line">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-blue-200 sticky top-0">
+                <tr>
+                  <th className="p-2">No.</th>
+                  <th className="p-2">File name</th>
+                  <th className="p-2">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materials.map((material, idx) => (
+                  <tr key={idx} className="border-b">
+                    <td className="p-2">{idx + 1}</td>
+                    <td className="p-2">{material.title}</td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => handleDownloadMaterial(material._id, material.title)}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Download
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
