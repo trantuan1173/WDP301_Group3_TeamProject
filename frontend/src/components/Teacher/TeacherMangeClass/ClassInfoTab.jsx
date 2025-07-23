@@ -6,15 +6,12 @@ import { API_ENDPOINTS } from "../../../config";
 import {
   FaLayerGroup,
   FaTag,
-  FaDollarSign,
   FaChartLine,
-
   FaBookOpen,
   FaClipboardList,
   FaStickyNote,
-
 } from "react-icons/fa";
-import TeacherFeedbackDropdown from "./TeacherFeedbackDropdown";
+
 
 export default function ClassInfoTab({ classInfo }) {
   const [progress, setProgress] = useState(0);

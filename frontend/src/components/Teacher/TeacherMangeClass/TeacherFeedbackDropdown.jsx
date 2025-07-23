@@ -5,7 +5,7 @@ import { FaChevronDown, FaChevronUp, FaStar, FaCommentDots } from "react-icons/f
 
 export default function TeacherFeedbackDropdown({ classId }) {
   const [feedbacks, setFeedbacks] = useState([]);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const feedbacksPerPage = 4;
 

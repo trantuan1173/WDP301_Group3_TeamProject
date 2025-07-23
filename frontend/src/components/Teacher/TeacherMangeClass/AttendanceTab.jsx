@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../LoadingSpinner";
 
 export default function AttendanceTab({ classId, students }) {
   const [schedules, setSchedules] = useState([]);
@@ -70,7 +71,7 @@ export default function AttendanceTab({ classId, students }) {
   }, [schedules]);
 
   if (loading) {
-    return <div>Loading schedules...</div>;
+    return <LoadingSpinner size={120} text="Loading schedules..." />;
   }
 
   if (!schedules.length) {
