@@ -160,12 +160,23 @@ export default function UserTestPage() {
                       : dateA - dateB;
                   })
                   .map((test, idx) => {
+                    const now = new Date();
                     const start = new Date(test.startDate);
                     const end = new Date(test.dueDate);
 
-                    // Compute duration in minutes
-                    const durationMs = end - start;
-                    const durationMin = Math.round(durationMs / 60000);
+                    // Status check
+                    const isBeforeStart = now < start;
+                    const isAfterEnd = now > end;
+                    const isDuring = !isBeforeStart && !isAfterEnd;
+
+                    let status = "Do test";
+                    if (test.submitted) status = "Submitted";
+                    else if (isBeforeStart) status = "Incoming";
+                    else if (isAfterEnd) status = "Expired";
+
+                    // Duration
+                    const durationMin = Math.round((end - start) / 60000);
+
 
                     const startHour = start
                       .getHours()
@@ -195,8 +206,8 @@ export default function UserTestPage() {
                       .getDate()
                       .toString()
                       .padStart(2, "0")}/${(start.getMonth() + 1)
-                      .toString()
-                      .padStart(2, "0")})`;
+                        .toString()
+                        .padStart(2, "0")})`;
 
                     return (
                       <tr key={test._id} className="text-sm">
@@ -215,25 +226,22 @@ export default function UserTestPage() {
                         <td className="p-3 border text-center">
                           <button
                             onClick={() =>
-                              navigate(`/user/test/${test.testId._id}`)
+                              status === "Do test" && navigate(`/user/test/${test.testId._id}`)
                             }
-                            title={test.submitted ? "Submitted" : "Do test"}
-                            className={`px-3 py-1 text-sm rounded hover:brightness-110 
-                          ${
-                            test.submitted
-                              ? "bg-gray-400 text-white cursor-not-allowed"
-                              : test.isExpired
-                              ? "bg-red-200 text-red-800 cursor-not-allowed"
-                              : "bg-green-200 text-green-800 hover:bg-green-300 cursor-pointer"
-                          }`}
-                            disabled={test.submitted || test.isExpired}
+                            title={status}
+                            className={`px-3 py-1 text-sm rounded hover:brightness-110 ${status === "Submitted"
+                                ? "bg-gray-400 text-white cursor-not-allowed"
+                                : status === "Expired"
+                                  ? "bg-red-200 text-red-800 cursor-not-allowed"
+                                  : status === "Incoming"
+                                    ? "bg-yellow-200 text-yellow-800 cursor-not-allowed"
+                                    : "bg-green-200 text-green-800 hover:bg-green-300 cursor-pointer"
+                              }`}
+                            disabled={status !== "Do test"}
                           >
-                            {test.submitted
-                              ? "Submitted"
-                              : test.isExpired
-                              ? "Expired"
-                              : "Do test"}
+                            {status}
                           </button>
+
                         </td>
                         <td className="p-3 border text-center">
                           {test.submitted

@@ -73,12 +73,12 @@ const ScoreTab = ({ classId }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4 text-[#111827]">Danh sách bài kiểm tra</h2>
+      <h2 className="text-2xl font-bold mb-4 text-[#111827]">Assigned Tests</h2>
 
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
           type="text"
-          placeholder="Tìm kiếm theo tên..."
+          placeholder="Search by name..."
           value={filterName}
           onChange={(e) => setFilterName(e.target.value)}
           className="px-4 py-2 rounded-lg border border-[#ccc] shadow w-full md:w-1/2"
@@ -88,10 +88,10 @@ const ScoreTab = ({ classId }) => {
           onChange={(e) => setFilterTime(e.target.value)}
           className="px-4 py-2 rounded-lg border border-[#ccc] shadow w-full md:w-1/4"
         >
-          <option value="">-- Tất cả thời gian --</option>
-          <option value="past">Quá khứ</option>
-          <option value="this">Tuần này</option>
-          <option value="future">Tương lai</option>
+          <option value="">-- All time --</option>
+          <option value="past">Past</option>
+          <option value="this">This week</option>
+          <option value="future">Future</option>
         </select>
       </div>
 
@@ -100,17 +100,17 @@ const ScoreTab = ({ classId }) => {
           <thead>
             <tr className="border-b-2 border-gray-200">
               <th className="py-2 px-4 text-left">No</th>
-              <th className="py-2 px-4 text-left">Tên bài kiểm tra</th>
-              <th className="py-2 px-4 text-left">Kết thúc</th>
-              <th className="py-2 px-4 text-left">Trạng thái</th>
-              <th className="py-2 px-4 text-left">Xem điểm</th>
+              <th className="py-2 px-4 text-left">Test name</th>
+              <th className="py-2 px-4 text-left">Due date</th>
+              <th className="py-2 px-4 text-left">Status</th>
+              <th className="py-2 px-4 text-left">View score</th>
             </tr>
           </thead>
           <tbody>
             {filteredData.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-6 text-gray-400">
-                  Không có bài kiểm tra nào được giao
+                  No tests assigned
                 </td>
               </tr>
             ) : (
@@ -129,7 +129,7 @@ const ScoreTab = ({ classId }) => {
                         className="p-1 text-blue-600 hover:text-blue-900"
                         onClick={() => handleOpenScoreModal(assign._id)}
                       >
-                        <FontAwesomeIcon icon={faFileExport} /> Xem điểm
+                        <FontAwesomeIcon icon={faFileExport} /> View score
                       </button>
                     </td>
                   </tr>
