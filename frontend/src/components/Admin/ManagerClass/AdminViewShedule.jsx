@@ -10,6 +10,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import vi from "date-fns/locale/vi";
 import enUS from "date-fns/locale/en-US";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../LoadingSpinner"; // Đã import
 
 const locales = {
   "en-US": enUS,
@@ -30,6 +31,8 @@ export default function AdminViewSchedule() {
   const [className, setClassName] = useState("");
   const [editEvent, setEditEvent] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [loading, setLoading] = useState(true); // Thêm state loading
+
   const navigate = useNavigate();
 
   const handleSelectEvent = (event) => {
@@ -37,81 +40,79 @@ export default function AdminViewSchedule() {
   };
 
   const handleSaveEdit = async (data) => {
-  try {
-    const token = localStorage.getItem("token");
-    // Cập nhật schedule
-    await axios.put(API_ENDPOINTS.UPDATE_SCHEDULE(editEvent.id), data, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(API_ENDPOINTS.UPDATE_SCHEDULE(editEvent.id), data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    // Lấy lại danh sách schedule mới nhất
-    const res = await axios.get(API_ENDPOINTS.GET_SHEDULE_BY_CLASSID(classId), {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const newSchedules = res.data.data || [];
+      const res = await axios.get(API_ENDPOINTS.GET_SHEDULE_BY_CLASSID(classId), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const newSchedules = res.data.data || [];
 
-    // Tìm schedule cuối cùng (end_time lớn nhất)
-    if (newSchedules.length > 0) {
-      const lastSchedule = newSchedules.reduce((a, b) =>
-        new Date(a.end_time) > new Date(b.end_time) ? a : b
-      );
-      // Nếu schedule vừa update là buổi cuối cùng thì cập nhật end_time cho class
-      if (
-        editEvent.id === lastSchedule._id ||
-        (data.end_time && new Date(data.end_time).getTime() > new Date(lastSchedule.end_time).getTime())
-      ) {
-        await axios.put(
-          API_ENDPOINTS.UPDATE_CLASS(classId),
-          { end_time: data.end_time },
-          { headers: { Authorization: `Bearer ${token}` } }
+      if (newSchedules.length > 0) {
+        const lastSchedule = newSchedules.reduce((a, b) =>
+          new Date(a.end_time) > new Date(b.end_time) ? a : b
         );
+        if (
+          editEvent.id === lastSchedule._id ||
+          (data.end_time && new Date(data.end_time).getTime() > new Date(lastSchedule.end_time).getTime())
+        ) {
+          await axios.put(
+            API_ENDPOINTS.UPDATE_CLASS(classId),
+            { end_time: data.end_time },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        }
       }
+
+      setEditEvent(null);
+      fetchSchedules();
+    } catch (error) {
+      alert("Update schedule failed!");
     }
+  };
 
-    setEditEvent(null);
-    fetchSchedules();
-  } catch (error) {
-    alert("Update schedule failed!");
-  }
-};
-
-  
   // Lấy tên lớp học
-const fetchClassName = async () => {
-  const token = localStorage.getItem("token");
-  const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  // Nếu res.data.data.course là object, lấy trường name hoặc nameCourses
-  const course = res.data.data?.course;
-  let name = "";
-  if (typeof course === "string") {
-    name = course;
-  } else if (typeof course === "object" && course !== null) {
-    name = course.name || course.nameCourses || course._id || "Buổi học";
-  } else {
-    name = "Buổi học";
-  }
-  const className = res.data.data?.className || res.data.data?.course?.name || "Buổi học";
-  setClassName(className);
-};
+  const fetchClassName = async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(API_ENDPOINTS.GET_CLASS_BY_ID(classId), {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const course = res.data.data?.course;
+    let name = "";
+    if (typeof course === "string") {
+      name = course;
+    } else if (typeof course === "object" && course !== null) {
+      name = course.name || course.nameCourses || course._id || "Buổi học";
+    } else {
+      name = "Buổi học";
+    }
+    const className = res.data.data?.className || res.data.data?.course?.name || "Buổi học";
+    setClassName(className);
+  };
 
   // Lấy lịch học
   const fetchSchedules = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(API_ENDPOINTS.GET_SHEDULE_BY_CLASSID(classId), {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setSchedules(res.data.data || []);
+    setLoading(true); // Bắt đầu loading
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(API_ENDPOINTS.GET_SHEDULE_BY_CLASSID(classId), {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSchedules(res.data.data || []);
+    } finally {
+      setLoading(false); // Kết thúc loading
+    }
   };
 
   useEffect(() => {
-    fetchClassName();
-    fetchSchedules();
+    setLoading(true);
+    Promise.all([fetchClassName(), fetchSchedules()]).then(() => setLoading(false));
     // eslint-disable-next-line
   }, [classId]);
 
-  // Chuyển đổi dữ liệu sang format của react-big-calendar
   const events = schedules.map(sch => ({
     id: sch._id,
     title: className || "Buổi học",
@@ -120,7 +121,6 @@ const fetchClassName = async () => {
     allDay: false,
   }));
 
-  // Xử lý xóa toàn bộ lịch học
   const handleDeleteAllSchedules = async () => {
     if (!window.confirm("Are you sure to change all shedules?")) return;
     setIsDeleting(true);
@@ -137,6 +137,15 @@ const fetchClassName = async () => {
       setIsDeleting(false);
     }
   };
+
+  // Hiển thị loading khi đang tải dữ liệu
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -208,7 +217,10 @@ const fetchClassName = async () => {
           </div>
         )}
         <AdminUpdateSheduleForm
-          open={!!editEvent}
+          open={
+            !!editEvent &&
+            new Date(editEvent.end).getTime() > Date.now()
+          }
           onClose={() => setEditEvent(null)}
           event={editEvent}
           onSave={handleSaveEdit}

@@ -373,6 +373,7 @@ if (onSuccess) onSuccess();
                       value={editData.date}
                       onChange={e => setEditData({ ...editData, date: e.target.value })}
                       className="border rounded px-2 py-1 w-full"
+                      min={startDate}
                     />
                   </div>
                   <div className="mb-2 flex gap-2">

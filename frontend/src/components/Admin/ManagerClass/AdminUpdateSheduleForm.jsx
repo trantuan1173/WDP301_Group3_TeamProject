@@ -7,6 +7,12 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
   const [userSetEnd, setUserSetEnd] = useState(false);
   const [error, setError] = useState("");
 
+  // Helper để lấy ngày hôm nay dạng YYYY-MM-DD
+  const todayStr = new Date().toISOString().slice(0, 10);
+  // Helper để lấy giờ hiện tại dạng HH:MM
+  const now = new Date();
+  const nowTimeStr = now.toTimeString().slice(0, 5);
+
   useEffect(() => {
     if (event) {
       const start = event.start instanceof Date ? event.start : new Date(event.start);
@@ -38,7 +44,6 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
     e.preventDefault();
     setError("");
     try {
-
       await onSave({
         date: new Date(date).toISOString(),
         start_time: new Date(`${date}T${startTime}`).toISOString(),
@@ -46,8 +51,6 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
       });
     } catch (err) {
       console.error("Full error object:", err);
-
-
       if (err?.response?.status === 409) {
         setError("Teacher has a schedule conflict.");
       } else {
@@ -55,7 +58,13 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
       }
     }
   };
+
+  // Không cho mở nếu không open
   if (!open) return null;
+
+  // Kiểm tra nếu chọn ngày là hôm nay thì không cho chọn giờ quá khứ
+  const minTime = date === todayStr ? nowTimeStr : "00:00";
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -76,7 +85,6 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
           </div>
         )}
 
-
         <div className="flex gap-4 mb-4">
           <label className="block flex-1">
             Date:
@@ -86,6 +94,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
               onChange={e => setDate(e.target.value)}
               className="border rounded px-2 py-1 w-full"
               required
+              min={todayStr}
             />
           </label>
           <label className="block flex-1">
@@ -96,7 +105,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
               onChange={e => handleStartTimeChange(e.target.value)}
               className="border rounded px-2 py-1 w-full"
               required
-              min="00:00"
+              min={minTime}
               max="23:59"
             />
           </label>
@@ -108,7 +117,7 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
               onChange={e => handleEndTimeChange(e.target.value)}
               className="border rounded px-2 py-1 w-full"
               required
-              min="00:00"
+              min={startTime}
               max="23:59"
             />
           </label>
