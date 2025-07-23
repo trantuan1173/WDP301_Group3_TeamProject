@@ -35,26 +35,26 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(""); 
-  try {
-    
-    await onSave({
-      date: new Date(date).toISOString(),
-      start_time: new Date(`${date}T${startTime}`).toISOString(),
-      end_time: new Date(`${date}T${endTime}`).toISOString(),
-    });
-  } catch (err) {
-    console.error("Full error object:", err); 
+    e.preventDefault();
+    setError("");
+    try {
 
-    
-    if (err?.response?.status === 409) {
-      setError("Teacher has a schedule conflict.");
-    } else {
-      setError("Failed to update schedule.");
+      await onSave({
+        date: new Date(date).toISOString(),
+        start_time: new Date(`${date}T${startTime}`).toISOString(),
+        end_time: new Date(`${date}T${endTime}`).toISOString(),
+      });
+    } catch (err) {
+      console.error("Full error object:", err);
+
+
+      if (err?.response?.status === 409) {
+        setError("Teacher has a schedule conflict.");
+      } else {
+        setError("Failed to update schedule.");
+      }
     }
-  }
-};
+  };
   if (!open) return null;
   return (
     <div
@@ -71,10 +71,10 @@ export default function AdminUpdateSheduleForm({ open, onClose, event, onSave, o
 
         {/* Hiển thị thông báo lỗi nếu có */}
         {error && (
-  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-3 text-center font-bold">
-    {error}
-  </div>
-)}
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-3 text-center font-bold">
+            {error}
+          </div>
+        )}
 
 
         <div className="flex gap-4 mb-4">
