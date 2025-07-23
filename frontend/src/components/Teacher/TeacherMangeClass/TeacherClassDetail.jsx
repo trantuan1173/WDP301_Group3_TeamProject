@@ -38,6 +38,25 @@ export default function TeacherClassDetail({ classId, onBack }) {
     if (classId) fetchData();
   }, [classId]);
 
+  //Download zip
+    const downloadZip = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(API_ENDPOINTS.DOWNLOAD_ALL_MATERIALS_ZIP(classId), {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "blob",
+        });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "class_materials.zip");
+        document.body.appendChild(link);
+        link.click();
+      } catch (err) {
+        console.error("Error downloading zip:", err);
+      }
+    };
+
   if (loading) return <LoadingSpinner size={120} text="Loading..." />;
 
 
@@ -55,6 +74,14 @@ export default function TeacherClassDetail({ classId, onBack }) {
       <h1 className="text-2xl font-bold mb-5">
         Class: {classInfo?.className || "Tên lớp học"}
       </h1>
+      <div className="flex justify-end mb-4">
+        <button
+          className="px-4 py-2 border-2 border-[#1a237e] rounded text-[#1a237e] font-semibold hover:bg-[#eaeafc]"
+          onClick={downloadZip}
+        >
+          Download Learning Materials
+        </button>
+      </div>
 
       {/* Bọc cả tabs và content */}
       <div className="w-full  mx-auto ">

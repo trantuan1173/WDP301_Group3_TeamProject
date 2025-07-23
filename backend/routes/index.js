@@ -15,12 +15,13 @@ const testAssignRoutes = require('./testAssignRoutes.js');
 const paymentRoutes = require('./paymentRoutes.js');
 const enrollmentRoutes = require('./enrollmentRoutes.js');
 const eventDataRoutes = require('./eventDataRoutes.js');
+const learningMaterialRoutes = require('./learningMaterialRoutes.js');
 
 const router = express.Router();
 router.use('/payments', paymentRoutes);
 router.use('/classes', classRoutes);
 router.use('/attendance', attendanceRoutes);
-
+router.use('/learningMaterials', learningMaterialRoutes);
 router.use('/courseDetail', courseDetailRoutes);
 router.use('/courses', courseRoutes);
 router.use('/feedbacksTeacher', feedbackTeacherRoutes);

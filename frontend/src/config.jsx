@@ -111,5 +111,15 @@ export const API_ENDPOINTS = {
   CREATE_TEST_FROM_AI: `${baseUrl}/api/tests/create-from-ai`,
 
   //Statistics
-  GET_STATISTICS_EVENT: (eventName) => `${baseUrl}/api/eventsData/event/${eventName}`
+  GET_STATISTICS_EVENT: (eventName) => `${baseUrl}/api/eventsData/event/${eventName}`,
+
+  //Learning Material
+  CREATE_LEARNING_MATERIAL: `${baseUrl}/api/learningMaterials`,
+  GET_ALL_LEARNING_MATERIALS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/learningMaterials/course/${courseId}`,
+  GET_ALL_LEARNING_MATERIALS_BY_CLASS_ID: (classId) => `${baseUrl}/api/learningMaterials/class/${classId}`,
+  GET_LEARNING_MATERIAL_BY_ID: (id) => `${baseUrl}/api/learningMaterials/${id}`,
+  DOWNLOAD_LEARNING_MATERIAL: (id) => `${baseUrl}/api/learningMaterials/download/${id}`,
+  DELETE_LEARNING_MATERIAL: (id) => `${baseUrl}/api/learningMaterials/${id}`,
+  DOWNLOAD_ALL_MATERIALS_ZIP: (classId) => `${baseUrl}/api/learningMaterials/download-zip/${classId}`,
+  DOWNLOAD_ALL_MATERIALS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/learningMaterials/download-zip/course/${courseId}`,
 };
