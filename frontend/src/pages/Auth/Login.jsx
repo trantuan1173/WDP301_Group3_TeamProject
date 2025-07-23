@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
-    const [language, setLanguage] = useState("vi");
+    const [language, setLanguage] = useState("en");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(""); // ✅ Thêm state lưu lỗi
     const { setUser } = useAuth();
@@ -101,7 +101,7 @@ export default function Login() {
                             className="h-20 w-auto"
                             alt="Logo"
                         />
-                        <button
+                        {/* <button
                             onClick={() =>
                                 setLanguage(language === "vi" ? "en" : "vi")
                             }
@@ -109,7 +109,7 @@ export default function Login() {
                             style={{ backgroundColor: "#0a2c63" }}
                         >
                             {t[language].toggleLang}
-                        </button>
+                        </button> */}
                     </div>
 
                     <h2 className="mt-6 text-2xl font-bold text-gray-900">
