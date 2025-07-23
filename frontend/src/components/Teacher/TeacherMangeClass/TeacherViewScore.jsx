@@ -4,6 +4,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
 import { Container, Table, Button, Spinner, Pagination } from "react-bootstrap";
 import ViewStudentsScoreModal from "../teacherModal/ViewStudentsScoreModal";
+import LoadingSpinner from "../../LoadingSpinner";
 
 const TeacherViewScore = () => {
   const [assignedTests, setAssignedTests] = useState([]);
@@ -86,8 +87,7 @@ const TeacherViewScore = () => {
   if (loading) {
     return (
       <div className="text-center my-5">
-        <Spinner animation="border" role="status" />
-        <p>Loading assigned tests...</p>
+        <LoadingSpinner />
       </div>
     );
   }

@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash, faPlus, faFileExport, faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import ChooseTestModal from "../teacherModal/ChooseTestModal";
 import AssignTestModal from "../teacherModal/AssignTestModal";
+import LoadingSpinner from "../../LoadingSpinner";
 
 const TestTab = ({ classId, courseId }) => {
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -19,6 +20,8 @@ const TestTab = ({ classId, courseId }) => {
     const [selectedTest, setSelectedTest] = useState(null);
     const [filterName, setFilterName] = useState("");
     const [filterTime, setFilterTime] = useState("this"); // "this", "last", "next"
+    const [loading, setLoading] = useState(true);
+
 
 
     // Lấy userId từ token
@@ -61,6 +64,7 @@ const TestTab = ({ classId, courseId }) => {
     // Lấy danh sách bài kiểm tra đã assign cho lớp
     const fetchAssigns = async () => {
         if (!classId) return;
+        setLoading(true);
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get(API_ENDPOINTS.GET_TEST_ASSIGN_BY_CLASS(classId), {
@@ -80,6 +84,8 @@ const TestTab = ({ classId, courseId }) => {
             setAssignData([]);
             setCourseName("");
             setClassName("");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -110,9 +116,9 @@ const TestTab = ({ classId, courseId }) => {
         const now = new Date();
         const start = new Date(startDate);
         const due = new Date(dueDate);
-        if (now < start) return { text: "Chưa bắt đầu", color: "#dc2626" }; // đỏ
-        if (now > due) return { text: "Đã kết thúc", color: "#a16207" }; // nâu
-        return { text: "Đang diễn ra", color: "#16a34a" }; // xanh
+        if (now < start) return { text: "Not started", color: "#dc2626" }; // đỏ
+        if (now > due) return { text: "Ended", color: "#a16207" }; // nâu
+        return { text: "In progress", color: "#16a34a" }; // xanh
     };
 
     const getTimeRange = () => {
@@ -161,7 +167,7 @@ const TestTab = ({ classId, courseId }) => {
         <div className="min-h-screen flex flex-col bg-[#f5f9fc]">
             <div className="flex-1 p-6">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="font-bold text-3xl mb-8 text-[#111827]">Bài Kiểm Tra</h2>
+                    {/* <h2 className="font-bold text-3xl mb-8 text-[#111827]">Test Management </h2> */}
                     <div className="flex flex-col md:flex-row gap-6 mb-8 justify-center">
                         <div className="flex-1 flex justify-center">
                             <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
@@ -170,19 +176,19 @@ const TestTab = ({ classId, courseId }) => {
                         </div>
                         <div className="flex-1 flex justify-center">
                             <div className="bg-[#0a2540] text-white rounded-xl flex items-center justify-center h-[53px] w-[293px] font-semibold text-lg shadow">
-                                {className || "Chưa có tên lớp"}
+                                {className || "No class found"}
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-2xl shadow p-6">
                         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                            <span className="font-bold text-lg text-[#111827]">Danh sách</span>
+                            <span className="font-bold text-lg text-[#111827]">Test List</span>
                             <div className="flex-1 border-b-2 border-[#e0e7ef] mb-2 md:mb-0" />
                             <div className="flex flex-col md:flex-row gap-2 w-full max-w-2xl">
                                 <input
                                     type="text"
-                                    placeholder="Tìm kiếm theo tên..."
+                                    placeholder="Search by name..."
                                     value={filterName}
                                     onChange={(e) => setFilterName(e.target.value)}
                                     className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow w-full"
@@ -193,10 +199,10 @@ const TestTab = ({ classId, courseId }) => {
 
                             <button
                                 className="flex items-center gap-2 bg-[#DFE9FF] text-[#111827] rounded-xl px-6 py-2 font-semibold shadow min-w-[150px]"
-                                style={{borderRadius: "10px"}}
+                                style={{ borderRadius: "10px" }}
                                 onClick={() => setShowCreateModal(true)}
                             >
-                                <FontAwesomeIcon icon={faPlus} /> Tạo mới
+                                <FontAwesomeIcon icon={faPlus} /> Create Test
                             </button>
                         </div>
 
@@ -206,7 +212,7 @@ const TestTab = ({ classId, courseId }) => {
                                 onChange={(e) => setFilterTime(e.target.value)}
                                 className="rounded-full px-4 py-2 border border-[#e0e7ef] bg-white shadow"
                             >
-                                <option value="">-- Tất cả thời gian --</option>
+                                <option value="">-- All time --</option>
                                 <option value="past">Past </option>
                                 <option value="this">This week</option>
                                 <option value="future">Future </option>
@@ -218,79 +224,88 @@ const TestTab = ({ classId, courseId }) => {
                             </button> */}
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full bg-[#f5f9fc] rounded-xl">
-                                <thead>
-                                    <tr className="border-b-2 border-[#e0e7ef]">
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">No</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Test name</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Start</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">End</th>
-                                        {/* <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th> */}
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Status</th>
-                                        <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {assignData.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="text-center py-6 text-gray-400">No test have assigned</td>
-                                        </tr>
-                                    ) : (
-                                        assignData
-                                            .filter((assign) => {
-                                                const title = assign.testId?.title || assign.title || "";
-                                                const matchName = title.toLowerCase().includes(filterName.toLowerCase());
+                        {loading ? (
+                            <div className="flex justify-center items-center min-h-[300px]">
+                                <LoadingSpinner />
+                            </div>
+                        ) : (
+                            <>
 
-                                                const { monday, sunday } = getTimeRange();
-                                                const startDate = new Date(assign.startDate);
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full bg-[#f5f9fc] rounded-xl">
+                                        <thead>
+                                            <tr className="border-b-2 border-[#e0e7ef]">
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">No</th>
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">Test name</th>
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">Start</th>
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">End</th>
+                                                {/* <th className="py-2 px-4 text-left text-[#111827] font-semibold">Mô tả</th> */}
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">Status</th>
+                                                <th className="py-2 px-4 text-left text-[#111827] font-semibold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {assignData.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={6} className="text-center py-6 text-gray-400">No test have assigned</td>
+                                                </tr>
+                                            ) : (
+                                                assignData
+                                                    .filter((assign) => {
+                                                        const title = assign.testId?.title || assign.title || "";
+                                                        const matchName = title.toLowerCase().includes(filterName.toLowerCase());
 
-                                                let matchTime = true;
-                                                if (filterTime === "this") {
-                                                    matchTime = startDate >= monday && startDate <= sunday;
-                                                } else if (filterTime === "past") {
-                                                    matchTime = startDate < monday;
-                                                } else if (filterTime === "future") {
-                                                    matchTime = startDate > sunday;
-                                                }
+                                                        const { monday, sunday } = getTimeRange();
+                                                        const startDate = new Date(assign.startDate);
 
-                                                return matchName && matchTime;
-                                            })
+                                                        let matchTime = true;
+                                                        if (filterTime === "this") {
+                                                            matchTime = startDate >= monday && startDate <= sunday;
+                                                        } else if (filterTime === "past") {
+                                                            matchTime = startDate < monday;
+                                                        } else if (filterTime === "future") {
+                                                            matchTime = startDate > sunday;
+                                                        }
 
-                                            .map((assign, idx) => {
-                                                const status = getStatus(assign.startDate, assign.dueDate);
-                                                return (
-                                                    <tr key={assign._id} className="border-b border-[#e0e7ef]">
-                                                        <td className="py-2 px-4">{idx + 1}</td>
-                                                        <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
-                                                        <td className="py-2 px-4 font-bold">
-                                                            {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
-                                                        </td>
-                                                        <td className="py-2 px-4 font-bold">
-                                                            {assign.dueDate ? new Date(assign.dueDate).toLocaleString("vi-VN") : ""}
-                                                        </td>
-                                                        {/* <td className="py-2 px-4">{assign.testId?.description || assign.description}</td> */}
-                                                        <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
-                                                            {status.text}
-                                                        </td>
-                                                        <td className="py-2 px-4">
-                                                            <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
-                                                                <FontAwesomeIcon icon={faEdit} />
-                                                            </button>
-                                                            <button className="p-1 text-blue-600 hover:text-blue-900">
-                                                                <FontAwesomeIcon icon={faFileExport} />
-                                                            </button>
-                                                            <button className="p-1 text-red-600 hover:text-red-900">
-                                                                <FontAwesomeIcon icon={faTrash} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                                        return matchName && matchTime;
+                                                    })
+
+                                                    .map((assign, idx) => {
+                                                        const status = getStatus(assign.startDate, assign.dueDate);
+                                                        return (
+                                                            <tr key={assign._id} className="border-b border-[#e0e7ef]">
+                                                                <td className="py-2 px-4">{idx + 1}</td>
+                                                                <td className="py-2 px-4 font-semibold">{assign.testId?.title || assign.title}</td>
+                                                                <td className="py-2 px-4 font-bold">
+                                                                    {assign.startDate ? new Date(assign.startDate).toLocaleString("vi-VN") : ""}
+                                                                </td>
+                                                                <td className="py-2 px-4 font-bold">
+                                                                    {assign.dueDate ? new Date(assign.dueDate).toLocaleString("vi-VN") : ""}
+                                                                </td>
+                                                                {/* <td className="py-2 px-4">{assign.testId?.description || assign.description}</td> */}
+                                                                <td className="py-2 px-4 font-semibold" style={{ color: status.color }}>
+                                                                    {status.text}
+                                                                </td>
+                                                                <td className="py-2 px-4">
+                                                                    <button className="p-1 me-2 text-indigo-600 hover:text-indigo-900">
+                                                                        <FontAwesomeIcon icon={faEdit} />
+                                                                    </button>
+                                                                    <button className="p-1 text-blue-600 hover:text-blue-900">
+                                                                        <FontAwesomeIcon icon={faFileExport} />
+                                                                    </button>
+                                                                    <button className="p-1 text-red-600 hover:text-red-900">
+                                                                        <FontAwesomeIcon icon={faTrash} />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Modals */}

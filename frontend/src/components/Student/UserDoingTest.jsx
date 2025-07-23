@@ -51,7 +51,7 @@ export const UserDoingTest = () => {
     useEffect(() => {
         const handleBeforeUnload = (e) => {
             e.preventDefault();
-            e.returnValue = "Bạn có chắc chắn muốn rời khỏi trang? Bài làm của bạn có thể bị mất.";
+            e.returnValue = "Are you sure you want to leave this page? Your answers may be lost.";
         };
         window.addEventListener("beforeunload", handleBeforeUnload);
         return () => window.removeEventListener("beforeunload", handleBeforeUnload);
@@ -137,7 +137,7 @@ export const UserDoingTest = () => {
 
 
     const handleSubmit = async () => {
-        const confirmed = window.confirm("Bạn có chắc chắn muốn nộp bài? Sau khi nộp bạn sẽ không thể sửa đổi.");
+        const confirmed = window.confirm("Are you sure you want to submit? Once submitted, you won't be able to modify your answers.");
         if (!confirmed) return;
         const formattedAnswers = Object.entries(answers).map(([questionIndex, answer]) => ({
             questionIndex: parseInt(questionIndex),
@@ -153,15 +153,14 @@ export const UserDoingTest = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            alert("Nộp bài thành công!");
-            navigate(`/user`);
+            alert("Submission successful!");
+            navigate(`/user/test`);
         } catch (err) {
             if (err.response?.data?.message === "You have already submitted this test") {
-                alert("Bạn đã nộp bài này rồi. Không thể nộp lại. || You have already submitted this test");
-                navigate(`/user`);
+                alert("You have already submitted this test");
+                navigate(`/user/test`);
             } else {
-                console.error("Lỗi khi nộp bài:", err);
-                alert(" Lỗi khi nộp bài kiểm tra!");
+                alert("Error submitting test!");
             }
         }
     };
@@ -192,13 +191,13 @@ export const UserDoingTest = () => {
                 flexDirection: "column",
                 alignItems: "center"
             }}>
-                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Thời gian còn lại</div>
+                <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 8 }}>Remaining Time</div>
                 <div style={{ color: "#00b200", fontWeight: 700, fontSize: 32, marginBottom: 24 }}>
                     {remainingTime || "00:00"}
                 </div>
 
 
-                <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>Câu hỏi</div>
+                <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 8 }}>Questions</div>
                 <div style={{
                     display: "grid",
                     gridTemplateColumns: "repeat(5, 38px)",
@@ -234,8 +233,8 @@ export const UserDoingTest = () => {
                 </div>
 
                 <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-                    <button style={navBtnStyle} onClick={() => handleNav("prev")}>&lt; Lùi</button>
-                    <button style={navBtnStyle} onClick={() => handleNav("next")}>Tiếp &gt;</button>
+                    <button style={navBtnStyle} onClick={() => handleNav("prev")}>&lt; Back</button>
+                    <button style={navBtnStyle} onClick={() => handleNav("next")}>Next &gt;</button>
                 </div>
 
                 <button
@@ -253,7 +252,7 @@ export const UserDoingTest = () => {
                         cursor: "pointer"
                     }}
                 >
-                    Nộp bài
+                    Submiss
                 </button>
             </div>
 
@@ -268,7 +267,7 @@ export const UserDoingTest = () => {
                     marginBottom: 8
                 }}>
                     <span style={{ fontWeight: 500, fontSize: 18 }}>
-                        Thời gian: <span style={{ fontWeight: 700 }}>{timeStr || "..."}</span>
+                        Time: <span style={{ fontWeight: 700 }}>{timeStr || "..."}</span>
                     </span>
                 </div>
 
@@ -282,7 +281,7 @@ export const UserDoingTest = () => {
                     padding: 24
                 }}>
                     <h4 style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>
-                        Câu hỏi {current}: {currentQuestion ? currentQuestion.question : "Không có dữ liệu"}
+                        Question {current}: {currentQuestion ? currentQuestion.question : "No data available"}
                     </h4>
 
                     {currentQuestion ? (
@@ -313,7 +312,7 @@ export const UserDoingTest = () => {
                         </div>
                     ) : (
                         <p style={{ fontSize: 16, fontStyle: "italic", color: "#666" }}>
-                            Không tìm thấy câu hỏi.
+                            No question data available for this test.
                         </p>
                     )}
                 </div>
