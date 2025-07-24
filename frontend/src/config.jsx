@@ -124,4 +124,8 @@ export const API_ENDPOINTS = {
   DELETE_LEARNING_MATERIAL: (id) => `${baseUrl}/api/learningMaterials/${id}`,
   DOWNLOAD_ALL_MATERIALS_ZIP: (classId) => `${baseUrl}/api/learningMaterials/download-zip/${classId}`,
   DOWNLOAD_ALL_MATERIALS_BY_COURSE_ID: (courseId) => `${baseUrl}/api/learningMaterials/download-zip/course/${courseId}`,
+
+  //Customer Consulting
+  CREATE_CUSTOMER_CONSULTING: `${baseUrl}/api/customerConsultings`,
+  GET_ALL_CUSTOMER_CONSULTING: `${baseUrl}/api/customerConsultings`,
 };

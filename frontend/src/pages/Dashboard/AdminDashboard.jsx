@@ -7,6 +7,7 @@ import AdminManageClass from '../../components/Admin/ManagerClass/AdminManageCla
 import AdminOverView from '../../components/Admin/AdminOverView/AdminOverView';
 import AdminStatistics from '../../components/Admin/AdminStatistics/AdminStatistics';
 import AdminManageEnrollment from '../../components/Admin/ManageEnrollment/AdminManageEnrollment';
+import AdminManageCustomerConsulting from '../../components/Admin/AdminCustomerConsulting/AdminManageCustomerConsulting';
 
 export default function AdminDashboard() {
   const { selectedPage } = useParams();
@@ -37,6 +38,7 @@ export default function AdminDashboard() {
           {selectedPage === 'classes' && <AdminManageClass />}
           {selectedPage === 'enrollment' && <AdminManageEnrollment />}
           {selectedPage === 'statistics' && <AdminStatistics />}
+          {selectedPage === 'customerConsulting' && <AdminManageCustomerConsulting />}
         </div>
       </main>
     </div>

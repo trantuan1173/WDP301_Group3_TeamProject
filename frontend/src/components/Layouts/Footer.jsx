@@ -6,9 +6,9 @@ import { faLocationDot, faPhone, faEnvelope, faPrint } from "@fortawesome/free-s
 
 export default function Footer() {
     return (
-        <div className="" style={{ marginTop: "200px" }}>
+        <div className="" style={{ marginTop: "50px" }}>
             <footer className="text-center text-lg-start text-white" style={{ backgroundColor: "#092257" }}>
-                <section className="d-flex justify-content-between p-4" style={{ backgroundColor: "#8b9dc3" }}>
+                <section className="d-flex justify-content-between p-4">
                   
                 </section>
 

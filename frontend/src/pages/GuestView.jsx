@@ -47,20 +47,20 @@ export default function GuestView() {
       </header>
 
       <main className="w-full">
-        <section className="w-full sm:px-6 lg:px-12 py-6">
-          <div className="w-full">
+        <section className="w-full">
+          <div className="w-full sm:px-6 lg:px-12 py-6">
             <RouteCourse onSupportClick={scrollToSupport} />
           </div>
 
-          <div className="w-full mt-12">
+          <div className="w-full">
             <GuestViewTeacher />
           </div>
 
-          <div className="w-full mt-12">
+          <div className="w-full">
             <GuestViewFeedBack />
           </div>
 
-          <div className="w-full mt-12" ref={supportRef}>
+          <div className="w-full sm:px-6 lg:px-12 py-6" ref={supportRef}>
             <GuestGetAdive />
           </div>
         </section>

@@ -62,7 +62,7 @@ const GuestViewFeedBack = () => {
 
   return (
     <section className="bg-blue-50 py-12">
-      <h2 className="text-2xl font-bold text-center mb-10 text-blue-800">
+      <h2 className="text-3xl font-extrabold text-center mb-10 text-blue-800 drop-shadow-sm tracking-wide">
         💬 What Students Say About Our Courses
       </h2>
 
@@ -80,10 +80,10 @@ const GuestViewFeedBack = () => {
 
               return (
                 <div key={fb._id} className="px-4">
-                  <div className="bg-white rounded-xl shadow-md p-6 h-full flex flex-col justify-between">
+                  <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl shadow-md hover:shadow-xl transition-all p-5 h-full flex flex-col justify-between border border-blue-300 min-h-[250px]">
                     {/* Avatar + Info */}
                     <div className="flex items-center mb-4">
-                      <div className="w-14 h-14 rounded-full bg-blue-300 flex items-center justify-center text-xl font-semibold text-white mr-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 shadow flex items-center justify-center text-lg font-bold text-white mr-3">
                         {studentInitial}
                       </div>
                       <div>
@@ -93,10 +93,10 @@ const GuestViewFeedBack = () => {
                     </div>
 
                     {/* Feedback */}
-                    <p className="text-gray-800 italic text-lg mb-4">"{fb.feedback}"</p>
+                    <p className="text-blue-900 italic text-base mb-3 leading-relaxed line-clamp-4 overflow-hidden">"{fb.feedback}"</p>
 
                     {/* Rating */}
-                    <div className="text-yellow-400 text-lg">{renderStars(fb.rating)}</div>
+                    <div className="text-yellow-400 text-base">{renderStars(fb.rating)}</div>
                   </div>
                 </div>
               );
