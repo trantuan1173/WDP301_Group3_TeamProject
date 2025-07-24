@@ -96,8 +96,14 @@ export default function AttendanceForm() {
       [studentId]: status,
     }));
   };
-
+  const isAllMarked = students.length > 0 && students.every(
+    stu => attendances[stu._id] === true || attendances[stu._id] === false
+  );
   const handleSaveAttendance = async () => {
+    if (!isAllMarked) {
+      alert("All students must be marked!");
+      return;
+    }
     const attendanceList = Object.entries(attendances).map(
       ([studentId, status]) => ({
         studentId,
@@ -314,6 +320,7 @@ export default function AttendanceForm() {
                   <button
                     onClick={handleSaveAttendance}
                     className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                    disabled={!isAllMarked}
                   >
                     Save Attendance
                   </button>

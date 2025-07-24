@@ -23,9 +23,17 @@ export default function AttendanceDetail() {
     );
   }
 
+  // Tính tổng present/absent theo từng ngày (nếu có nhiều bản ghi cùng ngày)
+  const groupedRecords = records.reduce((acc, rec) => {
+    const dateStr = new Date(rec.date).toLocaleDateString();
+    if (!acc[dateStr]) acc[dateStr] = [];
+    acc[dateStr].push(rec);
+    return acc;
+  }, {});
+
   const total = records.length;
   const presentCount = records.filter(r => r.status === true).length;
-  const absentCount = total - presentCount;
+  const absentCount = records.filter(r => r.status === false || r.status === null).length;
   const attendanceRate = total ? Math.round((presentCount / total) * 100) : 0;
 
   return (
@@ -43,7 +51,7 @@ export default function AttendanceDetail() {
         {/* Header info */}
         <div>
           <h1 className="text-3xl font-bold text-indigo-700 flex items-center gap-2">
-            {classInfo.course || "Unnamed Course"}
+            {classInfo.course?.name || classInfo.course || "Unnamed Course"}
           </h1>
           <p className="text-gray-600 mt-4 flex items-center gap-2">
             <FaLayerGroup className="text-indigo-400" />
@@ -51,7 +59,7 @@ export default function AttendanceDetail() {
           </p>
           <p className="text-gray-600 flex items-center gap-2">
             <FaChalkboardTeacher className="text-indigo-400" /> 
-            <span className="font-medium">Teacher ID:</span> {classInfo.teacherId || "N/A"}
+            <span className="font-medium">Teacher:</span> {classInfo.teacher?.profileId?.name || classInfo.teacherName || classInfo.teacherId || "N/A"}
           </p>
         </div>
 
@@ -74,23 +82,29 @@ export default function AttendanceDetail() {
           </div>
         </div>
 
-        {/* Attendance records */}
+        {/* Attendance records - nhóm theo ngày nếu có nhiều bản ghi cùng ngày */}
         <div className="space-y-3">
-          {records.map((rec) => (
+          {Object.entries(groupedRecords).map(([dateStr, recs]) => (
             <div 
-              key={rec._id}
-              className="border rounded-lg px-4 py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 hover:bg-gray-100 transition"
+              key={dateStr}
+              className="border rounded-lg px-4 py-3 bg-gray-50 hover:bg-gray-100 transition"
             >
-              <div className="flex items-center gap-2 text-gray-700 text-sm">
+              <div className="flex items-center gap-2 text-gray-700 text-sm mb-2">
                 <FaCalendarDay className="text-indigo-500" /> 
-                {new Date(rec.date).toLocaleDateString()}
+                {dateStr}
               </div>
-              <div className={`flex items-center gap-1 text-sm font-medium ${rec.status ? 'text-green-600' : 'text-red-500'}`}>
-                {rec.status ? <FaCheckCircle /> : <FaTimesCircle />}
-                {rec.status ? 'Present' : 'Absent'}
-              </div>
-              <div className="flex items-center gap-1 text-sm text-gray-500 mt-1 sm:mt-0">
-                <FaRegStickyNote /> {rec.note || "No note"}
+              <div className="flex flex-wrap gap-4">
+                {recs.map(rec => (
+                  <div key={rec._id} className="flex items-center gap-3">
+                    <span className={`flex items-center gap-1 text-sm font-medium ${rec.status ? 'text-green-600' : 'text-red-500'}`}>
+                      {rec.status ? <FaCheckCircle /> : <FaTimesCircle />}
+                      {rec.status ? 'Present' : 'Absent'}
+                    </span>
+                    <span className="flex items-center gap-1 text-sm text-gray-500">
+                      <FaRegStickyNote /> {rec.note || "No note"}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
