@@ -25,7 +25,7 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setCourses(res.data.data || res.data);
-            } catch (err) {}
+            } catch (err) { }
         };
         fetchCourses();
     }, []);
@@ -57,12 +57,31 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // Thêm vào handleSubmit:
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validate className
+        if (!form.className.trim()) {
+            setError("Please enter class name");
+            return;
+        }
+
+        // Validate note
+        if (!form.note.trim()) {
+            setError("Please enter note");
+            return;
+        }
+
         if (!form.courseId) {
             setError("Please select a course from the dropdown list.");
             return;
         }
+        if (!form.start_time) {
+            setError("Please select a start time.");
+            return;
+        }
+
         setLoading(true);
         setError("");
         try {
@@ -85,6 +104,7 @@ export default function AdminCreateClassForm({ onSuccess, onCancel }) {
             setLoading(false);
         }
     };
+
 
     return (
         <div

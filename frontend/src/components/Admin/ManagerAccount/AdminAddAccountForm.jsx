@@ -14,6 +14,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showVerifyMsg, setShowVerifyMsg] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,14 +29,27 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
     }
   };
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!isValidEmail(formData.email)) {
+      setError("Invalid email format");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const token = localStorage.getItem("token");
       const endpoint =
-        role === "teacher" ? API_ENDPOINTS.REGISTER_TEACHER : API_ENDPOINTS.REGISTER;
+        role === "teacher"
+          ? API_ENDPOINTS.REGISTER_TEACHER
+          : API_ENDPOINTS.REGISTER;
 
       const response = await axios.post(endpoint, formData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -46,11 +60,13 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
         if (onSubmit) onSubmit();
       }
     } catch (error) {
-      alert("Registration failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const msg =
+      error?.response?.data?.message || "Registration failed. Please try again.";
+    setError(msg);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div
@@ -59,7 +75,7 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
     >
       <div
         className="bg-white rounded-xl p-6 w-full max-w-xl shadow-lg relative"
-        onClick={(e) => e.stopPropagation()} // Prevent closing form when clicking inside
+        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Create New Account</h2>
 
@@ -69,47 +85,63 @@ export default function AdminAddAccount({ onClose, onSubmit }) {
           </div>
         )}
 
-         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-2">
-            <input
-              name="name"
-              value={formData.profileData.name}
-              onChange={handleChange}
-              type="text"
-              placeholder="Full Name"
-              className="w-full bg-blue-100 p-2 rounded mb-2"
-              required
-            />
-            <input
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              type="email"
-              placeholder="Email"
-              className="w-full bg-blue-100 p-2 rounded mb-2"
-              required
-            />
-            <input
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              type="password"
-              placeholder="Password"
-              className="w-full bg-blue-100 p-2 rounded mb-2"
-              required
-            />
-            <select
-              name="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-blue-100 p-2 rounded mb-2"
-              required
-            >
-              <option value="">Roles</option>
-              <option value="teacher">Teacher</option>
-              <option value="student">Student</option>
-            </select>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-3 text-center">
+            {error}
           </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-3">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Full Name</label>
+              <input
+                name="name"
+                value={formData.profileData.name}
+                onChange={handleChange}
+                type="text"
+                className="w-full bg-blue-100 p-2 rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                type="email"
+                className="w-full bg-blue-100 p-2 rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
+              <input
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                type="password"
+                className="w-full bg-blue-100 p-2 rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Role</label>
+              <select
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full bg-blue-100 p-2 rounded"
+                required
+              >
+                <option value="">Choose a role</option>
+                <option value="teacher">Teacher</option>
+                <option value="student">Student</option>
+              </select>
+            </div>
+          </div>
+
           <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
