@@ -26,7 +26,6 @@ export default function AdminAddTeacherClassForm({ classId, onSuccess, onCancel 
     fetchTeachers();
   }, [classId]);
 
-  // Khi teachers thay đổi và query rỗng, filtered sẽ là toàn bộ teachers
   useEffect(() => {
     if (!query) {
       setFiltered(teachers);
