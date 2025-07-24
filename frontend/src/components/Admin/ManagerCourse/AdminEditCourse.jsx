@@ -219,7 +219,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                
               </div>
               {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
             </div>
@@ -235,7 +235,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                   onChange={handleChange}
                   className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 pr-8"
                 />
-                <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                
               </div>
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
@@ -254,7 +254,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
                 onChange={handleChange}
                 className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 pr-8"
               />
-              <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              
             </div>
             {errors.level && <p className="text-red-500 text-xs mt-1">{errors.level}</p>}
           </div>
@@ -263,13 +263,14 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
             <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
             <div className="relative">
               <input
-                type="text"
+                type="number"
                 name="duration"
+                min="1"
                 value={form.duration}
                 onChange={handleChange}
                 className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 pr-8"
               />
-              <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              
             </div>
             {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
           </div>
@@ -280,13 +281,14 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
           <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
           <div className="relative">
             <input
-              type="text"
+              type="number"
+              min="0"
               name="price"
               value={form.price}
               onChange={handleChange}
               className="bg-gray-100 rounded-xl p-3 w-full outline-none focus:ring-2 focus:ring-blue-400 pr-8"
             />
-            <FaPen className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          
           </div>
           {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
         </div>

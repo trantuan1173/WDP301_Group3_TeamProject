@@ -105,6 +105,12 @@ export default function AdminViewClassDetails() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-4 justify-between mb-10">
+            <button
+              className="bg-gray-300 text-gray-800 rounded-md px-5 py-2 font-semibold shadow-sm hover:bg-gray-400 flex items-center gap-2 transition"
+              onClick={handleBack}
+            >
+              <FaArrowLeft /> Back
+            </button>
             <div className="flex flex-wrap gap-4">
               <button
                 className={`rounded-md px-5 py-2 font-semibold shadow-sm text-white flex items-center gap-2 transition ${classData.teacherId ? "bg-yellow-500 hover:bg-yellow-600" : "bg-blue-600 hover:bg-blue-700"
@@ -130,12 +136,7 @@ export default function AdminViewClassDetails() {
               </button>
             </div>
 
-            <button
-              className="bg-gray-300 text-gray-800 rounded-md px-5 py-2 font-semibold shadow-sm hover:bg-gray-400 flex items-center gap-2 transition"
-              onClick={handleBack}
-            >
-              <FaArrowLeft /> Back
-            </button>
+            
           </div>
 
           {/* Add Forms */}

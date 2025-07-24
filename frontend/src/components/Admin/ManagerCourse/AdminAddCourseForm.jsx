@@ -27,10 +27,9 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("Chỉ chấp nhận file ảnh.");
+        setError("Only image files are allowed.");
         return;
       }
-      // Đọc ảnh và resize
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
@@ -55,7 +54,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
           ctx.drawImage(img, 0, 0, width, height);
           canvas.toBlob((blob) => {
             if (blob.size > 10 * 1024 * 1024) {
-              setError("Ảnh sau khi nén vẫn lớn hơn 10MB.");
+              setError("Compressed image is still larger than 10MB.");
               return;
             }
             setError("");
@@ -84,10 +83,10 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
       if (data.secure_url) {
         setForm((prevForm) => ({ ...prevForm, imageURL: data.secure_url }));
       } else {
-        setError("Không thể upload ảnh lên Cloudinary.");
+        setError("Failed to upload image to Cloudinary.");
       }
     } catch (err) {
-      setError("Upload ảnh thất bại.");
+      setError("Image upload failed.");
     } finally {
       setUploadingImage(false);
     }
@@ -104,18 +103,21 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
       imageURL,
     } = form;
 
-    if (!nameCourses) return setError("Course name is required");
-    if (!category) return setError("Please select course category");
-    if (!level) return setError("Please enter course level");
-    if (!price) return setError("Please enter course price");
-    if (!durationDays) return setError("Please enter course duration");
-    if (!imageURL) return setError("Please upload course image");
+    if (!nameCourses) return setError("Course name is required.");
+    if (!category) return setError("Please select course category.");
+    if (!level) return setError("Course level is required.");
+    if (!price) return setError("Course price is required.");
+    if (isNaN(price) || parseFloat(price) < 0)
+      return setError("Price must be a number greater than or equal to 0.");
+    if (!durationDays) return setError("Course duration is required.");
+    if (isNaN(durationDays) || parseInt(durationDays) <= 0)
+      return setError("Duration must be a number greater than 0.");
+    if (!imageURL) return setError("Course image is required.");
 
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      // Tạo khóa học
       const courseRes = await axios.post(
         API_ENDPOINTS.CREATE_COURSE,
         { nameCourses },
@@ -125,7 +127,6 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
       );
       const courseId = courseRes.data.data._id;
 
-      // Tạo chi tiết khóa học
       const detailRes = await axios.post(
         API_ENDPOINTS.CREATE_COURSE_DETAIL,
         {
@@ -142,7 +143,6 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
         }
       );
 
-      // Chuẩn hóa dữ liệu trả về để hiển thị ngay
       if (onSubmit) {
         onSubmit({
           ...detailRes.data.data,
@@ -152,7 +152,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
       }
       onClose();
     } catch (err) {
-      setError("Add course failed");
+      setError("Add course failed.");
     } finally {
       setLoading(false);
     }
@@ -169,6 +169,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Add New Course</h2>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="bg-blue-100 p-2 rounded">
             <label>Image:</label>
@@ -182,6 +183,7 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
               </div>
             )}
           </div>
+
           <select
             name="category"
             value={form.category}
@@ -192,44 +194,51 @@ export default function AdminAddCourse({ onClose, onSubmit }) {
             <option value="ielts">IELTS</option>
             <option value="toeic">TOEIC</option>
           </select>
+
           <input
             name="nameCourses"
             value={form.nameCourses}
             onChange={handleChange}
-            className="bg-blue-100 p-2 rounded"
             placeholder="Course Name"
+            className="bg-blue-100 p-2 rounded"
           />
           <input
             name="level"
             value={form.level}
             onChange={handleChange}
+            placeholder="Level "
             className="bg-blue-100 p-2 rounded"
-            placeholder="Level"
           />
           <input
             name="durationDays"
             value={form.durationDays}
             onChange={handleChange}
+            type="number"
+            min="1"
+            placeholder="Duration "
             className="bg-blue-100 p-2 rounded"
-            placeholder="Duration"
           />
           <input
             name="price"
             value={form.price}
             onChange={handleChange}
-            className="bg-blue-100 p-2 rounded"
+            type="number"
+            min="0"
             placeholder="Price"
+            className="bg-blue-100 p-2 rounded"
           />
           <textarea
             name="description"
             value={form.description}
             onChange={handleChange}
+            placeholder="Description"
             className="bg-blue-100 p-2 rounded col-span-1 md:col-span-2"
             rows={3}
-            placeholder="Description"
           />
         </div>
+
         {error && <p className="text-red-500 text-center mb-2">{error}</p>}
+
         <div className="flex justify-end gap-4 mt-4">
           <button
             onClick={onClose}
