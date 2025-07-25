@@ -8,10 +8,12 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../config";
 import { useNavigate } from "react-router-dom";
+
 const locales = {
   "en-US": enUS,
   vi: vi,
 };
+
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -20,7 +22,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const TeacherViewShedule = () => {
+const TeacherViewSchedule = () => {
   const [schedules, setSchedules] = useState([]);
   const navigate = useNavigate();
 
@@ -44,67 +46,70 @@ const TeacherViewShedule = () => {
     fetchSchedule();
   }, []);
 
-  // Chuyển đổi dữ liệu sang format của DevExtreme Scheduler
   const events = schedules.map((sch) => ({
-    id: sch._id, // ID lịch học
-    classId: sch.classId?._id, // ✅ đảm bảo lấy đúng ID lớp
+    id: sch._id,
+    classId: sch.classId?._id,
     title: sch.classId?.className || "Buổi học",
     start: new Date(sch.start_time),
     end: new Date(sch.end_time),
     date: sch.date,
+    startISO: sch.start_time,
+    endISO: sch.end_time,
   }));
 
-const CustomEvent = ({ event }) => {
-  const now = new Date();
-  const eventDate = new Date(event.date);
+  const CustomEvent = ({ event }) => {
+    const now = new Date();
+    const eventDate = new Date(event.date);
 
-  const isSameDay =
-    now.getFullYear() === eventDate.getFullYear() &&
-    now.getMonth() === eventDate.getMonth() &&
-    now.getDate() === eventDate.getDate();
+    const isSameDay =
+      now.getFullYear() === eventDate.getFullYear() &&
+      now.getMonth() === eventDate.getMonth() &&
+      now.getDate() === eventDate.getDate();
 
-  const isPastDay = eventDate < new Date(now.setHours(0, 0, 0, 0));
-  const isFutureDay = eventDate > new Date(now.setHours(23, 59, 59, 999));
+    const isPastDay = eventDate < new Date(now.setHours(0, 0, 0, 0));
+    const isFutureDay = eventDate > new Date(now.setHours(23, 59, 59, 999));
 
-  let buttonStyle = "bg-gray-400 text-white cursor-not-allowed";
-  let buttonLabel = "Atendedance";
-  let isDisabled = false;
+    let buttonStyle = "bg-gray-400 text-white cursor-not-allowed";
+    let buttonLabel = "Attendance";
+    let isDisabled = false;
 
-  if (isPastDay) {
-    buttonStyle = "bg-yellow-500 text-white hover:bg-yellow-600";
-    buttonLabel = "View Attendance";
-    isDisabled = false;
-  } else if (isSameDay) {
-    buttonStyle = "bg-green-500 text-white hover:bg-green-600";
-    buttonLabel = "Take attendance";
-    isDisabled = false;
-  }
+    if (isPastDay) {
+      buttonStyle = "bg-yellow-500 text-white hover:bg-yellow-600";
+      buttonLabel = "View Attendance";
+    } else if (isSameDay) {
+      buttonStyle = "bg-green-500 text-white hover:bg-green-600";
+      buttonLabel = "Take Attendance";
+    } else if (isFutureDay) {
+      buttonStyle = "bg-gray-400 text-white cursor-not-allowed";
+      isDisabled = true;
+    }
 
-  return (
-    <div className="flex flex-col items-center justify-between h-full px-1 py-1">
-      <span className="text-white text-sm font-semibold text-center leading-tight">
-        {event.title}
-      </span>
-      <div className="mt-1 mb-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!isDisabled) {
-              navigate(`/teacher/attendance/${event.classId}?date=${event.date}`);
-            }
-          }}
-          disabled={isDisabled}
-          className={`px-2 py-[2px] text-[10px] rounded transition ${buttonStyle}`}
-        >
-          {buttonLabel}
-        </button>
+    return (
+      <div className="flex flex-col items-center justify-between h-full px-1 py-1">
+        <span className="text-white text-sm font-semibold text-center leading-tight">
+          {event.title}
+        </span>
+        <div className="mt-1 mb-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isDisabled) {
+                navigate(
+                  `/teacher/attendance/${event.classId}?date=${event.date}&start=${encodeURIComponent(
+                    event.startISO
+                  )}&end=${encodeURIComponent(event.endISO)}`
+                );
+              }
+            }}
+            disabled={isDisabled}
+            className={`px-2 py-[2px] text-[10px] rounded transition ${buttonStyle}`}
+          >
+            {buttonLabel}
+          </button>
+        </div>
       </div>
-    </div>
-  );
-};
-
-
-  // Tối ưu hiển thị ca tối
+    );
+  };
 
   return (
     <div className="p-8 bg-white min-h-screen">
@@ -127,15 +132,15 @@ const CustomEvent = ({ event }) => {
           }}
           slotPropGetter={() => ({
             style: {
-              minHeight: "25px", // 👈 tăng chiều cao mỗi dòng giờ
+              minHeight: "25px",
             },
           })}
           min={new Date(1970, 1, 1, 7, 0, 0)}
-              max={new Date(1970, 1, 1, 23, 59, 59)}
+          max={new Date(1970, 1, 1, 23, 59, 59)}
         />
       </div>
     </div>
   );
 };
 
-export default TeacherViewShedule;
+export default TeacherViewSchedule;
