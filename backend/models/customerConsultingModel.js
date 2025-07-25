@@ -27,8 +27,8 @@ const customerConsultingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "completed", "rejected"],
-      default: "pending",
+      enum: ["Not Process", "Processing", "Processed"],
+      default: "Not Process",
     },
   },
   { timestamps: true },
