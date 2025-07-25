@@ -25,6 +25,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [newMaterial, setNewMaterial] = useState({ description: "", file: null });
   const [materials, setMaterials] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,6 +92,7 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
 
   // Upload material to server
   const uploadMaterialToServer = async () => {
+    setIsUploading(true);
     const token = localStorage.getItem("token");
     const formData = new FormData();
     formData.append("courseId", form.courseId);
@@ -101,7 +103,6 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     newMaterial.file.forEach((file) => {
       formData.append("file", file);
     });
-
     try {
       const res = await axios.post(
         `${API_ENDPOINTS.CREATE_LEARNING_MATERIAL}`,
@@ -123,6 +124,8 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
     } catch (err) {
       console.error("Upload failed", err);
       alert("Failed to upload material");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -369,42 +372,53 @@ export default function AdminEditCourse({ courseData, onClose, onSubmit, onRefre
           <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-xl font-semibold mb-4">Add Course Material</h3>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Select File</label>
-              {/* <input
-              type="file"
-              onChange={(e) => setNewMaterial({ ...newMaterial, file: e.target.files[0] })}
-              className="w-full"
-            /> */}
-              <input
-                type="file"
-                multiple
-                onChange={(e) => setNewMaterial({ ...newMaterial, file: Array.from(e.target.files) })}
-                className="w-full"
-              />
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Upload File(s)</label>
+              <div
+                className="w-full border-2 border-dashed border-blue-400 rounded-xl p-6 text-center text-gray-500 hover:bg-blue-50 transition cursor-pointer"
+                onClick={() => document.getElementById('material-file-input').click()}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => {
+                  e.preventDefault();
+                  const files = Array.from(e.dataTransfer.files);
+                  setNewMaterial({ ...newMaterial, file: files });
+                }}
+              >
+                {newMaterial.file && newMaterial.file.length > 0 ? (
+                  <p>{newMaterial.file.length} file(s) selected</p>
+                ) : (
+                  <p>Click to upload or drag & drop files here</p>
+                )}
+                <input
+                  id="material-file-input"
+                  type="file"
+                  multiple
+                  onChange={(e) => setNewMaterial({ ...newMaterial, file: Array.from(e.target.files) })}
+                  className="hidden"
+                />
+              </div>
             </div>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowMaterialModal(false)}
                 className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400"
+                disabled={isUploading}
               >
                 Cancel
               </button>
               <button
+                disabled={isUploading}
+                className={`px-4 py-2 rounded-lg text-white ${
+                  isUploading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
                 onClick={() => {
-                  // if (newMaterial.file) {
-                  //   uploadMaterialToServer();
-                  // } else {
-                  //   alert("Please select a file");
-                  // }
                   if (newMaterial.file && newMaterial.file.length > 0) {
                     uploadMaterialToServer();
                   } else {
                     alert("Please select at least one file");
                   }
                 }}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               >
-                Add
+                {isUploading ? "Uploading..." : "Add"}
               </button>
             </div>
           </div>

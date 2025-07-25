@@ -26,6 +26,7 @@ export default function CourseDetailPage() {
   const [showCourseFeedback, setShowCourseFeedback] = useState(false);
   const [showTeacherFeedback, setShowTeacherFeedback] = useState(false);
   const [studentId, setStudentId] = useState();
+  const [downloading, setDownloading] = useState(false);
 
   // Lấy studentId từ token đăng nhập theo mẫu bạn yêu cầu
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function CourseDetailPage() {
   }
 
   const downloadZip = async () => {
+    setDownloading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(API_ENDPOINTS.DOWNLOAD_ALL_MATERIALS_ZIP(course._id), {
@@ -68,6 +70,8 @@ export default function CourseDetailPage() {
       link.click();
     } catch (err) {
       console.error("Error downloading zip:", err);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -159,11 +163,60 @@ export default function CourseDetailPage() {
             </div>
           </div>
           <div className="flex flex-col justify-center gap-3">
-            <button
+            {/* <button
               onClick={downloadZip}
               className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
             >
-              Download Learner Material
+              {downloading ? "Downloading..." : "Download Learner Material"}
+            </button> */}
+            <button
+              onClick={downloadZip}
+              disabled={downloading}
+              className={`py-2 px-4 rounded-lg transition flex items-center justify-center gap-2 ${downloading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+            >
+              {downloading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
+                  </svg>
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 4v12"
+                    />
+                  </svg>
+                  Download Learner Material
+                </>
+              )}
             </button>
             {course.progress >= 50 && (
               <>
