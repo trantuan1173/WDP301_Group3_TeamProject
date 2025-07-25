@@ -311,7 +311,6 @@ const downloadXLSXTemplate = (req, res) => {
 //     res.status(500).json({ success: false, message: "Upload failed", error: error.message })
 //   }
 // }
-
 const uploadTestFromXLSX = async (req, res) => {
   try {
     const filePath = req.file.path;
@@ -319,7 +318,6 @@ const uploadTestFromXLSX = async (req, res) => {
     const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-
 
     const questions = data.map((row) => ({
       question: row.question,
@@ -331,22 +329,65 @@ const uploadTestFromXLSX = async (req, res) => {
 
     const test = await Test.create({
       courseId,
-      // classId,
       teacherId,
       title,
       description,
       questions,
     });
-    
+
     fs.unlinkSync(filePath);
-    res.status(201).json({ success: true, data: test });
-    
-    message.success("Upload success");
+
+    // ✅ Trả response 1 lần duy nhất
+    return res.status(201).json({ success: true, data: test });
+
+    // ❌ Xoá dòng này vì đây là code frontend (Ant Design)
+    // message.success("Upload success");
   } catch (error) {
     console.error("Upload failed:", error);
-    res.status(500).json({ success: false, message: "Upload failed", error: error.message });
+
+    // ✅ Tránh lỗi headers đã gửi: kiểm tra trước khi gửi
+    if (!res.headersSent) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Upload failed", error: error.message });
+    }
   }
 };
+// const uploadTestFromXLSX = async (req, res) => {
+//   try {
+//     const filePath = req.file.path;
+
+//     const workbook = XLSX.readFile(filePath);
+//     const sheetName = workbook.SheetNames[0];
+//     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+
+//     const questions = data.map((row) => ({
+//       question: row.question,
+//       options: [row.option1, row.option2, row.option3, row.option4],
+//       correctAnswer: row.correctAnswer,
+//     }));
+
+//     const { courseId, teacherId, title, description } = req.body;
+
+//     const test = await Test.create({
+//       courseId,
+//       // classId,
+//       teacherId,
+//       title,
+//       description,
+//       questions,
+//     });
+    
+//     fs.unlinkSync(filePath);
+//     res.status(201).json({ success: true, data: test });
+    
+//     message.success("Upload success");
+//   } catch (error) {
+//     console.error("Upload failed:", error);
+//     res.status(500).json({ success: false, message: "Upload failed", error: error.message });
+//   }
+// };
 
 const { generateTestWithAI } = require("../service/aiGenerator.js");
 
