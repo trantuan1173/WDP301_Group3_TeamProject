@@ -8,6 +8,7 @@ import AdminOverView from '../../components/Admin/AdminOverView/AdminOverView';
 import AdminStatistics from '../../components/Admin/AdminStatistics/AdminStatistics';
 import AdminManageEnrollment from '../../components/Admin/ManageEnrollment/AdminManageEnrollment';
 import AdminManageCustomerConsulting from '../../components/Admin/AdminCustomerConsulting/AdminManageCustomerConsulting';
+import AdminManageFeedback from '../../components/Admin/AdminManageFeedback/AdminManageFeedback';
 
 export default function AdminDashboard() {
   const { selectedPage } = useParams();
@@ -39,6 +40,7 @@ export default function AdminDashboard() {
           {selectedPage === 'enrollment' && <AdminManageEnrollment />}
           {selectedPage === 'statistics' && <AdminStatistics />}
           {selectedPage === 'customerConsulting' && <AdminManageCustomerConsulting />}
+          {selectedPage === 'feedback' && <AdminManageFeedback />}
         </div>
       </main>
     </div>

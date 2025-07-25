@@ -21,7 +21,7 @@ const PaymentResult = () => {
             <NavBar />
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#F1F6FA] p-4">
             <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
-                <img src={isSuccess ? "/icons/checkIcon.png" : "/icons/deleteIcon.png"} alt="Logo" className="h-16 mb-4 mx-auto" />
+                <img src={isSuccess ? "/images/checkIcon.png" : "/images/deleteIcon.png"} alt="Logo" className="h-16 mb-4 mx-auto" />
                 <h1 className={`text-2xl font-bold mb-4 ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
                     {isSuccess ? "Payment Success!" : "Payment Failed!"}
                 </h1>

@@ -45,13 +45,13 @@ export default function AdminManageClassStudentList({
               <td className="py-2 px-3">{student.profileId?.name || "N/A"}</td>
               <td className="py-2 px-3">{student.email || "Unknown"}</td>
               <td className="py-2 px-3 text-center flex gap-3 justify-center">
-                <button
+                {/* <button
                   title="View detail"
                   className="text-blue-600 hover:text-blue-800"
                   onClick={() => onViewDetail && onViewDetail(student)}
                 >
                   <FaEye />
-                </button>
+                </button> */}
                 <button
                   title="Change class"
                   className="text-yellow-600 hover:text-yellow-800"
@@ -59,13 +59,13 @@ export default function AdminManageClassStudentList({
                 >
                   <FaExchangeAlt />
                 </button>
-                <button
+                {/* <button
                   title="Remove from class"
                   className="text-red-600 hover:text-red-800"
                   onClick={() => onRemove && onRemove(student)}
                 >
                   <FaTrash />
-                </button>
+                </button> */}
               </td>
             </tr>
           ))}

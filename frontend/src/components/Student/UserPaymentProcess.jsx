@@ -105,7 +105,7 @@ const UserPaymentProcess = () => {
                                         </div>
                                     </label>
 
-                                    <label className="flex flex-nowrap items-center gap-3 w-full">
+                                    {/* <label className="flex flex-nowrap items-center gap-3 w-full">
                                         <input type="radio" value="MoMo" name="payment" className="w-5 h-5 shrink-0" />
                                         <div className="flex items-center gap-2 overflow-hidden">
                                             <img
@@ -115,7 +115,7 @@ const UserPaymentProcess = () => {
                                             />
                                             <span className="font-medium text-[#333] whitespace-nowrap">MoMo</span>
                                         </div>
-                                    </label>
+                                    </label> */}
                                 </div>
                             </div>
                         </div>

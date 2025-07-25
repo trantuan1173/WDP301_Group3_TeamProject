@@ -6,6 +6,7 @@ import {
   BarChart2,
   ClipboardPlus,
   PenLine,
+  MessagesSquare
  } from "lucide-react";
 
 const menuItems = [
@@ -16,6 +17,7 @@ const menuItems = [
   { icon: ClipboardPlus, label: "Manage Enrollments", key: "enrollment" },
   { icon: BarChart2, label: "Statistics", key: "statistics" },
   { icon: PenLine  , label: "Customer Consulting", key: "customerConsulting" },
+  { icon: MessagesSquare  , label: "Feedback", key: "feedback" },
 ];
 
 export default function AdminSideMenu({ onMenuSelect, selectedKey }) {
