@@ -277,9 +277,7 @@ export default function AdminManageAccount() {
             <option value="teacher">Teacher</option>
             <option value="student">Student</option>
           </select>
-          <button className="bg-blue-100 text-blue-800 px-4 py-1 rounded shadow text-sm font-medium">
-            Export Data
-          </button>
+          
           <button
             className="bg-indigo-600 text-white flex items-center gap-2 px-3 py-1 rounded shadow text-sm font-medium"
             onClick={() => setShowAddForm(true)}

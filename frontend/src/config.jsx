@@ -129,4 +129,6 @@ export const API_ENDPOINTS = {
   //Customer Consulting
   CREATE_CUSTOMER_CONSULTING: `${baseUrl}/api/customerConsultings`,
   GET_ALL_CUSTOMER_CONSULTING: `${baseUrl}/api/customerConsultings`,
+  EDIT_CUSTOMER_CONSULTING: (consultingId) => `${baseUrl}/api/customerConsultings/${consultingId}`,
+  DELETE_CUSTOMER_CONSULTING: (consultingId) => `${baseUrl}/api/customerConsultings/${consultingId}`,
 };

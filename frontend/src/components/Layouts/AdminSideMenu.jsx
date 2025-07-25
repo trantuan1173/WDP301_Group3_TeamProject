@@ -4,7 +4,9 @@ import {
   BookOpen,
   Users,
   BarChart2,
-  ClipboardPlus } from "lucide-react";
+  ClipboardPlus,
+  PenLine,
+ } from "lucide-react";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Overview", key: "overview" },
@@ -13,7 +15,7 @@ const menuItems = [
   { icon: Users, label: "Manage Classes", key: "classes" },
   { icon: ClipboardPlus, label: "Manage Enrollments", key: "enrollment" },
   { icon: BarChart2, label: "Statistics", key: "statistics" },
-  { icon: BarChart2, label: "Customer Consulting", key: "customerConsulting" },
+  { icon: PenLine  , label: "Customer Consulting", key: "customerConsulting" },
 ];
 
 export default function AdminSideMenu({ onMenuSelect, selectedKey }) {
