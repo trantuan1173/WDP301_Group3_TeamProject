@@ -4,7 +4,6 @@ import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../config";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { log } from "handlebars/runtime";
 
 
 export const UserDoingTest = () => {
@@ -23,7 +22,7 @@ export const UserDoingTest = () => {
 
     const getStatus = (index, current) => {
         if (index === current) return "current";
-        if (answers[index]) return "answered";
+        if (answers[index - 1]) return "answered";
         return "neutral";
     };
 
@@ -156,7 +155,7 @@ export const UserDoingTest = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            console.log("Submiss Content:", {
+            console.log("Submit Content:", {
                 testAssignId,
                 studentId: userId,
                 answers: formattedAnswers,
@@ -262,7 +261,7 @@ export const UserDoingTest = () => {
                         cursor: "pointer"
                     }}
                 >
-                    Submiss
+                    Submit
                 </button>
             </div>
 
