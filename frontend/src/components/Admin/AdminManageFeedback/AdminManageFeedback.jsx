@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../config";
@@ -13,6 +13,8 @@ export default function AdminManageFeedback() {
   const [editingFeedback, setEditingFeedback] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [viewType, setViewType] = useState("course"); // "course" hoặc "teacher"
+  const [filterCourseOrTeacher, setFilterCourseOrTeacher] = useState("");
+  const [filterRating, setFilterRating] = useState("");
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span key={i} className={i < rating ? "text-yellow-400" : "text-gray-300"}>
@@ -63,16 +65,40 @@ export default function AdminManageFeedback() {
     fetchFeedbackTeacher();
   }, [refresh]);
 
+  // Memoized unique course or teacher name options for dropdown
+  const uniqueCourseOrTeacherOptions = useMemo(() => {
+    const data = viewType === "course" ? feedbackCourse : feedbackTeacher;
+    const names = data.map((item) =>
+      viewType === "course"
+        ? item.courseId?.nameCourses
+        : item.teacherId?.profileId?.name
+    );
+    return Array.from(new Set(names.filter(Boolean)));
+  }, [viewType, feedbackCourse, feedbackTeacher]);
+
+  const applyFilters = (data) => {
+    return data.filter((item) => {
+      const matchCourseOrTeacher =
+        filterCourseOrTeacher === "" ||
+        (viewType === "course"
+          ? item.courseId?.nameCourses === filterCourseOrTeacher
+          : item.teacherId?.profileId?.name === filterCourseOrTeacher);
+
+      const matchRating = filterRating === "" || item.rating === Number(filterRating);
+
+      return matchCourseOrTeacher && matchRating;
+    });
+  };
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentFeedback =
+  const filteredFeedback =
     viewType === "course"
-      ? feedbackCourse.slice(indexOfFirstUser, indexOfLastUser)
-      : feedbackTeacher.slice(indexOfFirstUser, indexOfLastUser);
-  const totalPages =
-    viewType === "course"
-      ? Math.ceil(feedbackCourse.length / usersPerPage)
-      : Math.ceil(feedbackTeacher.length / usersPerPage);
+      ? applyFilters(feedbackCourse)
+      : applyFilters(feedbackTeacher);
+
+  const currentFeedback = filteredFeedback.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredFeedback.length / usersPerPage);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this feedback?")) return;
@@ -109,6 +135,33 @@ export default function AdminManageFeedback() {
         >
           Total Feedback Teacher: {feedbackTeacher.length}
         </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+        <select
+          value={filterCourseOrTeacher}
+          onChange={(e) => setFilterCourseOrTeacher(e.target.value)}
+          className="border px-3 py-2 rounded w-full sm:w-1/3"
+        >
+          <option value="">
+            All {viewType === "course" ? "Courses" : "Teachers"}
+          </option>
+          {uniqueCourseOrTeacherOptions.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filterRating}
+          onChange={(e) => setFilterRating(e.target.value)}
+          className="border px-3 py-2 rounded w-full sm:w-1/4"
+        >
+          <option value="">All Ratings</option>
+          {[5, 4, 3, 2, 1].map((r) => (
+            <option key={r} value={r}>{r} Stars</option>
+          ))}
+        </select>
       </div>
 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
