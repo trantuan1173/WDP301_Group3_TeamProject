@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { API_ENDPOINTS } from "../../config";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { log } from "handlebars/runtime";
 
 
 export const UserDoingTest = () => {
@@ -118,6 +119,8 @@ export const UserDoingTest = () => {
             const now = new Date();
             const end = new Date(tests.dueDate);
             const diffMs = end - now;
+            
+            
 
             if (diffMs <= 0) {
                 setRemainingTime("00:00");
@@ -152,6 +155,13 @@ export const UserDoingTest = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
+            console.log("Submiss Content:", {
+                testAssignId,
+                studentId: userId,
+                answers: formattedAnswers,
+            });
+            
 
             alert("Submission successful!");
             navigate(`/user/test`);
@@ -301,8 +311,8 @@ export const UserDoingTest = () => {
                                         type="radio"
                                         name={`question-${current}`}
                                         value={opt}
-                                        checked={answers[current] === opt}
-                                        onChange={() => handleAnswer(current, opt)}
+                                        checked={answers[current - 1] === opt}
+                                        onChange={() => handleAnswer(current - 1, opt)}
                                         style={{ marginRight: 12 }}
                                     />
                                     {opt}
