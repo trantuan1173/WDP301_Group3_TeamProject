@@ -4,7 +4,7 @@ const User = require("../models/userModel.js")
 // Get all feedbacks
 const getAllFeedbacksAllTeacher = async (req, res) => {
   try {
-    const feedbacks = await FeedbackTeacher.find()
+    const feedbacks = await FeedbackTeacher.find().sort({ createdAt: -1 })
     .populate({
       path: "teacherId",
       select: "email profileId",
