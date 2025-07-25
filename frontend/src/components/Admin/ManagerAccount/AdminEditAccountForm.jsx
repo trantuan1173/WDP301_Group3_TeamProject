@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-export default function AdminEditAccount({ user,roles = [], onClose, onSubmit }) {
+export default function AdminEditAccount({ user, roles = [], onClose, onSubmit }) {
   const [formData, setFormData] = useState({
-    _id: user.id, 
+    _id: user.id,
     email: user.email,
-    role: user.role,  
+    role: user.role,
     profile: {
       name: user.name,
       phone: user.phone,
@@ -41,8 +41,9 @@ export default function AdminEditAccount({ user,roles = [], onClose, onSubmit })
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={onClose}>
       <div
+        onClick={(e) => e.stopPropagation()}
         className="flex-1 rounded shadow p-6 m-4 max-w-4xl bg-white"
         style={{
           border: "1px solid #D6BDBD",
@@ -181,14 +182,14 @@ export default function AdminEditAccount({ user,roles = [], onClose, onSubmit })
             onClick={onClose}
             className="px-6 py-3 bg-gray-300 text-gray-700 rounded"
           >
-            Hủy
+            Cancel
           </button>
           <button
             type="submit"
             className="px-6 py-3 bg-blue-600 text-white rounded"
             onClick={handleSubmit}
           >
-            Lưu
+            Save
           </button>
         </div>
       </div>
