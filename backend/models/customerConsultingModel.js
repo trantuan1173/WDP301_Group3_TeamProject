@@ -22,6 +22,9 @@ const customerConsultingSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    note: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ["pending", "completed", "rejected"],
