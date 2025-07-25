@@ -15,7 +15,7 @@ const getAllFeedbacksAllTeacher = async (req, res) => {
     })
     .populate({
       path: "studentId",
-      select: "profileId",
+      select: "profileId email",
       populate: {
         path: "profileId",
         select: "name"
