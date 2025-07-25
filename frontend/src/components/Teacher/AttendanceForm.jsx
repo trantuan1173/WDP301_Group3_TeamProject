@@ -12,23 +12,23 @@ export default function AttendanceForm() {
   const [attendances, setAttendances] = useState({});
   const [filterStatus, setFilterStatus] = useState("all");
   const [notes, setNotes] = useState({});
-  const [className, setClassName] = useState(""); // mới thêm
-  const navigate = useNavigate();
+  const [className, setClassName] = useState("");
 
+  const navigate = useNavigate();
   const { classId } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const removeVietnameseTones = (str) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove diacritics
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D")
-      .toLowerCase();
-  };
 
   const currentDate =
     queryParams.get("date") || new Date().toISOString().split("T")[0];
+
+  const startParam = queryParams.get("start");
+  const endParam = queryParams.get("end");
+
+  const classStart = startParam ? new Date(startParam) : null;
+  const classEnd = endParam ? new Date(endParam) : null;
+  const now = new Date();
+
   const isToday = (() => {
     const today = new Date();
     const input = new Date(currentDate);
@@ -38,11 +38,25 @@ export default function AttendanceForm() {
       input.getDate() === today.getDate()
     );
   })();
+
   const isFutureDate = (() => {
     const today = new Date();
     const input = new Date(currentDate);
     return input > today;
   })();
+
+  const isBeforeClass = isToday && classStart && now < classStart;
+  const isDuringClass = isToday && classStart && classEnd && now >= classStart && now <= classEnd;
+  const isAfterClass = isToday && classEnd && now > classEnd;
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -96,14 +110,19 @@ export default function AttendanceForm() {
       [studentId]: status,
     }));
   };
-  const isAllMarked = students.length > 0 && students.every(
-    stu => attendances[stu._id] === true || attendances[stu._id] === false
-  );
+
+  const isAllMarked =
+    students.length > 0 &&
+    students.every(
+      (stu) => attendances[stu._id] === true || attendances[stu._id] === false
+    );
+
   const handleSaveAttendance = async () => {
     if (!isAllMarked) {
       alert("All students must be marked!");
       return;
     }
+
     const attendanceList = Object.entries(attendances).map(
       ([studentId, status]) => ({
         studentId,
@@ -156,19 +175,15 @@ export default function AttendanceForm() {
       </header>
 
       <div className="flex flex-1 bg-gray-50 overflow-hidden">
-        {/* Sidebar */}
         <div className="hidden md:block w-64">
           <TeacherSideMenu />
         </div>
 
-        {/* Main content with scroll */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className="w-full px-4 sm:px-6 lg:px-8">
             <div className="p-6 bg-white rounded-xl shadow-md min-w-full">
-              {/* Quay lại */}
               <div className="mb-4">
                 <button
-                  // onClick={() => navigate("/teacher")}
                   onClick={() => navigate(-1)}
                   className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded shadow"
                 >
@@ -180,7 +195,6 @@ export default function AttendanceForm() {
                 {className ? `Class ${className}` : "Attendance"}
               </h2>
 
-              {/* Tìm kiếm & lọc */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <div className="flex items-center gap-2 bg-blue-50 rounded-lg px-3 py-1 w-full max-w-md">
                   <FiSearch className="text-gray-500" />
@@ -209,7 +223,6 @@ export default function AttendanceForm() {
                 </span>
               </div>
 
-              {/* Bảng điểm danh */}
               <div className="w-full overflow-x-auto">
                 <div className="inline-block min-w-full align-middle">
                   <div className="overflow-hidden border border-gray-200 rounded-lg">
@@ -246,14 +259,11 @@ export default function AttendanceForm() {
                                 className="w-20 h-25 rounded-sm object-cover mx-auto"
                               />
                             </td>
-
                             <td className="p-3 border">{student.name}</td>
                             <td className="p-3 border">{student.email}</td>
                             <td className="p-3 border">{student.gender}</td>
                             <td className="p-3 border">
-                              {new Date(student.dob).toLocaleDateString(
-                                "vi-VN"
-                              )}
+                              {new Date(student.dob).toLocaleDateString("vi-VN")}
                             </td>
                             <td className="p-3 border text-center">
                               <label className="inline-flex items-center mr-4">
@@ -261,7 +271,7 @@ export default function AttendanceForm() {
                                   type="radio"
                                   name={`attend-${student._id}`}
                                   checked={attendances[student._id] === true}
-                                  disabled={!isToday}
+                                  disabled={isFutureDate || !isToday || isBeforeClass}
                                   onChange={() =>
                                     handleAttendanceChange(student._id, true)
                                   }
@@ -273,7 +283,7 @@ export default function AttendanceForm() {
                                   type="radio"
                                   name={`attend-${student._id}`}
                                   checked={attendances[student._id] === false}
-                                  disabled={!isToday}
+                                  disabled={isFutureDate || !isToday || isBeforeClass}
                                   onChange={() =>
                                     handleAttendanceChange(student._id, false)
                                   }
@@ -286,7 +296,7 @@ export default function AttendanceForm() {
                                 type="text"
                                 placeholder="Note..."
                                 value={notes[student._id] || ""}
-                                disabled={!isToday}
+                                disabled={isFutureDate || !isToday || isBeforeClass}
                                 onChange={(e) =>
                                   setNotes((prev) => ({
                                     ...prev,
@@ -314,8 +324,8 @@ export default function AttendanceForm() {
                 </div>
               </div>
 
-              {/* Nút lưu */}
-              {isToday && (
+              {/* Save button & messages */}
+              {isToday && (isDuringClass || isAfterClass) && (
                 <div className="text-right mt-6">
                   <button
                     onClick={handleSaveAttendance}
@@ -327,12 +337,18 @@ export default function AttendanceForm() {
                 </div>
               )}
 
-              {/* Ghi chú trạng thái khác */}
+              {isToday && isBeforeClass && (
+                <div className="text-right mt-6 text-red-600 italic">
+                  It's not time for roll call yet.
+                </div>
+              )}
+
               {!isToday && !isFutureDate && (
                 <div className="text-right mt-6 text-gray-600 italic">
                   Time out to edit attendance.
                 </div>
               )}
+
               {isFutureDate && (
                 <div className="text-right mt-6 text-gray-600 italic">
                   It's not time for roll call yet.
