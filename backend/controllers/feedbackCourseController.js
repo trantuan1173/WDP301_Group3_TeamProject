@@ -7,7 +7,7 @@ const Course = require("../models/courseModel.js");
 // Get all feedbacks (Admin)
 const getAllFeedbacksAllCourse = async (req, res) => {
   try {
-    const feedbacks = await FeedbackCourse.find()
+    const feedbacks = await FeedbackCourse.find().sort({ createdAt: -1 })
     .populate({
       path: "userId",
       select: "email profileId",
