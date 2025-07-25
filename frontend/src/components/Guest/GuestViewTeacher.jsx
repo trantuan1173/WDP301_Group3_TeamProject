@@ -84,7 +84,7 @@ const GuestViewTeacher = () => {
               return (
                 <div key={fb._id} className="px-2">
                   {/* Giảm padding giữa các slide */}
-                  <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl shadow-md hover:shadow-xl transition-all p-5 h-full flex flex-col justify-between border border-blue-300 min-h-[250px]">
+                  <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl shadow-md hover:shadow-xl transition-all p-5 h-full flex flex-col justify-between border border-blue-300 min-h-[250px]">
                     {/* Avatar + Info */}
                     <div className="flex items-center mb-3">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 shadow flex items-center justify-center text-lg font-bold text-white mr-3">

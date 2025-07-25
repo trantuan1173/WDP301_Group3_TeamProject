@@ -5,12 +5,13 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../../config';
 import { useNavigate } from "react-router-dom";
 import GuestViewCourseRegistration from './GuestViewCourseRegistration';
+import GuestViewOpemingSchedule from './GuestViewOpeningSchedule';
 
 const roadmapData = {
     toeic: [
         {
-            title: "TỪ MẤT GỐC - 450+",
-            desc: "Cải thiện khả năng từ mất gốc đến 450+/990 TOEIC",
+            title: "FROM BEGINNER TO 450+",
+            desc: "Improve your TOEIC skills from beginner to 450+/990 TOEIC",
             levels: [
                 { name: "TOEIC Foundation", desc: "Xây nền" },
                 { name: "TOEIC Beginner", desc: "350+/990 TOEIC" },
@@ -18,8 +19,8 @@ const roadmapData = {
             ]
         },
         {
-            title: "TỪ 450 - 700+ TOEIC",
-            desc: "Chiến lược học tập tối ưu, luyện nghe chuyên sâu. Phát triển toàn diện kỹ năng Listening & Reading. Cam kết đạt mục tiêu, sẵn sàng cho TOEIC cấp độ cao.",
+            title: "FROM 450 TO 700+ TOEIC",
+            desc: "Optimize your study strategy, focus on listening practice. Develop comprehensive listening and reading skills. Commit to achieving your goal, ready for high-level TOEIC.",
             levels: [
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" },
                 { name: "TOEIC Intermediate", desc: "550+/990 TOEIC" },
@@ -27,8 +28,8 @@ const roadmapData = {
             ]
         },
         {
-            title: "4 KỸ NĂNG",
-            desc: "Lộ trình phát triển toàn diện 4 KỸ NĂNG Listening - Reading - Speaking - Writing trong vòng 10 - 11 tháng. Giáo trình chuyên sâu, phương pháp hiệu quả. Từ mất gốc đến thành thạo, sẵn sàng cho mọi thử thách TOEIC.",
+            title: "FROM BEGINNER TO 700+",
+            desc: "Develop comprehensive listening and reading skills. Commit to achieving your goal, ready for high-level TOEIC.",
             levels: [
                 { name: "TOEIC Beginner", desc: "350+/990 TOEIC" },
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" },
@@ -39,8 +40,8 @@ const roadmapData = {
     ],
     ielts: [
         {
-            title: "TỪ MẤT GỐC - 5.0",
-            desc: "Cá nhân hóa lộ trình học IELTS theo level từ mất gốc đến 5.0/9.0",
+            title: "FROM BEGINNER TO 5.0",
+            desc: "Personalized IELTS learning path from beginner to 5.0/9.0",
             levels: [
                 { name: "IELTS Foundation", desc: "3.0/9.0" },
                 { name: "IELTS Beginner", desc: "3.5-4.0/9.0" },
@@ -48,8 +49,8 @@ const roadmapData = {
             ]
         },
         {
-            title: "TỪ 5.0 - 7.5+ IELTS",
-            desc: "Chiến lược học tập tối ưu, luyện đề chuyên sâu. Phát triển toàn diện kỹ năng Listening & Reading. Cam kết đạt mục tiêu, sẵn sàng cho IELTS cấp độ cao.",
+            title: "FROM 5.0 TO 7.5+ IELTS",
+            desc: "Optimize your study strategy, focus on listening practice. Develop comprehensive listening and reading skills. Commit to achieving your goal, ready for high-level IELTS.",
             levels: [
                 { name: "IELTS Intermediate", desc: "5.5-6.0" },
                 { name: "IELTS Upper", desc: "6.5-7.0" },
@@ -66,6 +67,7 @@ const RouteCourse = ({ onSupportClick }) => {
     const [filter, setFilter] = useState('all');
     const [activeTab, setActiveTab] = useState('intro');
     const [showGuideModal, setShowGuideModal] = useState(false);
+    const [showSchedule, setShowSchedule] = useState(false);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -93,6 +95,7 @@ const RouteCourse = ({ onSupportClick }) => {
         setActiveTab('support');
         if (onSupportClick) {
             onSupportClick();
+            setShowSchedule(false);
         }
     };
 
@@ -150,7 +153,11 @@ const RouteCourse = ({ onSupportClick }) => {
             >
                 {/* Giới thiệu */}
                 <div
-                    onClick={() => setActiveTab('intro')}
+                    onClick={() => {
+                        setActiveTab('intro');
+                        setShowSchedule(false);
+                    }}
+
                     style={{
                         flex: 1,
                         textAlign: 'center',
@@ -165,12 +172,17 @@ const RouteCourse = ({ onSupportClick }) => {
                         borderBottom: activeTab === 'intro' ? '2px solid #12006b' : 'none',
                     }}
                 >
-                    Giới thiệu
+                    Introduce
                 </div>
 
                 {/* Lịch khai giảng */}
                 <div
-                    onClick={() => navigate("/guest/opening-schedule")}
+                    // onClick={() => navigate("/guest/opening-schedule")}
+                    // // show <Route path="/guest/opening-schedule" element={<GuestViewOpemingSchedule />} />
+                    onClick={() => {
+                        setActiveTab('schedule');
+                        setShowSchedule(true);
+                    }}
                     style={{
                         flex: 1,
                         textAlign: 'center',
@@ -184,7 +196,7 @@ const RouteCourse = ({ onSupportClick }) => {
                         justifyContent: 'center',
                     }}
                 >
-                    Lịch khai giảng
+                    Opening Schedule
                 </div>
 
                 {/* Khóa học (dropdown) */}
@@ -204,6 +216,7 @@ const RouteCourse = ({ onSupportClick }) => {
                         onChange={(e) => {
                             setFilter(e.target.value);
                             setActiveTab('courses');
+                            setShowSchedule(false);
                         }}
                         style={{
                             appearance: 'none',
@@ -218,7 +231,7 @@ const RouteCourse = ({ onSupportClick }) => {
                             cursor: 'pointer',
                         }}
                     >
-                        <option style={{ color: '#000' }} value="all">Khóa học</option>
+                        <option style={{ color: '#000' }} value="all">Courses</option>
                         <option style={{ color: '#000' }} value="toeic">TOEIC</option>
                         <option style={{ color: '#000' }} value="ielts">IELTS</option>
                     </select>
@@ -242,6 +255,7 @@ const RouteCourse = ({ onSupportClick }) => {
                     onClick={() => {
                         setActiveTab('guide');
                         setShowGuideModal(true);
+                        setShowSchedule(false);
                     }}
                     style={{
                         flex: 1,
@@ -256,7 +270,7 @@ const RouteCourse = ({ onSupportClick }) => {
                         justifyContent: 'center',
                     }}
                 >
-                    Hướng dẫn đăng ký học
+                    Guide
                 </div>
 
                 {/* Hỗ trợ */}
@@ -275,7 +289,7 @@ const RouteCourse = ({ onSupportClick }) => {
                         justifyContent: 'center',
                     }}
                 >
-                    Hỗ trợ
+                    Support
                 </div>
             </div>
         </div>
@@ -395,7 +409,7 @@ const RouteCourse = ({ onSupportClick }) => {
                                         >
                                             <img src={course.imageURL} alt={course.courseId.nameCourses} style={{ width: '100%', height: "100%", borderRadius: 8, marginBottom: 8, objectFit: 'cover' }} />
                                             <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{course.courseId.nameCourses}</div>
-                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Thời lượng: {course.durationDays} buổi</div>
+                                            <div style={{ fontSize: 13, marginBottom: 8 }}>Duration: {course.durationDays} days</div>
                                             <button onClick={() => navigate(`/course/${course.courseId._id}`)} style={{
                                                 background: '#19b46a',
                                                 color: '#fff',
@@ -471,6 +485,11 @@ const RouteCourse = ({ onSupportClick }) => {
 
             {renderHeader()}
 
+            {showSchedule && (
+                <div style={{ marginTop: 32 }}>
+                    <GuestViewOpemingSchedule />
+                </div>
+            )}
             <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 0' }}>
                 {sections.map(section => (
                     <React.Fragment key={section.key}>{section.jsx}</React.Fragment>
