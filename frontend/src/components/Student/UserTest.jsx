@@ -33,7 +33,7 @@ export default function UserTestPage() {
         );
 
         setTests(res.data.data);
-        // console.log("Tests fetched successfully:", res.data.data);
+         console.log("Tests fetched successfully:", res.data.data);
       } catch (error) {
         console.error("Failed to fetch tests:", error);
       } finally {

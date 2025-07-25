@@ -1,6 +1,6 @@
 // API Configuration
-const baseUrl = 'https://beenglishcenter.gicunhco.com';
-// const baseUrl = 'http://localhost:9999';
+//const baseUrl = 'https://beenglishcenter.gicunhco.com';
+ const baseUrl = 'http://localhost:9999';
 
 export const API_ENDPOINTS = {
   AUTH_PROFILE: `${baseUrl}/api/users/authProfile`,
@@ -56,6 +56,7 @@ export const API_ENDPOINTS = {
   GET_STUDENT_SCHEDULE: (userId) => `${baseUrl}/api/schedule/student/${userId}`,
   GET_COURSE: (courseId) => `${baseUrl}/api/courses/${courseId}`,
   STUDENT_SUBMIT_TEST: `${baseUrl}/api/testSubmission/submit`,
+  //STUDENT_SUBMIT_TEST: `${baseUrl}/api/tests/submit`,
   GET_STUDENT_EROLLMENT: (studentId) => `${baseUrl}/api/enrollments/student/${studentId}`,
 
   GET_TESTS_BY_STUDENT_ID: (studentId) => `${baseUrl}/api/test-assigns/student/${studentId}`,
