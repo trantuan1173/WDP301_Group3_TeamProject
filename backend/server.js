@@ -12,7 +12,11 @@ require("./cron/classProgressCron");
 connectDB();
 const app=express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://englishcenter.gicunhco.com', // tên miền thật frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true, // nếu frontend dùng cookie/token dạng cookie
+  }));
 
 app.use(express.json());
 app.use('/api',router);
