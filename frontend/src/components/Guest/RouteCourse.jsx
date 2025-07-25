@@ -13,7 +13,7 @@ const roadmapData = {
             title: "FROM BEGINNER TO 450+",
             desc: "Improve your TOEIC skills from beginner to 450+/990 TOEIC",
             levels: [
-                { name: "TOEIC Foundation", desc: "Xây nền" },
+                { name: "TOEIC Foundation", desc: "Build Up" },
                 { name: "TOEIC Beginner", desc: "350+/990 TOEIC" },
                 { name: "TOEIC Pre-Intermediate", desc: "450+/990 TOEIC" }
             ]
