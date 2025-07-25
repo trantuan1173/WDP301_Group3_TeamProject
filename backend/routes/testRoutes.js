@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const {
   getTests,
   getTestsByClass,
@@ -18,6 +19,13 @@ const { protect, authorize } = require("../middleware/authMiddleware.js");
 const multer = require("multer")
 const upload = multer({ dest: "uploads/" })
 const router = express.Router();
+
+const corsOptions = {
+  origin: 'https://englishcenter.gicunhco.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
 
 /**
  * @swagger
@@ -89,7 +97,17 @@ router.get("/download-xlsx-template", downloadXLSXTemplate)
  *       201:
  *         description: Tạo bài kiểm tra thành công
  */
-router.post("/upload-xlsx", upload.single("file"), protect, authorize("admin", "teacher"), uploadTestFromXLSX)
+
+router.options('/upload-xlsx', cors(corsOptions)); // preflight
+router.post(
+  '/upload-xlsx',
+  cors(corsOptions), // 👈 bọc riêng route upload
+  upload.single('file'),
+  protect,
+  authorize('admin', 'teacher'),
+  uploadTestFromXLSX
+);
+// router.post("/upload-xlsx", upload.single("file"), protect, authorize("admin", "teacher"), uploadTestFromXLSX)
 
 /**
  * @swagger
