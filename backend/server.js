@@ -12,13 +12,23 @@ require("./cron/classProgressCron");
 connectDB();
 const app=express();
 
-app.use(cors({
-    origin: 'https://englishcenter.gicunhco.com', // tên miền thật frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true, // nếu frontend dùng cookie/token dạng cookie
-  }));
+// app.use(cors({
+//     origin: 'https://englishcenter.gicunhco.com', // tên miền thật frontend
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     credentials: true, // nếu frontend dùng cookie/token dạng cookie
+//   }));
 
-app.options(/.*/, cors());
+// app.options(/.*/, cors());
+const corsOptions = {
+    origin: 'https://englishcenter.gicunhco.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  };
+  
+  app.use(cors(corsOptions)); // ✅ cấu hình toàn cục
+  
+  app.options(/.*/, cors(corsOptions)); // ✅ regex hợp lệ
 
 app.use(express.json());
 app.use('/api',router);
