@@ -12,7 +12,16 @@ require("./cron/classProgressCron");
 connectDB();
 const app=express();
 
-app.use(cors());
+// app.use(cors());
+const corsOptions = {
+    origin: 'https://englishcenter.gicunhco.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+  };
+  
+  app.use(cors(corsOptions));
+  app.options(/.*/, cors(corsOptions));
 
 
 app.use(express.json());
