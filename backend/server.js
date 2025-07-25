@@ -18,7 +18,7 @@ app.use(cors({
     credentials: true, // nếu frontend dùng cookie/token dạng cookie
   }));
 
-app.options('*', cors());
+
 
 app.use(express.json());
 app.use('/api',router);
