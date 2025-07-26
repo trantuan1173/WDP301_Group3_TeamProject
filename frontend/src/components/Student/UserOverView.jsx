@@ -10,12 +10,14 @@ import {
   FaCalendarAlt,
   FaClock,
 } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";  
 
 export default function UserOverView({ onQuickAction }) {
   const [profile, setProfile] = useState(null);
   const [schedules, setSchedules] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -70,7 +72,7 @@ export default function UserOverView({ onQuickAction }) {
         <div className="absolute inset-0 flex flex-col justify-center items-start p-10">
           <h3 className="text-white text-3xl md:text-4xl font-bold mb-2 drop-shadow">
             Have a nice day,{" "}
-            {profile?.profile?.name || profile?.email || "Student"}!
+            {profile?.profile?.name || profile?.email || user?.profile?.name || "Student"}!
           </h3>
           <p className="text-white text-xl md:text-2xl mb-4 drop-shadow">
             Let&apos;s progress together!
@@ -86,13 +88,13 @@ export default function UserOverView({ onQuickAction }) {
 
       <div className="flex items-center gap-4 mb-4 p-4 bg-white rounded-lg shadow">
         <img
-          src={profile?.profile?.imageURL || "/avatar-default.png"}
+          src={profile?.profile?.imageURL || user?.profile?.imageURL || "/avatar-default.png"}
           alt="avatar"
           className="w-16 h-16 rounded-full border object-cover"
         />
         <div>
           <div className="font-bold text-xl">
-            {profile?.profile?.name || profile?.email || "Student"}
+            {profile?.profile?.name || profile?.email || user?.profile?.name || "Student"}
           </div>
           <div className="text-gray-600">Welcome back to your dashboard!</div>
         </div>
